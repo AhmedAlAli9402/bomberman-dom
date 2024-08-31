@@ -1,0 +1,40 @@
+.grid {
+    float:center;
+    width:1500px;
+    height:630px;
+    display: flex;
+    position: flex; 
+    flex-wrap:wrap;
+    background: url('./images/grid.png') no-repeat;
+    background-size: 1500px;
+    border-radius: 20px;
+    margin-left: 150px;
+    transform: translateZ(1);
+}
+
+.grid div {
+    width: 48.4px;
+    height: 48.1px;
+    border:solid 0.1px purple;
+    box-sizing: border-box;
+}
+
+.bombermanGoingDown {
+    background: url('./images/bombermanDown.png') no-repeat;
+    background-size: 48.4px 48.1px;
+}
+
+.bombermanGoingRight {
+    background: url('./images/bombermanRight.png') no-repeat;
+    background-size: 48.4px 48.1px;
+}
+
+.bombermanGoingLeft {
+    background: url('./images/bombermanLeft.png') no-repeat;
+    background-size: 48.4px 48.1px;
+}
+
+.bombermanGoingUp {
+    background: url('./images/bombermanUp.png') no-repeat;
+    background-size: 48.4px 48.1px;
+}
