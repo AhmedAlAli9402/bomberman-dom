@@ -1,5 +1,5 @@
 import { DOM} from '../framework/dom.js';
-import {changeDirection} from './bombermanMoves.js';
+import {changeDirection, setKeyUp} from './bombermanMoves.js';
 
 export let availableSquares = []
 export function buildGame() {
@@ -39,5 +39,16 @@ export function buildGame() {
     }
     availableSquares = Array.from(document.querySelectorAll('.grid div'))
     availableSquares[31].classList.add('bombermanGoingDown');
+    let emptySquares = availableSquares
+    emptySquares = emptySquares.filter((square)=>!square.classList.contains("bombermanGoingDown") && !square.classList.contains("wall"))
+    for (let i=0;i<30;i++){
+       let random = Math.floor(Math.random() * 247) + 1;
+       if (!emptySquares[random].classList.contains("breakableWall")){
+             emptySquares[random].classList.add('breakableWall');  
+        } else {
+            i--
+        }
+    }
     document.addEventListener('keydown', changeDirection)
+    document.addEventListener('keyup', setKeyUp)
 }
