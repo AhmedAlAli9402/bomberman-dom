@@ -45,22 +45,61 @@
 }
 
 .bomb {
-  background: url('./images/bomb.png') no-repeat;
-  background-size: 48.4px 48.1px;
-}
-
-.breakWall {
-    animation-name:breakWall;
-    animation-duration: 0.5s;
-    font-size:10px
+    background: url('./images/bomb.png') no-repeat;
+    background-size: 48.4px 48.1px;
   }
-
-  @keyframes breakWall {
-    100%   {background: url('./images/wall0.png') no-repeat;background-size: 48.4px 48.1px;}
-    80%  {background: url('./images/wall10.png') no-repeat;background-size: 48.4px 48.1px;}
+  
+  .explosion {
+      background: url('./images/explosion.png') no-repeat;
+      background-size: 48.4px 48.1px;
+    }
+    
+    .explosionTop {
+        background: url('./images/explosionTop.png') no-repeat;
+        background-size: 48.4px 48.1px;
+    }
+    
+    .explosionBottom {
+        background: url('./images/explosionBottom.png') no-repeat;
+        background-size: 48.4px 48.1px;
+    }
+    
+    .explosionLeft {
+        background: url('./images/explosionLeft.png') no-repeat;
+        background-size: 48.4px 48.1px;
+    }
+    
+    .explosionRight {
+        background: url('./images/explosionRight.png') no-repeat;
+        background-size: 48.4px 48.1px;
+    }
+    
+    
+    .breakWall {
+        animation-name:breakWall;
+        animation-duration: 0.5s;
+        font-size:10px
+      }
+    
+    @keyframes breakWall {
+        100%   {background: url('./images/wall0.png') no-repeat;background-size: 48.4px 48.1px;}
+        80%  {background: url('./images/wall10.png') no-repeat;background-size: 48.4px 48.1px;}
     60%  {background: url('./images/wall20.png') no-repeat;background-size: 48.4px 48.1px;}
     40%  {background: url('./images/wall40.png') no-repeat;background-size: 48.4px 48.1px;}
     20%  {background: url('./images/wall60.png') no-repeat;background-size: 48.4px 48.1px;}
     10%  {background: url('./images/wall80.png') no-repeat;background-size: 48.4px 48.1px;}
     0% {background: url('./images/wall100.png') no-repeat;background-size: 48.4px 48.1px;}
   }
+
+  .dead {
+    animation-name:dying;
+    animation-duration: 0.5s;
+    font-size:10px
+  }
+
+@keyframes dying {
+100% {background: url('./images/fullyDead.png') no-repeat;background-size: 48.4px 48.1px;}
+50%  {background: url('./images/halfDead.png') no-repeat;background-size: 48.4px 48.1px;}
+0%   {background: url('./images/Dying.png') no-repeat;background-size: 48.4px 48.1px;}
+}
+
