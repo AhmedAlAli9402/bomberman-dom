@@ -1,4 +1,5 @@
 import {availableSquares} from './buildGame.js'
+import { players } from './buildGame.js'
 
 function explosion(id){
 if (!availableSquares[id-30].getAttribute('class')){
@@ -19,12 +20,10 @@ if (!availableSquares[id+1].getAttribute('class')){
 }
 }
 
-
 export function breakWall(){
     let bomb = document.getElementsByClassName("bomb")
     let bombIndex = availableSquares.indexOf(bomb[0])
-    let divId = bomb[0].getAttribute("id")
-    let id = Number(divId.substring(3))
+    let id = Number(bomb[0].getAttribute("id"))
     explosion(id)
     checkIfPlayerInBlastRadius(id)
     if (availableSquares[id-1].classList.contains('breakableWall')){

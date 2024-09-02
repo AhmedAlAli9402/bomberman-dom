@@ -39,22 +39,17 @@
     background-size: 48.4px 48.1px;
 }
 
-.breakableWall {
-    background: url('./images/wall100.png') no-repeat;
-    background-size: 48.4px 48.1px;
-}
-
 .bomb {
     background: url('./images/bomb.png') no-repeat;
     background-size: 48.4px 48.1px;
-  }
-  
-  .explosion {
-      background: url('./images/explosion.png') no-repeat;
-      background-size: 48.4px 48.1px;
-    }
-    
-    .explosionTop {
+}
+
+.explosion {
+    background: url('./images/explosion.png') no-repeat;
+    background-size: 48.4px 48.1px;
+}
+
+.explosionTop {
         background: url('./images/explosionTop.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
@@ -74,12 +69,31 @@
         background-size: 48.4px 48.1px;
     }
     
+    .explosionX2 {
+        background: url('./images/explosionX2.png') no-repeat;
+        background-size: 48.4px 48.1px;
+    }
+    
+    .bombX2 {
+        background: url('./images/bombX2.png') no-repeat;
+        background-size: 48.4px 48.1px;
+    }
+    
+    .speed {
+        background: url('./images/increaseSpeed.png') no-repeat;
+        background-size: 48.4px 48.1px;
+    }
+    
+    .breakableWall {
+        background: url('./images/wall100.png') no-repeat;
+        background-size: 48.4px 48.1px;
+    }
     
     .breakWall {
         animation-name:breakWall;
         animation-duration: 0.5s;
         font-size:10px
-      }
+    }
     
     @keyframes breakWall {
         100%   {background: url('./images/wall0.png') no-repeat;background-size: 48.4px 48.1px;}

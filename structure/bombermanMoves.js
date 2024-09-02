@@ -1,5 +1,6 @@
 import {availableSquares} from './buildGame.js'
 import { breakWall } from './gameEvents.js'
+import { players } from './buildGame.js'
 
 let keyStillDown = false
 let bombDropped = false
@@ -33,7 +34,6 @@ function moveBomberman(direction){
       || document.querySelector('.bombermanGoingDown')
        || document.querySelector('.bombermanGoingLeft') 
     let  bombermanFacing = bomberman.getAttribute('class')
-    console.log(bombermanFacing)
     if (bombermanFacing.includes('bomb ')){
         bombermanFacing = bombermanFacing.split('bomb ')[1]
     } else if (bombermanFacing.includes(' bomb')){
