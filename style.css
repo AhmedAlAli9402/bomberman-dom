@@ -1,11 +1,11 @@
 .grid {
     float:center;
-    width:1500px;
-    height:630px;
+    width:1150px;
+    height:650px;
     display: flex;
     position: flex; 
     flex-wrap:wrap;
-    background: url('./images/grid.png') no-repeat;
+    /* background: url('./images/grid.png') no-repeat; */
     background-size: 1500px;
     border-radius: 20px;
     margin-left: 150px;
@@ -13,83 +13,91 @@
 }
 
 .grid div {
+    background: url('./images/walkable.png') no-repeat;
+    background-size: 48.1px 48.4px;
     width: 48.4px;
     height: 48.1px;
     border:solid 0.1px purple;
     box-sizing: border-box;
 }
 
-.bombermanGoingDown {
+div .wall {
+    background: url('./images/wall.png') no-repeat;
+    background-size: 48.4px 48.1px;
+}
+
+
+div .bombermanGoingDown {
     background: url('./images/bombermanDown.png') no-repeat;
     background-size: 48.4px 48.1px;
 }
 
-.bombermanGoingRight {
+div .bombermanGoingRight {
     background: url('./images/bombermanRight.png') no-repeat;
     background-size: 48.4px 48.1px;
 }
 
-.bombermanGoingLeft {
+div .bombermanGoingLeft {
     background: url('./images/bombermanLeft.png') no-repeat;
     background-size: 48.4px 48.1px;
 }
 
-.bombermanGoingUp {
+div .bombermanGoingUp {
     background: url('./images/bombermanUp.png') no-repeat;
     background-size: 48.4px 48.1px;
 }
 
-.bomb {
+div .bomb {
     background: url('./images/bomb.png') no-repeat;
     background-size: 48.4px 48.1px;
 }
 
-.explosion {
+div .explosion {
     background: url('./images/explosion.png') no-repeat;
     background-size: 48.4px 48.1px;
 }
 
-.explosionTop {
+div .explosionTop {
         background: url('./images/explosionTop.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-    .explosionBottom {
+div .explosionBottom {
         background: url('./images/explosionBottom.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-    .explosionLeft {
+div .explosionLeft {
         background: url('./images/explosionLeft.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-    .explosionRight {
+div .explosionRight {
         background: url('./images/explosionRight.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-    .explosionX2 {
+div .explosionX2 {
         background: url('./images/explosionX2.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-    .bombX2 {
+div .bombX2 {
         background: url('./images/bombX2.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-    .speed {
+div .speed {
         background: url('./images/increaseSpeed.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-    .breakableWall {
+div .breakableWall {
         background: url('./images/wall100.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-    .breakWall {
+div .breakWall {
         animation-name:breakWall;
         animation-duration: 0.5s;
         font-size:10px
@@ -105,7 +113,7 @@
     0% {background: url('./images/wall100.png') no-repeat;background-size: 48.4px 48.1px;}
   }
 
-  .dead {
+div .dead {
     animation-name:dying;
     animation-duration: 0.5s;
     font-size:10px

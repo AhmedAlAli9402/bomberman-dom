@@ -42,8 +42,8 @@ function moveBomberman(direction){
     let bombermanIndex = availableSquares.indexOf(bomberman)
     switch(direction){
         case 'up':
-            if(bombermanIndex-30 >=0 && !availableSquares[bombermanIndex-30].getAttribute('class')){
-                availableSquares[bombermanIndex - 30].classList.add('bombermanGoingUp')
+            if(bombermanIndex-23 >=0 && !availableSquares[bombermanIndex-23].getAttribute('class')){
+                availableSquares[bombermanIndex - 23].classList.add('bombermanGoingUp')
                 availableSquares[bombermanIndex].classList.remove(bombermanFacing)
                 keyStillDown = true
             }
@@ -56,8 +56,8 @@ function moveBomberman(direction){
             }
             break
         case 'down':
-            if(bombermanIndex+30 <390 && !availableSquares[bombermanIndex+30].getAttribute('class')){
-                availableSquares[bombermanIndex + 30].classList.add('bombermanGoingDown')
+            if(bombermanIndex+23 <390 && !availableSquares[bombermanIndex+23].getAttribute('class')){
+                availableSquares[bombermanIndex + 23].classList.add('bombermanGoingDown')
                 availableSquares[bombermanIndex].classList.remove(bombermanFacing)
                 keyStillDown = true
             }
