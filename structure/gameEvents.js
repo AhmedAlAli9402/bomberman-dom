@@ -1,14 +1,14 @@
 import {availableSquares} from './buildGame.js'
-import { players } from './buildGame.js'
+import { width, height, players } from './model.js'
 
 function explosion(id){
-if (!availableSquares[id-23].getAttribute('class')){
-    availableSquares[id-23].classList.add("explosionTop")
-    setTimeout(()=>{availableSquares[id-23].classList.remove("explosionTop")}, 200)
+if (!availableSquares[id-width].getAttribute('class')){
+    availableSquares[id-width].classList.add("explosionTop")
+    setTimeout(()=>{availableSquares[id-width].classList.remove("explosionTop")}, 200)
 }
-if (!availableSquares[id+23].getAttribute('class')){
-    availableSquares[id+23].classList.add("explosionBottom")
-    setTimeout(()=>{availableSquares[id+23].classList.remove("explosionBottom")}, 200)
+if (!availableSquares[id+width].getAttribute('class')){
+    availableSquares[id+width].classList.add("explosionBottom")
+    setTimeout(()=>{availableSquares[id+width].classList.remove("explosionBottom")}, 200)
 }
 if (!availableSquares[id-1].getAttribute('class')){
     availableSquares[id-1].classList.add("explosionLeft")
@@ -34,13 +34,13 @@ export function breakWall(){
         availableSquares[id+1].classList.add("breakWall")
         availableSquares[id+1].classList.remove('breakableWall')
     }
-    if (availableSquares[id+23].classList.contains('breakableWall')){
-        availableSquares[id+23].classList.add("breakWall")
-        availableSquares[id+23].classList.remove('breakableWall')
+    if (availableSquares[id+width].classList.contains('breakableWall')){
+        availableSquares[id+width].classList.add("breakWall")
+        availableSquares[id+width].classList.remove('breakableWall')
     }
-    if (availableSquares[id-23].classList.contains('breakableWall')){
-        availableSquares[id-23].classList.add("breakWall")
-        availableSquares[id-23].classList.remove('breakableWall')   
+    if (availableSquares[id-width].classList.contains('breakableWall')){
+        availableSquares[id-width].classList.add("breakWall")
+        availableSquares[id-width].classList.remove('breakableWall')   
     }
     let elementsWithBreakWall = document.getElementsByClassName('breakWall') 
     availableSquares[bombIndex].classList.remove("bomb")
@@ -64,9 +64,9 @@ function checkIfPlayerInBlastRadius(id){
         killPlayer(bomberman)
     } else if (bombermanIndex === id+1){
         killPlayer(bomberman)
-    } else if (bombermanIndex === id+23){
+    } else if (bombermanIndex === id+width){
         killPlayer(bomberman)
-    } else if (bombermanIndex === id-23){
+    } else if (bombermanIndex === id-width){
         killPlayer(bomberman) 
     }
 }

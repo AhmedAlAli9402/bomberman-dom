@@ -1,6 +1,6 @@
 import {availableSquares} from './buildGame.js'
 import { breakWall } from './gameEvents.js'
-import { players } from './buildGame.js'
+import { width, height, players, powerUps } from './model.js'
 
 let keyStillDown = false
 let bombDropped = false
@@ -40,35 +40,41 @@ function moveBomberman(direction){
         bombermanFacing = bombermanFacing.split(' bomb')[0]
     }
     let bombermanIndex = availableSquares.indexOf(bomberman)
+    let checkIfSquareAvailable
+    let moving
     switch(direction){
         case 'up':
-            if(bombermanIndex-23 >=0 && !availableSquares[bombermanIndex-23].getAttribute('class')){
-                availableSquares[bombermanIndex - 23].classList.add('bombermanGoingUp')
-                availableSquares[bombermanIndex].classList.remove(bombermanFacing)
-                keyStillDown = true
+            if(bombermanIndex-width >=0){
+                checkIfSquareAvailable = availableSquares[bombermanIndex-width]
+                moving = 'Up'
             }
             break
         case 'right':
-            if(bombermanIndex+1 < 390 && !availableSquares[bombermanIndex+1].getAttribute('class')){
-                availableSquares[bombermanIndex + 1].classList.add('bombermanGoingRight')
-                availableSquares[bombermanIndex].classList.remove(bombermanFacing)
-                keyStillDown = true
+            if(bombermanIndex+1 < width*height){
+                checkIfSquareAvailable = availableSquares[bombermanIndex+1]
+                moving = 'Right'
             }
             break
         case 'down':
-            if(bombermanIndex+23 <390 && !availableSquares[bombermanIndex+23].getAttribute('class')){
-                availableSquares[bombermanIndex + 23].classList.add('bombermanGoingDown')
-                availableSquares[bombermanIndex].classList.remove(bombermanFacing)
-                keyStillDown = true
+            if(bombermanIndex+width <width*height){
+                checkIfSquareAvailable = availableSquares[bombermanIndex+width]
+                moving = 'Down'
             }
             break
         case 'left':
-            if(bombermanIndex-1 >=0 && !availableSquares[bombermanIndex-1].getAttribute('class')){
-                availableSquares[bombermanIndex - 1].classList.add('bombermanGoingLeft')
-                availableSquares[bombermanIndex].classList.remove(bombermanFacing)
-                keyStillDown = true
+            if(bombermanIndex-1 >=0){
+                checkIfSquareAvailable = availableSquares[bombermanIndex-1]
+                moving = 'Left'
             }
             break
+    }
+    let squareClass = checkIfSquareAvailable.getAttribute('class')
+    if (!squareClass || powerUps.includes(squareClass)){
+        players[1].powerUp = squareClass
+        checkIfSquareAvailable.removeAttribute('class')
+        checkIfSquareAvailable.classList.add('bombermanGoing'+moving)
+        availableSquares[bombermanIndex].classList.remove(bombermanFacing)
+        keyStillDown = true
     }
 }
 

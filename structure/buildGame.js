@@ -1,44 +1,38 @@
 import { DOM} from '../framework/dom.js';
 import {changeDirection, setKeyUp} from './bombermanMoves.js';
+import { height, width, players, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js'
 
-export let players = {1:{nickname:"", powerUp:"", position:"1"}
-                    , 2:{nickname:"", powerUp:"", position:"1"}
-                    , 3:{nickname:"", powerUp:"", position:"1"}
-                    , 4:{nickname:"", powerUp:"", position:"1"}}
-let powerUps = ["speed", "bombX2", "explosionX2"]
 export let availableSquares = []
 export function buildGame() {
     let grid = document.getElementById('grid');
-    for (let i=0;i<391;i++){
+    for (let i=0;i<(width*height);i++){
         grid.appendChild(DOM.createElement({ tag: 'div', attrs: { id: (i)} }));
     }
-    for (let i=0;i<391;i++){
+    for (let i=0;i<(width*height);i++){
         document.getElementById(i).classList.add('wall')
-        if (i==22){
-            i+=345
+        if (i==width-1){
+            i+=(height-2)*width
         }
     }
-    for (let i=23;i<391;){
+    for (let i=width;i<width*height;i++){
         document.getElementById(i).classList.add('wall')
-        i+=22
-        document.getElementById(i).classList.add('wall')
-        i++
+        i+=width-1
+        document.getElementById(i).classList.add('wall')  
     }
-    for (let i=48, j= 0;i<391;){
+    for (let i=(width*2)+2, j= 0;i<width*height;i++){
         document.getElementById(i).classList.add('wall')
-        i+=2
-        j+=1
-        if (j == 10) {
-            i+=26
+        i++ 
+        j++
+        if (j == (width-3)/2) {
+            i+=(width + 3)
             j=0
         }
     }
     availableSquares = Array.from(document.querySelectorAll('.grid div'))
-    availableSquares[24].classList.add('bombermanGoingDown');
+    availableSquares[Number(players[1].position)].classList.add('bombermanGoingDown');
     let emptySquares = availableSquares
     emptySquares = emptySquares.filter((square)=>!square.classList.contains("bombermanGoingDown") && !square.classList.contains("wall"))
-    console.log(emptySquares.length)
-    for (let i=0;i<60;i++){
+    for (let i=0;i<numberOfBreakableWalls;i++){
        let random = Math.floor(Math.random() * (emptySquares.length-1)) + 1;
        if (!emptySquares[random].classList.contains("breakableWall")){
              emptySquares[random].classList.add('breakableWall');  
@@ -46,22 +40,23 @@ export function buildGame() {
             i--
         }
     }
-    for (let i=0;i<4;i++){
-        for (let j=0;j<12;j++){
+    if ((emptySquares[width+2].classList.contains("breakableWall") && emptySquares[(width*2)+1].classList.contains("breakableWall")) ||
+       (emptySquares[width+2].classList.contains("breakableWall") && emptySquares[(width*3)+1].classList.contains("breakableWall"))){
+            emptySquares[width+2].classList.remove('breakableWall');
+        }
+    if (emptySquares[width+3].classList.contains("breakableWall") && emptySquares[(width*2)+1].classList.contains("breakableWall")){
+        emptySquares[(width*2)+1].classList.remove('breakableWall');
+    }
+    for (let i=0;i<powerUps.length;i++){
+        for (let j=0;j<(numberOfPowerUps/(powerUps.length));j++){
             let random = Math.floor(Math.random() * (emptySquares.length-1)) + 1;
-       if (emptySquares[random].classList.contains("breakableWall")){
+            let checkSquare = emptySquares[random].classList
+       if (checkSquare.contains("breakableWall") && checkSquare.length<2){
              emptySquares[random].classList.add(powerUps[i]);  
         } else {
             j--
         }
         }
-    }
-    if ((emptySquares[25].classList.contains("breakableWall") && emptySquares[47].classList.contains("breakableWall")) ||
-       (emptySquares[25].classList.contains("breakableWall") && emptySquares[70].classList.contains("breakableWall"))){
-            emptySquares[25].classList.remove('breakableWall');
-        }
-    if (emptySquares[26].classList.contains("breakableWall") && emptySquares[47].classList.contains("breakableWall")){
-        emptySquares[47].classList.remove('breakableWall');
     }
     document.addEventListener('keydown', changeDirection)
     document.addEventListener('keyup', setKeyUp)
