@@ -1,63 +1,94 @@
-import { DOM} from '../framework/dom.js';
-import {changeDirection, setKeyUp} from './bombermanMoves.js';
-import { height, width, players, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js'
+import { DOM } from '../framework/dom.js';
+import { changeDirection, setKeyUp } from './bombermanMoves.js';
+import { height, width, players, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js';
 
-export let availableSquares = []
+export let availableSquares = [];
+
 export function buildGame() {
-    let grid = document.getElementById('grid');
-    for (let i=0;i<(width*height);i++){
-        grid.appendChild(DOM.createElement({ tag: 'div', attrs: { id: (i)} }));
+    const grid = document.getElementById('grid');
+    
+    // Create the grid squares and append to grid
+    for (let i = 0; i < width * height; i++) {
+        const square = DOM.createElement({ tag: 'div', attrs: { id: i.toString() } });
+        grid.appendChild(square);
     }
-    for (let i=0;i<(width*height);i++){
-        document.getElementById(i).classList.add('wall')
-        if (i==width-1){
-            i+=(height-2)*width
+
+    // Create walls along the grid edges
+    const createWall = (index) => document.getElementById(index).classList.add('wall');
+    for (let i = 0; i < width; i++) {
+        createWall(i);
+        createWall(i + (height - 1) * width);
+    }
+    for (let i = width; i < width * height; i += width) {
+        createWall(i);
+        createWall(i + width - 1);
+    }
+
+    // Create internal walls
+    for (let i = (width * 2) + 2, j = 0; i < width * height; i += 2, j++) {
+        createWall(i);
+        if (j === (width - 3) / 2) {
+            i += (width + 3);
+            j = 0;
         }
     }
-    for (let i=width;i<width*height;i++){
-        document.getElementById(i).classList.add('wall')
-        i+=width-1
-        document.getElementById(i).classList.add('wall')  
-    }
-    for (let i=(width*2)+2, j= 0;i<width*height;i++){
-        document.getElementById(i).classList.add('wall')
-        i++ 
-        j++
-        if (j == (width-3)/2) {
-            i+=(width + 3)
-            j=0
-        }
-    }
-    availableSquares = Array.from(document.querySelectorAll('.grid div'))
-    availableSquares[Number(players[1].position)].classList.add('bombermanGoingDown');
-    let emptySquares = availableSquares
-    emptySquares = emptySquares.filter((square)=>!square.classList.contains("bombermanGoingDown") && !square.classList.contains("wall"))
-    for (let i=0;i<numberOfBreakableWalls;i++){
-       let random = Math.floor(Math.random() * (emptySquares.length-1)) + 1;
-       if (!emptySquares[random].classList.contains("breakableWall")){
-             emptySquares[random].classList.add('breakableWall');  
+
+    availableSquares = Array.from(document.querySelectorAll('.grid div'));
+    
+    // Set player starting positions
+    const player1Start = availableSquares[Number(players[1].position)];
+    player1Start.classList.add('bombermanGoingDown');
+
+    let emptySquares = availableSquares.filter(
+        (square) => !square.classList.contains('bombermanGoingDown') && !square.classList.contains('wall')
+    );
+
+    // Place breakable walls
+    for (let i = 0; i < numberOfBreakableWalls; i++) {
+        const random = getRandomIndex(emptySquares.length);
+        const targetSquare = emptySquares[random];
+        if (!targetSquare.classList.contains('breakableWall')) {
+            targetSquare.classList.add('breakableWall');
         } else {
-            i--
+            i--;
         }
     }
-    if ((emptySquares[width+2].classList.contains("breakableWall") && emptySquares[(width*2)+1].classList.contains("breakableWall")) ||
-       (emptySquares[width+2].classList.contains("breakableWall") && emptySquares[(width*3)+1].classList.contains("breakableWall"))){
-            emptySquares[width+2].classList.remove('breakableWall');
-        }
-    if (emptySquares[width+3].classList.contains("breakableWall") && emptySquares[(width*2)+1].classList.contains("breakableWall")){
-        emptySquares[(width*2)+1].classList.remove('breakableWall');
-    }
-    for (let i=0;i<powerUps.length;i++){
-        for (let j=0;j<(numberOfPowerUps/(powerUps.length));j++){
-            let random = Math.floor(Math.random() * (emptySquares.length-1)) + 1;
-            let checkSquare = emptySquares[random].classList
-       if (checkSquare.contains("breakableWall") && checkSquare.length<2){
-             emptySquares[random].classList.add(powerUps[i]);  
-        } else {
-            j--
-        }
+
+    // Ensure no blocked initial paths
+    removeBlockedPaths(emptySquares);
+
+    // Place power-ups
+    for (const powerUp of powerUps) {
+        for (let j = 0; j < numberOfPowerUps / powerUps.length; j++) {
+            const random = getRandomIndex(emptySquares.length);
+            const targetSquare = emptySquares[random];
+            if (targetSquare.classList.contains('breakableWall') && targetSquare.classList.length < 2) {
+                targetSquare.classList.add(powerUp);
+            } else {
+                j--;
+            }
         }
     }
-    document.addEventListener('keydown', changeDirection)
-    document.addEventListener('keyup', setKeyUp)
+
+    // Add event listeners
+    document.addEventListener('keydown', changeDirection);
+    document.addEventListener('keyup', setKeyUp);
+}
+
+function getRandomIndex(length) {
+    return Math.floor(Math.random() * (length - 1)) + 1;
+}
+
+function removeBlockedPaths(availableSquares) {
+    const pathsToCheck = [
+        { idx1: width + 2, idx2: (width * 2) + 1 },
+        { idx1: width + 2, idx2: (width * 3) + 1 },
+        { idx1: width + 3, idx2: (width * 2) + 1 }
+    ];
+    
+    pathsToCheck.forEach(({ idx1, idx2 }) => {
+        if (availableSquares[idx1].classList.contains('breakableWall') && availableSquares[idx2].classList.contains('breakableWall')) {
+            availableSquares[idx2].classList.remove('breakableWall');
+        }
+    });
 }
