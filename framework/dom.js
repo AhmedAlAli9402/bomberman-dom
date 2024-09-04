@@ -1,3 +1,4 @@
+//  framework/dom.js
 class MyDOM {
     createElement({ tag, attrs = {}, children = [] }) {
         // try {
@@ -47,6 +48,11 @@ class MyDOM {
     render(element, container) {
         container.innerHTML = '';
         container.appendChild(element);
+    }
+
+    // getElement by id function
+    getById(id) {
+        return document.getElementById(id);
     }
 }
 
