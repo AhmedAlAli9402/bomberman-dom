@@ -24,7 +24,7 @@ export function changeDirection(e) {
 }
 
 function moveBomberman(direction) {
-    const bomberman = document.querySelector('.bombermanGoingUp, .bombermanGoingRight, .bombermanGoingDown, .bombermanGoingLeft');
+    const bomberman = document.querySelector(`.bomberman${players[3].color}GoingUp, .bomberman${players[3].color}GoingRight, .bomberman${players[3].color}GoingDown, .bomberman${players[3].color}GoingLeft`);
     if (!bomberman) return;
 
     const bombermanClass = bomberman.classList[0].replace(' bomb', '');
@@ -41,8 +41,8 @@ function moveBomberman(direction) {
     const nextSquare = availableSquares[newIndex];
 
     if (nextSquare && (!nextSquare.classList.length || powerUps.includes(nextSquare.classList[0]))) {
-        players[1].powerUp = nextSquare.classList[0] || '';
-        nextSquare.className = `bombermanGoing${capitalize(direction)}`;
+        players[3].powerUp = nextSquare.classList[0] || '';
+        nextSquare.className = `bomberman${players[3].color}Going${capitalize(direction)}`;
         bomberman.classList.remove(bombermanClass);
         keyStillDown = true;
     }
@@ -55,7 +55,8 @@ export function setKeyUp() {
 function dropBomb() {
     if (bombDropped) return;
 
-    const bomberman = document.querySelector('.bombermanGoingUp, .bombermanGoingRight, .bombermanGoingDown, .bombermanGoingLeft');
+    const bomberman = document.querySelector(`.bomberman${players[3].color}GoingUp, .bomberman${players[3].color}GoingRight, .bomberman${players[3].color}GoingDown, .bomberman${players[3].color}GoingLeft`);
+    console.log(bomberman);
     if (!bomberman) return;
 
     const bombermanIndex = availableSquares.indexOf(bomberman);

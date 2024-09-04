@@ -36,14 +36,16 @@ function explosion(id) {
     Object.entries(directions).forEach(([explosionType, offset]) => {
         const targetSquare = availableSquares[id + offset];
         if (targetSquare && !targetSquare.classList.length) {
-            targetSquare.classList.add(explosionType);
-            setTimeout(() => targetSquare.classList.remove(explosionType), 200);
+            targetSquare.classList.add("sideExplosion");
+            setTimeout(() => targetSquare.classList.remove("sideExplosion"), 200);
         }
     });
 }
 
 function checkIfPlayerInBlastRadius(id) {
-    const bomberman = document.querySelector('.bombermanGoingUp, .bombermanGoingRight, .bombermanGoingDown, .bombermanGoingLeft');
+    const bomberman = document.querySelector('.bomberman'+players[1].color+'GoingUp',
+         '.bomberman'+players[1].color+'GoingRight', '.bomberman'+players[1].color
+         +'GoingDown', '.bomberman'+players[1].color+'GoingLeft');
     const bombermanIndex = availableSquares.indexOf(bomberman);
 
     if ([id, id - 1, id + 1, id + width, id - width].includes(bombermanIndex)) {

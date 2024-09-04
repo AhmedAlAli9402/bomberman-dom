@@ -28,19 +28,20 @@ export function buildGame() {
     for (let i = (width * 2) + 2, j = 0; i < width * height; i += 2, j++) {
         createWall(i);
         if (j === (width - 3) / 2) {
-            i += (width + 3);
-            j = 0;
+            i += (width + 3)-2;
+            j = -1;
         }
     }
 
     availableSquares = Array.from(document.querySelectorAll('.grid div'));
     
     // Set player starting positions
-    const player1Start = availableSquares[Number(players[1].position)];
-    player1Start.classList.add('bombermanGoingDown');
-
+    players.forEach((player) => {
+        const playerSquare = availableSquares[player.position];
+        playerSquare.classList.add('bomberman' + player.color + 'GoingDown');
+    });
     let emptySquares = availableSquares.filter(
-        (square) => !square.classList.contains('bombermanGoingDown') && !square.classList.contains('wall')
+        (square) => !square.getAttribute('class')
     );
 
     // Place breakable walls
@@ -55,7 +56,7 @@ export function buildGame() {
     }
 
     // Ensure no blocked initial paths
-    removeBlockedPaths(emptySquares);
+    removeBlockedPaths(availableSquares);
 
     // Place power-ups
     for (const powerUp of powerUps) {
@@ -83,8 +84,11 @@ function removeBlockedPaths(availableSquares) {
     const pathsToCheck = [
         { idx1: width + 2, idx2: (width * 2) + 1 },
         { idx1: width + 2, idx2: (width * 3) + 1 },
-        { idx1: width + 3, idx2: (width * 2) + 1 }
-    ];
+        { idx1: width + 3, idx2: (width * 2) + 1 },
+        { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*3)+1 },
+        { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*4)+1 },
+        { idx1: (width*height)-(width*4)+1, idx2: (width*height)-(width*3)+1 },
+    ]; //still remaining paths to add
     
     pathsToCheck.forEach(({ idx1, idx2 }) => {
         if (availableSquares[idx1].classList.contains('breakableWall') && availableSquares[idx2].classList.contains('breakableWall')) {
