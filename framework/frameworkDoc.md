@@ -66,7 +66,7 @@ Attach event listeners to elements using the `Events.addEvent` method. You need 
 **Example:**
 
 ```javascript
-const button = document.getElementById('myButton');
+const button = DOM.getById('myButton');
 Events.addEvent(button, 'click', () => {
     console.log('Button clicked!');
 });

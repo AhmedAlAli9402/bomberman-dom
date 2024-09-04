@@ -1,3 +1,5 @@
+// structure/buildGame.js
+
 import { DOM } from '../framework/dom.js';
 import { changeDirection, setKeyUp } from './bombermanMoves.js';
 import { height, width, players, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js';
@@ -5,7 +7,8 @@ import { height, width, players, powerUps, numberOfBreakableWalls, numberOfPower
 export let availableSquares = [];
 
 export function buildGame() {
-    const grid = document.getElementById('grid');
+    console.log('Building game...');
+    const grid = DOM.getById('grid');
     
     // Create the grid squares and append to grid
     for (let i = 0; i < width * height; i++) {
@@ -14,7 +17,7 @@ export function buildGame() {
     }
 
     // Create walls along the grid edges
-    const createWall = (index) => document.getElementById(index).classList.add('wall');
+    const createWall = (index) => DOM.getById(index).classList.add('wall');
     for (let i = 0; i < width; i++) {
         createWall(i);
         createWall(i + (height - 1) * width);
