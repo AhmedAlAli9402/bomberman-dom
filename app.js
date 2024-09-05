@@ -34,7 +34,7 @@ function showLandingPage() {
 function showNicknamePopup() {
     const nicknameInput = MyFramework.DOM.createElement({
         tag: 'input',
-        attrs: { id: 'nicknameInput', type: 'text', placeholder: 'Enter your nickname' }
+        attrs: { id: 'nicknameInput', type: 'text', placeholder: 'Enter your nickname to start the game' }
     });
 
     const submitButton = MyFramework.DOM.createElement({
@@ -47,14 +47,21 @@ function showNicknamePopup() {
         tag: 'div',
         attrs: { id: 'nicknamePopup', style: "display: flex;" },
         children: [
-            MyFramework.DOM.createElement({ tag: 'p', children: 'Enter your nickname to start the game' }),
             nicknameInput,
             submitButton
         ]
     });
 
     MyFramework.DOM.render(nicknamePopup, MyFramework.DOM.getById('app'));
+
+    // add event listener to nickname input if enter is pressed
+    MyFramework.DOM.getById('nicknameInput').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            submitNickname();
+        }
+    });
 }
+
 
 // Submit the nickname and navigate to the waiting area
 function submitNickname() {

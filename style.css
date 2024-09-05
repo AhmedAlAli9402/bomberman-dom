@@ -1,5 +1,5 @@
 /*  General styles */
-#landingPage , #usernamePopup, #waitingArea , #gameGrid{
+#landingPage , #nicknamePopup, #waitingArea , #gameGrid{
     display: none;
     position: flex; 
     flex-direction: column;
@@ -9,6 +9,16 @@
     background-color: #f2f2f2;
     font-family: 'Roboto', sans-serif;
     
+}
+
+#nicknameInput{
+    width: 300px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 16px;
+    margin: 20px;
 }
 
   /* Button styles */
