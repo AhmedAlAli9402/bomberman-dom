@@ -1,139 +1,150 @@
 // app.js
 
-import { MyFramework } from './framework/framework.js';
-import { buildGame } from './structure/buildGame.js';
+import { MyFramework } from "./vFw/framework.js";
+import { buildGame } from "./structure/buildGame.js";
+// import { s } from "vite/dist/node/types.d-aGj9QkWt.js";
+const container = document.getElementById("app");
+const [gameStarted, setgameStarted] = MyFramework.State([]);
+const [nickname, setNickname] = MyFramework.State([]);
+const [playersReady, setPlayersReady] = MyFramework.State([]);
 
 // Initialize state
-MyFramework.State.setState({
-    gameStarted: false,
-    nickname: '',
-    playersReady: 0
-});
+// MyFramework.State({
+//   gameStarted: false,
+//   nickname: "",
+//   playersReady: 0,
+// });
 
 // Define the landing page
 function showLandingPage() {
-    const startButton = MyFramework.DOM.createElement({
-        tag: 'button',
-        attrs: { id: 'startGameButton', onclick: showNicknamePopup },
-        children: 'Start Game'
-    });
-
-    const landingPage = MyFramework.DOM.createElement({
-        tag: 'div',
-        attrs: { id: 'landingPage', style: "display: flex;" },
-        children: [
-            MyFramework.DOM.createElement({ tag: 'h1', children: 'Bomberman Game' }),
-            startButton
-        ]
-    });
-
-    MyFramework.DOM.render(landingPage, MyFramework.DOM.getById('app'));
+  const landingPage = MyFramework.DOM(
+    "div",
+    { id: "landingPage", style: "display: flex;" },
+    MyFramework.DOM("h1", { id: "title" }, "Bomberman Game"),
+    MyFramework.DOM(
+      "button",
+      { id: "startGameButton", onclick: showNicknamePopup },
+      "Start Game"
+    )
+  );
+  if (container) {
+    container.innerHTML = "";
+    container.appendChild(landingPage);
+  }
 }
 
 // Show the nickname popup
 function showNicknamePopup() {
-    const nicknameInput = MyFramework.DOM.createElement({
-        tag: 'input',
-        attrs: { id: 'nicknameInput', type: 'text', placeholder: 'Enter your nickname to start the game' }
-    });
+  const nicknameInput = MyFramework.DOM("input", {
+    id: "nicknameInput",
+    type: "text",
+    placeholder: "Enter your nickname",
+  });
 
-    const submitButton = MyFramework.DOM.createElement({
-        tag: 'button',
-        attrs: { id: 'submitnicknameButton', onclick: submitNickname },
-        children: 'Submit'
-    });
+  const submitButton = MyFramework.DOM(
+    "button",
+    { id: "submitnicknameButton", onclick: submitNickname },
+    "Submit"
+  );
 
-    const nicknamePopup = MyFramework.DOM.createElement({
-        tag: 'div',
-        attrs: { id: 'nicknamePopup', style: "display: flex;" },
-        children: [
-            nicknameInput,
-            submitButton
-        ]
-    });
-
-    MyFramework.DOM.render(nicknamePopup, MyFramework.DOM.getById('app'));
-
-    // add event listener to nickname input if enter is pressed
-    MyFramework.DOM.getById('nicknameInput').addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            submitNickname();
-        }
-    });
+  const nicknamePopup = MyFramework.DOM(
+    "div",
+    { id: "nicknamePopup", style: "display: flex;" },
+    MyFramework.DOM("p", null, "Enter your nickname to start the game"),
+    nicknameInput,
+    submitButton
+  );
+  if (container) {
+    container.innerHTML = "";
+    container.appendChild(nicknamePopup);
+  }
+  document.getElementById('nicknameInput').addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+        submitNickname();
+    }
+});
 }
-
 
 // Submit the nickname and navigate to the waiting area
 function submitNickname() {
-    const nickname = MyFramework.DOM.getById('nicknameInput').value;
-    if (nickname) {
-        MyFramework.State.setState({ nickname, gameStarted: true });
-        showWaitingArea();
-    } else {
-        alert('Please enter a nickname!');
-    }
+  const nickname = document.getElementById("nicknameInput").value;
+  if (nickname) {
+    // setNickname(nickname);
+    setPlayersReady(playersReady + 1);
+    // setgameStarted(true);
+    showWaitingArea();
+  } else {
+    alert("Please enter a nickname!");
+  }
 }
 
 // Show the waiting area
 function showWaitingArea() {
-    const waitingMessage = MyFramework.DOM.createElement({
-        tag: 'p',
-        children: 'Waiting for more players...'
-    });
+  const waitingMessage = MyFramework.DOM(
+    "p",
+    null,
+    "Waiting for more players..."
+  );
 
-    const countdownTimer = MyFramework.DOM.createElement({
-        tag: 'p',
-        attrs: { id: 'countdownTimer' },
-        children: 'Starting in 10 seconds...'
-    });
+  const countdownTimer = MyFramework.DOM(
+    "p",
+    { id: "countdownTimer" },
+    "Starting in 10 seconds..."
+  );
 
-    const waitingArea = MyFramework.DOM.createElement({
-        tag: 'div',
-        attrs: { id: 'waitingArea', style: "display: flex;" },
-        children: [waitingMessage, countdownTimer]
-    });
+  const waitingArea = MyFramework.DOM(
+    "div",
+    { id: "waitingArea", style: "display: flex;" },
+    waitingMessage,
+    countdownTimer
+  );
 
-    MyFramework.DOM.render(waitingArea, MyFramework.DOM.getById('app'));
+  if (container) {
+    container.innerHTML = "";
+    container.appendChild(waitingArea);
+  }
 
-    MyFramework.State.setState({
-        playersReady: MyFramework.State.getState().playersReady + 1
-    });
+  MyFramework.State({
+    playersReady: MyFramework.State.playersReady + 1,
+  });
 
-    if (MyFramework.State.getState().playersReady >= 1) {
-        startCountdown();
-    }
+  if (playersReady >= 1) {
+    startCountdown();
+  }
 }
 
 // Start the countdown timer
 function startCountdown() {
-    let countdown = 1;
-    const timer = setInterval(() => {
-        countdown--;
-        MyFramework.DOM.getById('countdownTimer').textContent = `Starting in ${countdown} seconds...`;
-        if (countdown === 0) {
-            clearInterval(timer);
-            showGameGrid();
-            MyFramework.Router.navigate('game');
-        }
-    }, 1000);
+  let countdown = 1;
+  const timer = setInterval(() => {
+    countdown--;
+    document.getElementById(
+      "countdownTimer"
+    ).textContent = `Starting in ${countdown} seconds...`;
+    if (countdown === 0) {
+      clearInterval(timer);
+      showGameGrid();
+      //   MyFramework.Router.navigate("game");
+      buildGame();
+    }
+  }, 1000);
 }
 
 // Show the game grid
 function showGameGrid() {
-    const gameGrid = MyFramework.DOM.createElement({
-        tag: 'div',
-        attrs: { id: 'gameGrid', style: "display: inherit;" },
-        children: [
-            MyFramework.DOM.createElement({ tag: 'h1', children: 'Bomberman Game' }),
-            MyFramework.DOM.createElement({ tag: 'div', attrs: { id: 'grid' ,class:'grid' }  })
-        ]
-    });
+  const gameGrid = MyFramework.DOM(
+    "div",
+    { id: "gameGrid", style: "display: inherit;" },
+    MyFramework.DOM("h1", null, "Bomberman Game"),
+    MyFramework.DOM("div", { id: "grid", class: "grid" })
+  );
 
-    MyFramework.DOM.render(gameGrid, MyFramework.DOM.getById('app'));
+  container.innerHTML = "";
+  container.appendChild(gameGrid);
 }
 
 // Build the game on navigating to /game
-MyFramework.Router.addRoute('game', buildGame);
+// MyFramework.Router.addRoute("game", buildGame);
 
 // Start the app with the landing page
 showLandingPage();

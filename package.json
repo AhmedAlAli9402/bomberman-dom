@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "compile": "tsc --watch &",
+    "dev": "npm run compile && vite"
+  },
+  "type": "module",
+  "dependencies": {
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  },
+  "devDependencies": {}
+}
