@@ -1,0 +1,26 @@
+export interface vElement {
+  tagName: string;
+  attributes: {
+    class?: string;
+    id?: string;
+  };
+  children: (vElement | string)[];
+}
+
+export function createElement(
+  tagName: vElement["tagName"],
+  attributes: vElement["attributes"],
+  children: vElement["children"]
+): vElement {
+  return {
+    tagName,
+    attributes,
+    children: children.map((child) =>
+      typeof child === "object" ? child : createTextElement(child)
+    )
+  };
+}
+
+function createTextElement(text: string): string{
+  return text;
+}
