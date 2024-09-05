@@ -4,11 +4,17 @@ import { availableSquares } from './buildGame.js';
 import { width, players } from './model.js';
 
 export function breakWall() {
-    const bomb = document.querySelector('.bomb');
+    let bomb = document.querySelector('.bomb');
+    let powerbomb = false
+    if (!bomb) {
+        bomb = document.querySelector('.powerBomb');
+        powerbomb = true;
+    }
+    if (!bomb) return;
     const bombIndex = availableSquares.indexOf(bomb);
     const id = Number(bomb.getAttribute('id'));
 
-    explosion(id);
+    explosion(id, powerbomb);
     checkIfPlayerInBlastRadius(id);
 
     const directions = [-1, 1, width, -width];
@@ -22,19 +28,23 @@ export function breakWall() {
     });
 
     bomb.classList.replace('bomb', 'explosion');
+    if (powerbomb) {
+        bomb.classList.replace('powerBomb', 'explosion');
+    }
     setTimeout(() => bomb.classList.remove('explosion'), 200);
 }
 
-function explosion(id) {
-    const directions = {
-        'explosionTop': -width,
-        'explosionBottom': width,
-        'explosionLeft': -1,
-        'explosionRight': 1
-    };
+function explosion(id, powerbomb) {
+    const directions = [
+        -width, width, -1, 1
+    ];
 
-    Object.entries(directions).forEach(([explosionType, offset]) => {
-        const targetSquare = availableSquares[id + offset];
+    if (powerbomb) {
+        directions.push(-2, 2, -width*2, width*2);
+    }   
+
+    directions.forEach((explosionPosition) => {
+        const targetSquare = availableSquares[id + explosionPosition];
         if (targetSquare && !targetSquare.classList.length) {
             targetSquare.classList.add("sideExplosion");
             setTimeout(() => targetSquare.classList.remove("sideExplosion"), 200);

@@ -10,4 +10,4 @@ export let players = [
     { nickname: "", powerUp: "", position: (width*height)-(width*2)+1, color: "Blue"},
     { nickname: "", powerUp: "", position: (width*height)-width-2, color: "Black"},
 ];
-export let powerUps = ['extraFlame', 'extraBomb', 'skate'];
+export let powerUps = ['powerBomb', 'extraBomb', 'skate'];

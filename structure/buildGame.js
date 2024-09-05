@@ -9,7 +9,7 @@ export let availableSquares = [];
 export function buildGame() {
     console.log('Building game...');
     const grid = DOM.getById('grid');
-    
+    // console.log(grid);
     // Create the grid squares and append to grid
     for (let i = 0; i < width * height; i++) {
         const square = DOM.createElement({ tag: 'div', attrs: { id: i.toString() } });
@@ -67,7 +67,7 @@ export function buildGame() {
             const random = getRandomIndex(emptySquares.length);
             const targetSquare = emptySquares[random];
             if (targetSquare.classList.contains('breakableWall') && targetSquare.classList.length < 2) {
-                targetSquare.classList.add(powerUp);
+                targetSquare.classList.add(powerUp+"PowerUp");
             } else {
                 j--;
             }
@@ -91,15 +91,16 @@ function removeBlockedPaths(availableSquares) {
         { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*3)+1 }, // bottom left corner
         { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*4)+1 },
         { idx1: (width*height)-(width*4)+1, idx2: (width*height)-(width*3)+1 },
-        { idx1: (width*2)-3, idx: (width*3)-3}, // top right corner
-        { idx1: (width*2)-4, idx: (width*3)-2},
-        { idx1: (width*2)-2, idx: (width*4)-2},
+        { idx1: (width*2)-3, idx2: (width*3)-3}, // top right corner
+        { idx1: (width*2)-4, idx2: (width*3)-2},
+        { idx1: (width*2)-2, idx2: (width*4)-2},
         { idx1: (width*height)-width-3, idx2: (width*height)-(width*2)-2 }, // bottom right corner
         { idx1: (width*height)-width-4, idx2: (width*height)-(width*2)-2 },
         { idx1: (width*height)-width-3, idx2: (width*height)-(width*3)-2 }
     ]; 
     
     pathsToCheck.forEach(({ idx1, idx2 }) => {
+        // console.log(idx1, idx2)
         if (availableSquares[idx1].classList.contains('breakableWall') && availableSquares[idx2].classList.contains('breakableWall')) {
             availableSquares[idx2].classList.remove('breakableWall');
         }
