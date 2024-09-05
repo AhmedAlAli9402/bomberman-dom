@@ -6,7 +6,7 @@ import { buildGame } from './structure/buildGame.js';
 // Initialize state
 MyFramework.State.setState({
     gameStarted: false,
-    username: '',
+    nickname: '',
     playersReady: 0
 });
 
@@ -14,7 +14,7 @@ MyFramework.State.setState({
 function showLandingPage() {
     const startButton = MyFramework.DOM.createElement({
         tag: 'button',
-        attrs: { id: 'startGameButton', onclick: showUsernamePopup },
+        attrs: { id: 'startGameButton', onclick: showNicknamePopup },
         children: 'Start Game'
     });
 
@@ -30,40 +30,40 @@ function showLandingPage() {
     MyFramework.DOM.render(landingPage, MyFramework.DOM.getById('app'));
 }
 
-// Show the username popup
-function showUsernamePopup() {
-    const usernameInput = MyFramework.DOM.createElement({
+// Show the nickname popup
+function showNicknamePopup() {
+    const nicknameInput = MyFramework.DOM.createElement({
         tag: 'input',
-        attrs: { id: 'usernameInput', type: 'text', placeholder: 'Enter your username' }
+        attrs: { id: 'nicknameInput', type: 'text', placeholder: 'Enter your nickname' }
     });
 
     const submitButton = MyFramework.DOM.createElement({
         tag: 'button',
-        attrs: { id: 'submitUsernameButton', onclick: submitUsername },
+        attrs: { id: 'submitnicknameButton', onclick: submitNickname },
         children: 'Submit'
     });
 
-    const usernamePopup = MyFramework.DOM.createElement({
+    const nicknamePopup = MyFramework.DOM.createElement({
         tag: 'div',
-        attrs: { id: 'usernamePopup', style: "display: flex;" },
+        attrs: { id: 'nicknamePopup', style: "display: flex;" },
         children: [
-            MyFramework.DOM.createElement({ tag: 'p', children: 'Enter your username to start the game' }),
-            usernameInput,
+            MyFramework.DOM.createElement({ tag: 'p', children: 'Enter your nickname to start the game' }),
+            nicknameInput,
             submitButton
         ]
     });
 
-    MyFramework.DOM.render(usernamePopup, MyFramework.DOM.getById('app'));
+    MyFramework.DOM.render(nicknamePopup, MyFramework.DOM.getById('app'));
 }
 
-// Submit the username and navigate to the waiting area
-function submitUsername() {
-    const username = MyFramework.DOM.getById('usernameInput').value;
-    if (username) {
-        MyFramework.State.setState({ username, gameStarted: true });
+// Submit the nickname and navigate to the waiting area
+function submitNickname() {
+    const nickname = MyFramework.DOM.getById('nicknameInput').value;
+    if (nickname) {
+        MyFramework.State.setState({ nickname, gameStarted: true });
         showWaitingArea();
     } else {
-        alert('Please enter a username!');
+        alert('Please enter a nickname!');
     }
 }
 
