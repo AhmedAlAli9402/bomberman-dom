@@ -258,6 +258,10 @@ div .bomb {
     background-size: 48.4px 48.1px;
 }
 
+/* div .bomb2 {
+    background: url('./images/bomb.png') no-repeat;
+    background-size: 48.4px 48.1px;
+} */
 
 div .powerBomb {
     background: url('./images/powerBomb.png') no-repeat;

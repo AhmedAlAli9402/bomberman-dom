@@ -3,8 +3,16 @@
 import { availableSquares } from './buildGame.js';
 import { width, players } from './model.js';
 
-export function breakWall() {
-    let bomb = document.querySelector('.bomb');
+export function breakWall(id) {
+    console.log(id)
+    let bomb
+    let bombs = document.getElementsByClassName("bomb");
+    if (bombs.length>1){
+       bomb = bombs[1]
+    } else {
+        bomb = bombs[0]
+    }
+    console.log(bomb)
     let powerbomb = false
     if (!bomb) {
         bomb = document.querySelector('.powerBomb');
@@ -12,22 +20,23 @@ export function breakWall() {
     }
     if (!bomb) return;
     const bombIndex = availableSquares.indexOf(bomb);
-    const id = Number(bomb.getAttribute('id'));
+    const pos = Number(bomb.getAttribute('id'));
 
-    explosion(id, powerbomb);
-    checkIfPlayerInBlastRadius(id);
+    explosion(pos, powerbomb);
+    checkIfPlayerInBlastRadius(pos);
 
     const directions = [-1, 1, width, -width];
 
     directions.forEach((direction) => {
-        const square = availableSquares[id + direction];
+        const square = availableSquares[pos + direction];
         if (square && square.classList.contains('breakableWall')) {
             square.classList.replace('breakableWall', 'breakWall');
             setTimeout(() => square.classList.remove('breakWall'), 500);
         }
     });
 
-    bomb.classList.replace('bomb', 'explosion');
+    bomb.classList.replace("bomb", 'explosion');
+    bomb.classList.remove(id)
     if (powerbomb) {
         bomb.classList.replace('powerBomb', 'explosion');
     }

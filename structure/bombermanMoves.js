@@ -4,7 +4,7 @@ import { breakWall } from './gameEvents.js';
 import { width, height, players, powerUps } from './model.js';
 
 let keyStillDown = false;
-let bombDropped = false;
+let bombDropped = 0;
 
 export function changeDirection(e) {
     if (!keyStillDown) {
@@ -18,7 +18,7 @@ export function changeDirection(e) {
         if (directions[e.key]) {
             moveBomberman(directions[e.key], 3);
         } else if (e.key === 'x') {
-            dropBomb();
+            dropBomb(3);
         }
     }
 }
@@ -57,23 +57,23 @@ export function setKeyUp() {
 }
 
 function dropBomb(id) {
-    if (bombDropped) return;
+    if ((bombDropped === 1 && !players[id].powerUp) || (bombDropped === 2 && players[id].powerUp)) return;
     id = 3
     const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
     console.log(bomberman);
     if (!bomberman) return;
 
     const bombermanIndex = availableSquares.indexOf(bomberman);
+    bombDropped++
     if (players[id].powerUp === 'powerBomb') {
         availableSquares[bombermanIndex].classList.add('powerBomb');
     } else {
     availableSquares[bombermanIndex].classList.add('bomb');
-    }
-    bombDropped = true;
-
+    availableSquares[bombermanIndex].classList.add(bombDropped);
+}
     setTimeout(() => {
-        breakWall();
-        bombDropped = false;
+        breakWall(String(bombDropped));
+        bombDropped--;
     }, 3000);
 }
 
