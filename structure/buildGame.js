@@ -1,6 +1,6 @@
 // structure/buildGame.js
 
-import { DOM } from '../framework/dom.js';
+import { MyFramework } from '../vFw/framework.js';
 import { changeDirection, setKeyUp } from './bombermanMoves.js';
 import { height, width, players, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js';
 
@@ -8,16 +8,16 @@ export let availableSquares = [];
 
 export function buildGame() {
     console.log('Building game...');
-    const grid = DOM.getById('grid');
+    const grid = document.getElementById('grid');
     // console.log(grid);
     // Create the grid squares and append to grid
     for (let i = 0; i < width * height; i++) {
-        const square = DOM.createElement({ tag: 'div', attrs: { id: i.toString() } });
+        const square = MyFramework.DOM(  'div',  { id: i.toString() } );
         grid.appendChild(square);
     }
 
     // Create walls along the grid edges
-    const createWall = (index) => DOM.getById(index).classList.add('wall');
+    const createWall = (index) => document.getElementById(index).classList.add('wall');
     for (let i = 0; i < width; i++) {
         createWall(i);
         createWall(i + (height - 1) * width);
@@ -37,7 +37,7 @@ export function buildGame() {
     }
 
     availableSquares = Array.from(document.querySelectorAll('.grid div'));
-    
+
     // Set player starting positions
     players.forEach((player) => {
         const playerSquare = availableSquares[player.position];
@@ -97,8 +97,8 @@ function removeBlockedPaths(availableSquares) {
         { idx1: (width*height)-width-3, idx2: (width*height)-(width*2)-2 }, // bottom right corner
         { idx1: (width*height)-width-4, idx2: (width*height)-(width*2)-2 },
         { idx1: (width*height)-width-3, idx2: (width*height)-(width*3)-2 }
-    ]; 
-    
+    ];
+
     pathsToCheck.forEach(({ idx1, idx2 }) => {
         // console.log(idx1, idx2)
         if (availableSquares[idx1].classList.contains('breakableWall') && availableSquares[idx2].classList.contains('breakableWall')) {
