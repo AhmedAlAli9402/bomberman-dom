@@ -20,12 +20,17 @@ function showLandingPage() {
   const landingPage = MyFramework.DOM(
     "div",
     { id: "landingPage", style: "display: flex;" },
-    MyFramework.DOM("h1", { id: "title" }, "Bomberman Game"),
+    MyFramework.DOM('img',{ src: 'logo.png', alt: 'Bomberman' } ),
     MyFramework.DOM(
       "button",
       { id: "startGameButton", onclick: showNicknamePopup },
       "Start Game"
-    )
+    ),
+    MyFramework.DOM('h3',{},'A better Bomberman Game by Elites Seniors! 👴 ' ),
+    MyFramework.DOM('a', {href: 'https://github.com/amali01'},'amali01'),
+    MyFramework.DOM('a', {href: 'https://github.com/sahmedG'},'sahmedG'),
+    MyFramework.DOM('a', {href: 'https://github.com/MSK17A'},'MSK17A'),
+    MyFramework.DOM('a', {href: 'https://github.com/AhmedAlAli9402'},'AhmedAlAli9402')
   );
   if (container) {
     container.innerHTML = "";
