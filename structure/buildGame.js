@@ -67,7 +67,7 @@ export function buildGame() {
             const random = getRandomIndex(emptySquares.length);
             const targetSquare = emptySquares[random];
             if (targetSquare.classList.contains('breakableWall') && targetSquare.classList.length < 2) {
-                targetSquare.classList.add(powerUp+"PowerUp");
+                targetSquare.classList.add(powerUp);
             } else {
                 j--;
             }

@@ -3,7 +3,7 @@
 export let height = 17;
 export let width = 23;
 export let numberOfBreakableWalls = 60;
-export let numberOfPowerUps = 36;
+export let numberOfPowerUps = 50;
 export let players = [
     { nickname: "", powerUp: "", position: width + 1, color: "White" },
     { nickname: "", powerUp: "", position: (width*2)-2 , color: "Red"},

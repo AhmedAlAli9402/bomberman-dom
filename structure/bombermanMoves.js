@@ -24,7 +24,6 @@ export function changeDirection(e) {
 }
 
 function moveBomberman(direction, id) {
-    id = 3
     const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
     if (!bomberman) return;
 
@@ -41,9 +40,9 @@ function moveBomberman(direction, id) {
     const newIndex = bombermanIndex + directionMap[direction];
     const nextSquare = availableSquares[newIndex];
 
-    if (nextSquare && (!nextSquare.classList.length || powerUps.includes(nextSquare.classList[0].split('PowerUp')[0]))) {
+    if (nextSquare && (!nextSquare.classList.length || powerUps.includes(nextSquare.classList[0]))) {
         if (nextSquare.classList[0]){
-            AddPowerUpToPlayer(nextSquare.classList[0].split('PowerUp')[0], id);
+            AddPowerUpToPlayer(nextSquare.classList[0], id);
         }
         console.log(players[id].powerUp);
         nextSquare.className = `bomberman${players[id].color}Going${capitalize(direction)}`;
@@ -57,22 +56,19 @@ export function setKeyUp() {
 }
 
 function dropBomb(id) {
-    if ((bombDropped === 1 && !players[id].powerUp) || (bombDropped === 2 && players[id].powerUp)) return;
-    id = 3
+    if ((bombDropped >= 1 && players[id].powerUp !=="extraBomb") || (bombDropped >= 2 && players[id].powerUp === "extraBomb")) return;
     const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
-    console.log(bomberman);
     if (!bomberman) return;
 
     const bombermanIndex = availableSquares.indexOf(bomberman);
     bombDropped++
     if (players[id].powerUp === 'powerBomb') {
-        availableSquares[bombermanIndex].classList.add('powerBomb');
+        availableSquares[bombermanIndex].classList.add('powerBombDropped');
     } else {
     availableSquares[bombermanIndex].classList.add('bomb');
-    availableSquares[bombermanIndex].classList.add(bombDropped);
 }
     setTimeout(() => {
-        breakWall(String(bombDropped));
+        breakWall(String(bombermanIndex));
         bombDropped--;
     }, 3000);
 }

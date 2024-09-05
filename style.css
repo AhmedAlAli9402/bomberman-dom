@@ -292,12 +292,7 @@ div .bomb {
     background-size: 48.4px 48.1px;
 }
 
-/* div .bomb2 {
-    background: url('./images/bomb.png') no-repeat;
-    background-size: 48.4px 48.1px;
-} */
-
-div .powerBomb {
+div .powerBombDropped {
     background: url('./images/powerBomb.png') no-repeat;
     background-size: 48.4px 48.1px;
 }
@@ -312,12 +307,12 @@ div .sideExplosion {
         background-size: 48.4px 48.1px;
     }
     
-div .powerBombPowerUp {
+div .powerBomb {
         background: url('./images/powerUps/PowerBombPowerUp.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
     
-div .extraBombPowerUp {
+div .extraBomb {
         background: url('./images/powerUps/extraBombPowerUp.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
