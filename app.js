@@ -2,7 +2,7 @@
 
 import { MyFramework } from "./vFw/framework.js";
 import { buildGame } from "./structure/buildGame.js";
-// import { s } from "vite/dist/node/types.d-aGj9QkWt.js";
+
 const container = document.getElementById("app");
 const [gameStarted, setgameStarted] = MyFramework.State([]);
 const [nickname, setNickname] = MyFramework.State([]);
@@ -70,7 +70,7 @@ function submitNickname() {
   const nickname = document.getElementById("nicknameInput").value;
   if (nickname) {
     // setNickname(nickname);
-    setPlayersReady(playersReady + 1);
+    setPlayersReady(playersReady() + 1);
     // setgameStarted(true);
     showWaitingArea();
   } else {
@@ -104,11 +104,8 @@ function showWaitingArea() {
     container.appendChild(waitingArea);
   }
 
-  MyFramework.State({
-    playersReady: MyFramework.State.playersReady + 1,
-  });
 
-  if (playersReady >= 1) {
+  if (playersReady() >= 1) {
     startCountdown();
   }
 }
