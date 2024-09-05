@@ -85,13 +85,19 @@ function getRandomIndex(length) {
 
 function removeBlockedPaths(availableSquares) {
     const pathsToCheck = [
-        { idx1: width + 2, idx2: (width * 2) + 1 },
+        { idx1: width + 2, idx2: (width * 2) + 1 }, // top left corner
         { idx1: width + 2, idx2: (width * 3) + 1 },
         { idx1: width + 3, idx2: (width * 2) + 1 },
-        { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*3)+1 },
+        { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*3)+1 }, // bottom left corner
         { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*4)+1 },
         { idx1: (width*height)-(width*4)+1, idx2: (width*height)-(width*3)+1 },
-    ]; //still remaining paths to add
+        { idx1: (width*2)-3, idx: (width*3)-3}, // top right corner
+        { idx1: (width*2)-4, idx: (width*3)-2},
+        { idx1: (width*2)-2, idx: (width*4)-2},
+        { idx1: (width*height)-width-3, idx2: (width*height)-(width*2)-2 }, // bottom right corner
+        { idx1: (width*height)-width-4, idx2: (width*height)-(width*2)-2 },
+        { idx1: (width*height)-width-3, idx2: (width*height)-(width*3)-2 }
+    ]; 
     
     pathsToCheck.forEach(({ idx1, idx2 }) => {
         if (availableSquares[idx1].classList.contains('breakableWall') && availableSquares[idx2].classList.contains('breakableWall')) {
