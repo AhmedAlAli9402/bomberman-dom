@@ -20,7 +20,7 @@ function showLandingPage() {
   const landingPage = MyFramework.DOM(
     "div",
     { id: "landingPage", style: "display: flex;" },
-    MyFramework.DOM('img',{ src: 'logo.png', alt: 'Bomberman' } ),
+    MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
     MyFramework.DOM(
       "button",
       { id: "startGameButton", onclick: showNicknamePopup },
@@ -55,6 +55,7 @@ function showNicknamePopup() {
   const nicknamePopup = MyFramework.DOM(
     "div",
     { id: "nicknamePopup", style: "display: flex;" },
+    MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
     MyFramework.DOM("p", null, "Enter your nickname to start the game"),
     nicknameInput,
     submitButton
