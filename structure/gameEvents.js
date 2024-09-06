@@ -12,10 +12,10 @@ export function breakWall(id) {
     }
     if (!bomb) return;
     const bombIndex = availableSquares.indexOf(bomb);
-    const pos = Number(bomb.getAttribute('id'));
+    const bombPosition = Number(bomb.getAttribute('id'));
 
-    explosion(pos, powerbomb);
-    checkIfPlayerInBlastRadius(pos);
+    explosion(bombPosition, powerbomb);
+    checkIfPlayerInBlastRadius(bombPosition);
 
     const directions = [-1, 1, width, -width];
 
@@ -24,7 +24,7 @@ export function breakWall(id) {
     } 
 
     directions.forEach((direction) => {
-        const square = availableSquares[pos + direction];
+        const square = availableSquares[bombPosition + direction];
         if (square && square.classList.contains('breakableWall')) {
             square.classList.replace('breakableWall', 'breakWall');
             setTimeout(() => square.classList.remove('breakWall'), 500);
@@ -43,7 +43,6 @@ function explosion(id, powerbomb) {
         -width, width, -1, 1
     ];
 
-    
     if (powerbomb) {
         let powerbombDirections = [-width*2, width*2, -2, 2];
         for (let i = 0; i < 4; i++) {
@@ -62,13 +61,11 @@ function explosion(id, powerbomb) {
     });
 }
 
-function checkIfPlayerInBlastRadius(id) {
-    const bomberman = document.querySelector('.bomberman'+players[1].color+'GoingUp',
-         '.bomberman'+players[1].color+'GoingRight', '.bomberman'+players[1].color
-         +'GoingDown', '.bomberman'+players[1].color+'GoingLeft');
+function checkIfPlayerInBlastRadius(bombPosition) {
+    const bomberman = document.querySelector(`.bomberman${players[3].color}GoingUp, .bomberman${players[3].color}GoingRight, .bomberman${players[3].color}GoingDown, .bomberman${players[3].color}GoingLeft`);
     const bombermanIndex = availableSquares.indexOf(bomberman);
-
-    if ([id, id - 1, id + 1, id + width, id - width].includes(bombermanIndex)) {
+        console.log(bombPosition, bomberman)
+    if ([bombPosition, bombPosition - 1, bombPosition + 1, bombPosition + width, bombPosition - width].includes(bombermanIndex)) {
         killPlayer(bomberman);
     }
 }

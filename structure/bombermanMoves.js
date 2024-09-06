@@ -8,7 +8,7 @@ let bombDropped = 0;
 let keyStillDownForSkate = 0;
 
 export function changeDirection(e) {
-    if (!keyStillDown) {
+    if (!keyStillDown || (players[3].powerUp === "skate" && keyStillDownForSkate < 4)) {
         const directions = {
             'ArrowUp': 'up',
             'ArrowRight': 'right',
@@ -42,25 +42,22 @@ function moveBomberman(direction, id) {
     const nextSquare = availableSquares[newIndex];
 
     if (nextSquare && (!nextSquare.classList.length || powerUps.includes(nextSquare.classList[0]))) {
-        if (nextSquare.classList[0]){
+        if (powerUps.includes(nextSquare.classList[0])){
             AddPowerUpToPlayer(nextSquare.classList[0], id);
         }
-        console.log(players[id].powerUp);
         nextSquare.className = `bomberman${players[id].color}Going${capitalize(direction)}`;
         bomberman.classList.remove(bombermanClass);
         keyStillDown = true;
         if (players[id].powerUp === 'skate') {
-            keyStillDown = false;
-            console.log(keyStillDown)
-            setTimeout(() => {
-                keyStillDown = true;
-                console.log(keyStillDown)
-            }, 400);
-        }
+            keyStillDownForSkate++
+    } else {
+        keyStillDownForSkate = 0
     }
+}
 }
 
 export function setKeyUp() {
+    keyStillDownForSkate = 0
     keyStillDown = false;
 }
 
@@ -89,6 +86,6 @@ function capitalize(str) {
 function AddPowerUpToPlayer(powerUp, id) {
     if (powerUp) {
         players[id].powerUp = powerUp;
-        setTimeout(() => players[id].powerUp = '', 30000);
+        setTimeout(() => {players[id].powerUp = ''}, 20000);
     }
 }
