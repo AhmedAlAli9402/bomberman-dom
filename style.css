@@ -1,3 +1,129 @@
+/* styles.css */
+
+/* General HUD container styling */
+#hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    width: 500px; /* Adjust width as needed */
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Styling for HUD elements */
+  #hud div {
+    margin: 0 10px;
+  }
+  
+  /* Countdown timer styling */
+  #hud div:first-child {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  /* Player lives styling */
+  #hud div:nth-child(n+2) {
+    font-size: 16px;
+    font-weight: normal;
+  }
+  
+  /* Add responsiveness */
+  @media (max-width: 600px) {
+    #hud {
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    #hud div {
+      margin: 5px 0;
+    }
+  }
+  
+  /* ///////////////////////////////////////////// */
+  #waitingArea {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f2f2f2;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  #waitingArea p {
+    font-size: 1.2em;
+    color: #333;
+  }
+  
+
+  #countdownTimer {
+    display: none;
+    font-weight: bold;
+    color: #d9534f;
+  }
+  
+  #instructionsPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .instruction-title {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .instruction-objective {
+    font-size: 1.4em;
+    color: #666;
+    text-align: center;
+  }
+  
+  .instruction-item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .instruction-item img {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+  }
+  
+  .instruction-item p {
+    font-size: 1.1em;
+    color: #333;
+    margin: 0;
+  }
+  
+  @media (max-width: 600px) {
+    .instruction-item {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .instruction-item img {
+      margin-bottom: 10px;
+    }
+  }
+/* /////////////////////////////////////////////   */
 /*  General styles */
 a {
     color: #1a0404;
@@ -17,7 +143,7 @@ a {
     height: 100%;
     background-color: #f2f2f2;
 }
-#landingPage , #nicknamePopup, #waitingArea , #gameGrid{
+#landingPage , #nicknamePopup , #gameGrid{
     display: none;
     position: flex; 
     flex-direction: column;

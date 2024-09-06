@@ -2,6 +2,7 @@
 
 import { availableSquares } from './buildGame.js';
 import { width, players } from './model.js';
+import { updateHUD } from './buildGame.js';
 
 export function breakWall(id) {
     let bomb = document.getElementById(id);
@@ -84,4 +85,5 @@ function killPlayer(bomberman, playerId) {
     }}
     setTimeout(() => {bomberman.removeAttribute('class');
     availableSquares[recoveryPosition].classList.add(`bomberman${players[playerId].color}GoingDown`);}, 500)
+    updateHUD(playerId)
 }

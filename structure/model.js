@@ -1,4 +1,5 @@
 // structure/model.js
+import { MyFramework } from "../vFw/framework.js";
 
 export let height = 17;
 export let width = 23;
@@ -11,3 +12,17 @@ export let players = [
     { nickname: "", powerUp: "", startPosition: (width*height)-width-2,playerPosition:0, color: "Black", lives:3},
 ];
 export let powerUps = ['powerBomb', 'extraBomb', 'skate'];
+
+
+// number of players needed to start the game (minimum 2) and maximum 4
+export let minimumPlayers = 2;
+export let maximumPlayers = 4;
+
+// time for the game to start
+export let minimumTime = 3;
+export let maximumTime = 20;
+
+const gameDuration = 180; // 3 minutes
+
+// the countdown for the riming of the game
+export const [countdown, setCountdown] = MyFramework.State(gameDuration); // Countdown for the game start (3 minutes)

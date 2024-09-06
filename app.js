@@ -1,22 +1,24 @@
 // app.js
 
 import { MyFramework } from "./vFw/framework.js";
-import { buildGame } from "./structure/buildGame.js";
+import { showGameGrid ,buildGame } from "./structure/buildGame.js";
+import { minimumPlayers , maximumPlayers , minimumTime, maximumTime } from "./structure/model.js";
 
-const container = document.getElementById("app");
-const [gameStarted, setgameStarted] = MyFramework.State([]);
 const [nickname, setNickname] = MyFramework.State([]);
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 
-// Initialize state
-// MyFramework.State({
-//   gameStarted: false,
-//   nickname: "",
-//   playersReady: 0,
-// });
+// set the countdown to the minimum time or maximum time 
+let countdown = minimumTime;
+
+// set the needed players 
+// let neededPlayers = minimumPlayers ; // for mini of 2 players
+let neededPlayers = 1 ; // for testing with 1 player
+
+// Get the container element
+export const container = document.getElementById("app");
 
 // Define the landing page
-function showLandingPage() {
+export function showLandingPage() {
   const landingPage = MyFramework.DOM(
     "div",
     { id: "landingPage", style: "display: flex;" },
@@ -75,10 +77,8 @@ function showNicknamePopup() {
 function submitNickname() {
   const nickname = document.getElementById("nicknameInput").value;
   if (nickname) {
-    // setNickname(nickname);
     setPlayersReady(playersReady() + 1);
-    // setgameStarted(true);
-    instructionsPage();
+    showWaitingArea();
   } else {
     alert("Please enter a nickname!");
   }
@@ -87,22 +87,56 @@ function submitNickname() {
 // Show the waiting area
 function showWaitingArea() {
   const waitingMessage = MyFramework.DOM(
-    "p",
-    null,
-    "Waiting for more players..."
+    "h1",
+    { id: "waitingMessage" },
+    'Waiting for more players...'
+  );
+
+  const countPlayers = MyFramework.DOM(
+    "h2",
+    { id: "countPlayers" },
+    `[2-4 players needed] Players ready: ${playersReady()}`
   );
 
   const countdownTimer = MyFramework.DOM(
-    "p",
+    "h1",
     { id: "countdownTimer" },
-    "Starting in 10 seconds..."
+    `Starting in ${countdown} seconds...`
   );
+
+  const instructionsContent = [
+    { img: 'images/bomb.png', text: 'You can place a bomb using the x key.' },
+    { img: 'images/arrowKeys.png', text: 'You can move your player using the arrow keys.' },
+    { img: 'images/wall/wall.png', text: 'This wall cannot be broken or walked over.' },
+    { img: 'images/wall/wall100.png', text: 'This wall can be broken by placing a bomb near it (some walls contain power-ups).' },
+    { img: 'images/powerUps/speedPowerUp.png', text: 'The skate power-up allows you to skate by holding down an arrow key.' },
+    { img: 'images/powerUps/PowerBombPowerUp.png', text: 'The power bomb power-up makes the bombs you drop twice as powerful.' },
+    { img: 'images/powerUps/extraBombPowerUp.png', text: 'The extra bomb power-up allows you to drop two bombs at the same time.' }
+  ];
+  
+  const instructionsItems = instructionsContent.map(item => 
+    MyFramework.DOM("div", { class: "instruction-item" },
+      MyFramework.DOM('img', { src: item.img, alt: 'Bomberman' }),
+      MyFramework.DOM('p', {}, item.text)
+    )
+  );
+  
+  const instructionsPage = MyFramework.DOM(
+    "div",
+    { id: "instructionsPage" },
+    MyFramework.DOM('h3', { class: "instruction-title" }, 'Instructions'),
+    MyFramework.DOM('h3', { class: "instruction-objective" }, 'The objective of the game is to eliminate all other players by placing bombs.'),
+    ...instructionsItems
+  );
+  
 
   const waitingArea = MyFramework.DOM(
     "div",
     { id: "waitingArea", style: "display: flex;" },
     waitingMessage,
-    countdownTimer
+    countPlayers,
+    countdownTimer,
+    instructionsPage
   );
 
   if (container) {
@@ -111,83 +145,19 @@ function showWaitingArea() {
   }
 
 
-  if (playersReady() >= 1) {
+  if (playersReady() >= neededPlayers) {
     startCountdown();
   }
 }
 
-function instructionsPage() {
-  const instructionsPage = MyFramework.DOM(
-    "div",
-    { id: "instructionsPage", style: "display: grid;text-align:center" },
-    // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
-    MyFramework.DOM('h1',{style:"font-size:6rem; align-items:center"},'Instructions'),
-    MyFramework.DOM('h3',{},'The objective of the game is to eliminate all other players by placing bombs.'),
-    MyFramework.DOM(
-      "div",
-      { id: "instructionsPage", style: "display: flex;text-align:center" },
-      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
-      MyFramework.DOM('img',{ src: 'images/bomb.png', alt: 'Bomberman', style:'max-width:18px' },),
-
-      MyFramework.DOM('p',{},'You can place a bomb using the x key.'),
-    ),
-    MyFramework.DOM(
-      "div",
-      { id: "instructionsPage", style: "display: flex;text-align:center" },
-      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
-      MyFramework.DOM('img',{ src: 'images/arrowKeys.png', alt: 'Bomberman', style:'max-width:18px'  },),
-      MyFramework.DOM('p',{},'You can move your player using the arrow keys.'),
-    ),
-    MyFramework.DOM(
-      "div",
-      { id: "instructionsPage", style: "display:flex ;text-align:center" },
-      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
-      MyFramework.DOM('img',{ src: 'images/wall/wall.png', alt: 'Bomberman' },),
-      MyFramework.DOM('p',{},'this wall cannot be broken or walked over.'),
-    ),
-    MyFramework.DOM(
-      "div",
-      { id: "instructionsPage", style: "display: flex;text-align:center" },
-      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
-      MyFramework.DOM('img',{ src: 'images/wall/wall100.png', alt: 'Bomberman' },),
-      MyFramework.DOM('p',{},'this wall can be broken by placing a bomb near it (some walls contain powerUps).'),
-    ),
-    MyFramework.DOM(
-      "div",
-      { id: "instructionsPage", style: "display: flex;text-align:center" },
-      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
-      MyFramework.DOM('img',{ src: 'images/powerUps/speedPowerUp.png', alt: 'Bomberman' },),
-      MyFramework.DOM('p',{},'the skate powerUp allows you to skate by holding down on an arrow key.'),
-    ),
-    MyFramework.DOM(
-      "div",
-      { id: "instructionsPage", style: "display: flex;text-align:center" },
-      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
-      MyFramework.DOM('img',{ src: 'images/powerUps/PowerBombPowerUp.png', alt: 'Bomberman' },),
-      MyFramework.DOM('p',{},'the powerBomb powerUp makes the bombs you drop twice as powerful.'),
-    ),
-    MyFramework.DOM(
-      "div",
-      { id: "instructionsPage", style: "display: flex;text-align:center" },
-      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
-      MyFramework.DOM('img',{ src: 'images/powerUps/extraBombPowerUp.png', alt: 'Bomberman' },),
-      MyFramework.DOM('p',{},'the extraBomb powerUp allows you to drop two bombs at the same time.'),
-    ))
-    const button = MyFramework.DOM(
-      "button",
-      { id: "go to waiting area", onclick: showWaitingArea },
-      "go to waiting area"
-    )
-    if (container) {
-      container.innerHTML = "";
-      container.appendChild(instructionsPage);
-      container.appendChild(button);
-    }
-}
 
 // Start the countdown timer
 function startCountdown() {
-  let countdown = 1;
+// hide countPlayers,waitingMessage 
+  // document.getElementById("countPlayers").style.display = "none";
+  document.getElementById("waitingMessage").style.display = "none";
+  // show countdownTimer
+  document.getElementById("countdownTimer").style.display = "block";
   const timer = setInterval(() => {
     countdown--;
     document.getElementById(
@@ -196,27 +166,10 @@ function startCountdown() {
     if (countdown === 0) {
       clearInterval(timer);
       showGameGrid();
-      //   MyFramework.Router.navigate("game");
       buildGame();
     }
   }, 1000);
 }
-
-// Show the game grid
-function showGameGrid() {
-  const gameGrid = MyFramework.DOM(
-    "div",
-    { id: "gameGrid", style: "display: inherit;" },
-    MyFramework.DOM("h1", null, "Bomberman Game"),
-    MyFramework.DOM("div", { id: "grid", class: "grid" })
-  );
-
-  container.innerHTML = "";
-  container.appendChild(gameGrid);
-}
-
-// Build the game on navigating to /game
-// MyFramework.Router.addRoute("game", buildGame);
 
 // Start the app with the landing page
 showLandingPage();
