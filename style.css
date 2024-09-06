@@ -124,6 +124,26 @@
     }
   }
 /* /////////////////////////////////////////////   */
+.game-over {
+    font-size: 3em;
+    color: #d9534f;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px #000;
+  }
+  
+  .winner-display {
+    font-size: 2em;
+    color: #5cb85c;
+    text-shadow: 1px 1px #333;
+    margin-top: 10px;
+  }
+  
+  #gameGrid h1, #gameGrid h2 {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+  }
+  /* /////////////////////////////////////////////   */
+
 /*  General styles */
 a {
     color: #1a0404;

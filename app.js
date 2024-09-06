@@ -3,8 +3,7 @@
 import { MyFramework } from "./vFw/framework.js";
 import { showGameGrid ,buildGame } from "./structure/buildGame.js";
 import { minimumPlayers , maximumPlayers , minimumTime, maximumTime } from "./structure/model.js";
-
-const [nickname, setNickname] = MyFramework.State([]);
+import {setPlayerNickname} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 
 // set the countdown to the minimum time or maximum time 
@@ -78,6 +77,8 @@ function submitNickname() {
   const nickname = document.getElementById("nicknameInput").value;
   if (nickname) {
     setPlayersReady(playersReady() + 1);
+    // add the nickname to the playersReady array
+    setPlayerNickname(playersReady()-1,nickname);
     showWaitingArea();
   } else {
     alert("Please enter a nickname!");

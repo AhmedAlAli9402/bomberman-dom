@@ -1,7 +1,17 @@
+import { players } from './model.js';
+
 // Format time in minutes and seconds
 export function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}m ${secs < 10 ? '0' : ''}${secs}s`;
   }
-  
+
+  // Update player name by index
+export function setPlayerNickname(index, newNickname) {
+  if (index >= 0 && index < players.length) {
+      players[index].nickname = newNickname;
+  } else {
+      console.error('Invalid player index');
+  }
+}

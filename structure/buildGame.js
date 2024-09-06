@@ -4,7 +4,7 @@ import { MyFramework } from '../vFw/framework.js';
 import { changeDirection, setKeyUp } from './bombermanMoves.js';
 import { height, width, players, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js';
 import { formatTime } from './helpers.js';
-import { container } from '../app.js';
+import { container  } from '../app.js';
 import {countdown, setCountdown} from './model.js';
 export let availableSquares = [];
 
@@ -132,7 +132,6 @@ export function showGameGrid() {
   
 // Create the HUD with player lives and time countdown
 function createHUD() {
-    setCountdown(180); // 3 minutes
     const hud = MyFramework.DOM(
       "div",
       { id: "hud", style: "display: flex; justify-content: space-between;" },
@@ -182,11 +181,23 @@ function startTimer(time) {
 // End the game when the countdown reaches 0
 function endGame() {
     console.log('Game over!');
+
     const gameGrid = document.getElementById('gameGrid');
-    gameGrid.innerHTML = '';
-    const gameOver = MyFramework.DOM('h1', {}, 'Game Over!');
+    gameGrid.innerHTML = '';  // Clear the game grid
+    
+    // Display "Game Over" message
+    const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
     gameGrid.appendChild(gameOver);
-    const winner = playerLives().filter((lives) => lives > 0);
-    const winnerDisplay = MyFramework.DOM('h2', {}, `Player ${winner[0]} wins!`);
-    gameGrid.appendChild(winnerDisplay);
+    
+    // Determine the winner
+    const winnerIndex = players.findIndex(player => player.lives > 0); // Get the winner's index
+    if (winnerIndex !== -1) {
+        const winnerName = players[winnerIndex].nickname; // Get the winner's name
+        // Display the winner
+        const winnerDisplay = MyFramework.DOM('h2', { class: 'winner-display' }, `${winnerName} is the winner!`);
+        gameGrid.appendChild(winnerDisplay);
+    } else {
+        const noWinner = MyFramework.DOM('h2', { class: 'winner-display' }, 'No winner!');
+        gameGrid.appendChild(noWinner);
+    }
 }
