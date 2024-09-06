@@ -66,11 +66,22 @@ function checkIfPlayerInBlastRadius(bombPosition) {
     const bombermanIndex = availableSquares.indexOf(bomberman);
         console.log(bombPosition, bomberman)
     if ([bombPosition, bombPosition - 1, bombPosition + 1, bombPosition + width, bombPosition - width].includes(bombermanIndex)) {
-        killPlayer(bomberman);
+        killPlayer(bomberman, 3);
     }
 }
 
-function killPlayer(bomberman) {
+function killPlayer(bomberman, playerId) {
     bomberman.classList.add('dead');
-    setTimeout(() => bomberman.classList.remove('dead'), 500);
+    let recoveryPosition =players[playerId].startPosition
+    console.log(availableSquares[recoveryPosition])
+    if (availableSquares[recoveryPosition].childNodes.length > 0) {
+        console.log('nope')
+        for (let i=0;i<players.length;i++){
+            if (availableSquares[players[i].startPosition].length === 0){ {
+                recoveryPosition = players[i].startPosition;
+            }
+        }
+    }}
+    setTimeout(() => {bomberman.removeAttribute('class');
+    availableSquares[recoveryPosition].classList.add(`bomberman${players[playerId].color}GoingDown`);}, 500)
 }
