@@ -40,7 +40,7 @@ export function buildGame() {
 
     // Set player starting positions
     players.forEach((player) => {
-        const playerSquare = availableSquares[player.position];
+        const playerSquare = availableSquares[player.startPosition];
         playerSquare.classList.add('bomberman' + player.color + 'GoingDown');
     });
     let emptySquares = availableSquares.filter(
