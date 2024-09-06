@@ -5,6 +5,7 @@ import { width, height, players, powerUps } from './model.js';
 
 let keyStillDown = false;
 let bombDropped = 0;
+let keyStillDownForSkate = 0;
 
 export function changeDirection(e) {
     if (!keyStillDown) {
@@ -48,6 +49,14 @@ function moveBomberman(direction, id) {
         nextSquare.className = `bomberman${players[id].color}Going${capitalize(direction)}`;
         bomberman.classList.remove(bombermanClass);
         keyStillDown = true;
+        if (players[id].powerUp === 'skate') {
+            keyStillDown = false;
+            console.log(keyStillDown)
+            setTimeout(() => {
+                keyStillDown = true;
+                console.log(keyStillDown)
+            }, 400);
+        }
     }
 }
 
