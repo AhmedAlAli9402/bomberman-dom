@@ -91,9 +91,9 @@ function removeBlockedPaths(availableSquares) {
         { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*3)+1 }, // bottom left corner
         { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*4)+1 },
         { idx1: (width*height)-(width*4)+1, idx2: (width*height)-(width*3)+1 },
-        { idx1: (width*2)-3, idx2: (width*3)-3}, // top right corner
+        { idx1: (width*2)-3, idx2: (width*3)-2}, // top right corner
         { idx1: (width*2)-4, idx2: (width*3)-2},
-        { idx1: (width*2)-2, idx2: (width*4)-2},
+        { idx1: (width*2)-3, idx2: (width*4)-2},
         { idx1: (width*height)-width-3, idx2: (width*height)-(width*2)-2 }, // bottom right corner
         { idx1: (width*height)-width-4, idx2: (width*height)-(width*2)-2 },
         { idx1: (width*height)-width-3, idx2: (width*height)-(width*3)-2 }
