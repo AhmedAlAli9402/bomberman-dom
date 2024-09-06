@@ -137,10 +137,10 @@ function createHUD() {
       { id: "hud", style: "display: flex; justify-content: space-between;" },
       MyFramework.DOM("div", {}, `Time: ${formatTime(countdown())}`),
       
-      MyFramework.DOM("div", {}, `Player 1 Lives: ${playerLives()[0]}`),
-      MyFramework.DOM("div", {}, `Player 2 Lives: ${playerLives()[1]}`),
-      MyFramework.DOM("div", {}, `Player 3 Lives: ${playerLives()[2]}`),
-      MyFramework.DOM("div", {}, `Player 4 Lives: ${playerLives()[3]}`)
+      MyFramework.DOM("div", {}, `${players[0].nickname} Lives: ${playerLives()[0]}`),
+      MyFramework.DOM("div", {}, `${players[1].nickname} Lives: ${playerLives()[1]}`),
+      MyFramework.DOM("div", {}, `${players[2].nickname} Lives: ${playerLives()[2]}`),
+      MyFramework.DOM("div", {}, `${players[3].nickname} Lives: ${playerLives()[3]}`)
     );
   
     return hud;
@@ -160,7 +160,7 @@ const livesDisplay = document.querySelectorAll('#hud > div:not(:first-child)');
 const lives = playerLives();
 
 livesDisplay.forEach((display, index) => {
-      display.textContent = `Player ${index + 1} Lives: ${lives[index]}`;
+      display.textContent = `${players[index].nickname} Lives: ${lives[index]}`;
 });
 }
 

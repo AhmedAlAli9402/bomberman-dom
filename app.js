@@ -74,9 +74,15 @@ function showNicknamePopup() {
 
 // Submit the nickname and navigate to the waiting area
 function submitNickname() {
-  const nickname = document.getElementById("nicknameInput").value;
+  let nickname = document.getElementById("nicknameInput").value;
   if (nickname) {
     setPlayersReady(playersReady() + 1);
+    // chseck if nickname is not a white space
+    if (nickname.trim() === "") {
+      nickname = "Player " + playersReady().toString();
+    }else if (nickname.length > 10) {
+      nickname = nickname.slice(0,10);
+    }
     // add the nickname to the playersReady array
     setPlayerNickname(playersReady()-1,nickname);
     showWaitingArea();

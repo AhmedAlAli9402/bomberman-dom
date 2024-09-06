@@ -22,7 +22,7 @@ export let maximumPlayers = 4;
 export let minimumTime = 3;
 export let maximumTime = 20;
 
-// const gameDuration = 180; // 3 minutes
-const gameDuration = 1; // testing game over with 1 second
+const gameDuration = 180; // 3 minutes
+// const gameDuration = 1; // testing game over with 1 second
 // the countdown for the riming of the game
 export const [countdown, setCountdown] = MyFramework.State(gameDuration); // Countdown for the game start (3 minutes)
