@@ -78,7 +78,7 @@ function submitNickname() {
     // setNickname(nickname);
     setPlayersReady(playersReady() + 1);
     // setgameStarted(true);
-    showWaitingArea();
+    instructionsPage();
   } else {
     alert("Please enter a nickname!");
   }
@@ -114,6 +114,75 @@ function showWaitingArea() {
   if (playersReady() >= 1) {
     startCountdown();
   }
+}
+
+function instructionsPage() {
+  const instructionsPage = MyFramework.DOM(
+    "div",
+    { id: "instructionsPage", style: "display: grid;text-align:center" },
+    // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+    MyFramework.DOM('h1',{style:"font-size:6rem; align-items:center"},'Instructions'),
+    MyFramework.DOM('h3',{},'The objective of the game is to eliminate all other players by placing bombs.'),
+    MyFramework.DOM(
+      "div",
+      { id: "instructionsPage", style: "display: flex;text-align:center" },
+      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+      MyFramework.DOM('img',{ src: 'images/bomb.png', alt: 'Bomberman', style:'max-width:18px' },),
+
+      MyFramework.DOM('p',{},'You can place a bomb using the x key.'),
+    ),
+    MyFramework.DOM(
+      "div",
+      { id: "instructionsPage", style: "display: flex;text-align:center" },
+      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+      MyFramework.DOM('img',{ src: 'images/arrowKeys.png', alt: 'Bomberman', style:'max-width:18px'  },),
+      MyFramework.DOM('p',{},'You can move your player using the arrow keys.'),
+    ),
+    MyFramework.DOM(
+      "div",
+      { id: "instructionsPage", style: "display:flex ;text-align:center" },
+      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+      MyFramework.DOM('img',{ src: 'images/wall/wall.png', alt: 'Bomberman' },),
+      MyFramework.DOM('p',{},'this wall cannot be broken or walked over.'),
+    ),
+    MyFramework.DOM(
+      "div",
+      { id: "instructionsPage", style: "display: flex;text-align:center" },
+      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+      MyFramework.DOM('img',{ src: 'images/wall/wall100.png', alt: 'Bomberman' },),
+      MyFramework.DOM('p',{},'this wall can be broken by placing a bomb near it (some walls contain powerUps).'),
+    ),
+    MyFramework.DOM(
+      "div",
+      { id: "instructionsPage", style: "display: flex;text-align:center" },
+      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+      MyFramework.DOM('img',{ src: 'images/powerUps/speedPowerUp.png', alt: 'Bomberman' },),
+      MyFramework.DOM('p',{},'the skate powerUp allows you to skate by holding down on an arrow key.'),
+    ),
+    MyFramework.DOM(
+      "div",
+      { id: "instructionsPage", style: "display: flex;text-align:center" },
+      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+      MyFramework.DOM('img',{ src: 'images/powerUps/PowerBombPowerUp.png', alt: 'Bomberman' },),
+      MyFramework.DOM('p',{},'the powerBomb powerUp makes the bombs you drop twice as powerful.'),
+    ),
+    MyFramework.DOM(
+      "div",
+      { id: "instructionsPage", style: "display: flex;text-align:center" },
+      // MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+      MyFramework.DOM('img',{ src: 'images/powerUps/extraBombPowerUp.png', alt: 'Bomberman' },),
+      MyFramework.DOM('p',{},'the extraBomb powerUp allows you to drop two bombs at the same time.'),
+    ))
+    const button = MyFramework.DOM(
+      "button",
+      { id: "go to waiting area", onclick: showWaitingArea },
+      "go to waiting area"
+    )
+    if (container) {
+      container.innerHTML = "";
+      container.appendChild(instructionsPage);
+      container.appendChild(button);
+    }
 }
 
 // Start the countdown timer
