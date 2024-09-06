@@ -15,12 +15,12 @@ export let powerUps = ['powerBomb', 'extraBomb', 'skate'];
 
 
 // number of players needed to start the game (minimum 2) and maximum 4
-export let minimumPlayers = 2;
-export let maximumPlayers = 4;
+export const minimumPlayers = 2;
+export const maximumPlayers = 4;
 
 // time for the game to start
-export let minimumTime = 3;
-export let maximumTime = 20;
+export const minimumTime = 3;
+export const maximumTime = 20;
 
 const gameDuration = 180; // 3 minutes
 // const gameDuration = 1; // testing game over with 1 second
