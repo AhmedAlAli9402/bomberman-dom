@@ -16,7 +16,6 @@ export function breakWall(id) {
     const bombPosition = Number(bomb.getAttribute('id'));
 
     explosion(bombPosition, powerbomb);
-    checkIfPlayerInBlastRadius(bombPosition);
 
     const directions = [-1, 1, width, -width];
 
@@ -39,7 +38,7 @@ export function breakWall(id) {
     setTimeout(() => bomb.classList.remove('explosion'), 200);
 }
 
-function explosion(id, powerbomb) {
+function explosion(bombPosition, powerbomb) {
     const directions = [
         -width, width, -1, 1
     ];
@@ -47,14 +46,15 @@ function explosion(id, powerbomb) {
     if (powerbomb) {
         let powerbombDirections = [-width*2, width*2, -2, 2];
         for (let i = 0; i < 4; i++) {
-            if (!availableSquares[id + directions[i]].classList.contains('wall')) {
+            if (!availableSquares[bombPosition + directions[i]].classList.contains('wall')) {
                 directions.push(powerbombDirections[i]);                
             }
         }
     }
 
     directions.forEach((explosionPosition) => {
-        const targetSquare = availableSquares[id + explosionPosition];
+        checkIfPlayerInBlastRadius(bombPosition+explosionPosition);
+        const targetSquare = availableSquares[bombPosition + explosionPosition];
         if (targetSquare && !targetSquare.classList.length) {
             targetSquare.classList.add("sideExplosion");
             setTimeout(() => targetSquare.classList.remove("sideExplosion"), 200);
@@ -62,12 +62,12 @@ function explosion(id, powerbomb) {
     });
 }
 
-function checkIfPlayerInBlastRadius(bombPosition) {
+function checkIfPlayerInBlastRadius(explosionPosition) {
     for (let i = 0; i < players.length; i++) {
     const bomberman = document.querySelector(`.bomberman${players[i].color}GoingUp, .bomberman${players[i].color}GoingRight, .bomberman${players[i].color}GoingDown, .bomberman${players[i].color}GoingLeft`);
     const bombermanIndex = availableSquares.indexOf(bomberman);
-        console.log(bombPosition, bomberman)
-    if ([bombPosition, bombPosition - 1, bombPosition + 1, bombPosition + width, bombPosition - width].includes(bombermanIndex)) {
+        console.log(explosionPosition, bombermanIndex)
+    if (explosionPosition === bombermanIndex) {
         killPlayer(bomberman, i);
     }
 }
