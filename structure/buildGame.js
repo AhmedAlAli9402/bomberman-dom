@@ -88,15 +88,15 @@ export function buildGame() {
 }
 
 function initializePlayer(connection) {
-    let playerId = 1
+    let playerId = 0
     // for (let i = 0; i < players.length; i++) {
     //     if (players[i].connection === connection) {
     //         playerId = i;
     //         break;
     //     }
     // }
-    document.addEventListener('keydown', changeDirection(playerId));
-    document.addEventListener('keyup', setKeyUp(playerId));
+    document.addEventListener('keydown', ((ev) =>changeDirection(ev.key, playerId)));
+    document.addEventListener('keyup', setKeyUp);
 }
 
 function getRandomIndex(length) {
