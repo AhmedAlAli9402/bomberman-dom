@@ -7,8 +7,8 @@ let keyStillDown = false;
 let bombDropped = 0;
 let keyStillDownForSkate = 0;
 
-export function changeDirection(e) {
-    if (!keyStillDown || (players[3].powerUp === "skate" && keyStillDownForSkate < 4)) {
+export function changeDirection(e, playerId) {
+    if (!keyStillDown || (players[playerId].powerUp === "skate" && keyStillDownForSkate < 4)) {
         const directions = {
             'ArrowUp': 'up',
             'ArrowRight': 'right',
@@ -17,9 +17,9 @@ export function changeDirection(e) {
         };
 
         if (directions[e.key]) {
-            moveBomberman(directions[e.key], 3);
+            moveBomberman(directions[e.key], playerId);
         } else if (e.key === 'x') {
-            dropBomb(3);
+            dropBomb(playerId);
         }
     }
 }
@@ -56,7 +56,7 @@ function moveBomberman(direction, id) {
 }
 }
 
-export function setKeyUp() {
+export function setKeyUp(playerId) {
     keyStillDownForSkate = 0
     keyStillDown = false;
 }
