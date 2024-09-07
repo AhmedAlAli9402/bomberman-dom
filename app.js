@@ -74,22 +74,19 @@ function showNicknamePopup() {
 
 // Submit the nickname and navigate to the waiting area
 function submitNickname() {
-  let nickname = document.getElementById("nicknameInput").value;
-  if (nickname) {
-    setPlayersReady(playersReady() + 1);
-    // chseck if nickname is not a white space
-    if (nickname.trim() === "") {
-      nickname = "Player " + playersReady().toString();
-    }else if (nickname.length > 10) {
-      nickname = nickname.slice(0,10);
-    }
-    // add the nickname to the playersReady array
-    setPlayerNickname(playersReady()-1,nickname);
-    showWaitingArea();
-  } else {
-    alert("Please enter a nickname!");
+  let nickname = document.getElementById("nicknameInput").value.trim();
+  if (!nickname) {
+      nickname = `Player ${playersReady().toString()}`;
+  } else if (nickname.length > 10) {
+      nickname = nickname.slice(0, 10);
   }
+
+  // Add the nickname and proceed
+  setPlayersReady(playersReady() + 1);
+  setPlayerNickname(playersReady() - 1, nickname);
+  showWaitingArea();
 }
+
 
 // Show the waiting area
 function showWaitingArea() {

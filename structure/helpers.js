@@ -11,6 +11,7 @@ export function formatTime(seconds) {
 export function setPlayerNickname(index, newNickname) {
   if (index >= 0 && index < players.length) {
       players[index].nickname = newNickname;
+      players[index].lives = 3;
   } else {
       console.error('Invalid player index');
   }

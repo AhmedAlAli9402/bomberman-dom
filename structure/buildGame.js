@@ -48,7 +48,6 @@ export function buildGame() {
     // Set player starting positions
     players.forEach((player) => {
         if (player.nickname !== ''){
-            player.lives = 3;
         const playerSquare = availableSquares[player.startPosition];
         playerSquare.classList.add('bomberman' + player.color + 'GoingDown');}
     });
@@ -145,25 +144,23 @@ export function showGameGrid() {
 // Create the HUD with player lives and time countdown
 function createHUD() {
     // Filter players that have a nickname, then map to create lives display
-    const playerLivesDisplay = players
-        .filter(player => player.nickname !== '') // Only players with a nickname
-        .map((player, index) => {
-            return MyFramework.DOM("div", {}, `${player.nickname} ❤️: ${playerLives()[index]}`);
-    });
-
-    console.log(playerLivesDisplay);
-    // MyFramework.DOM("div", {}, `${players[0].nickname} Lives: ${playerLives()[0]}`),
-    // MyFramework.DOM("div", {}, `${players[1].nickname} Lives: ${playerLives()[1]}`),
-    // MyFramework.DOM("div", {}, `${players[2].nickname} Lives: ${playerLives()[2]}`),
-    // MyFramework.DOM("div", {}, `${players[3].nickname} Lives: ${playerLives()[3]}`)
-
+    const livesDisplay = players.filter(player => player.nickname).map((player) => {
+        return MyFramework.DOM(
+          "div",
+          {}, 
+          `${player.nickname} ❤️: ${player.lives > 0 ? player.lives : '💔'}`
+        );
+      });
+      
     const hud = MyFramework.DOM(
       "div",
       { id: "hud", style: "display: flex; justify-content: space-between;" },
       MyFramework.DOM("div", {}, `Time: ${formatTime(countdown())}`),
       // Display player lives
-      ...playerLivesDisplay
+      ...livesDisplay
     );
+
+    
   
     return hud;
 }
