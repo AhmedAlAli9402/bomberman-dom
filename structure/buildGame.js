@@ -48,6 +48,7 @@ export function buildGame() {
     // Set player starting positions
     players.forEach((player) => {
         if (player.nickname !== ''){
+            player.lives = 3;
         const playerSquare = availableSquares[player.startPosition];
         playerSquare.classList.add('bomberman' + player.color + 'GoingDown');}
     });
@@ -172,19 +173,25 @@ export function updateHUD(playerId) {
     const timeDisplay = document.querySelector('#hud > div');
     if (timeDisplay) {
       timeDisplay.textContent = `Time: ${formatTime(countdown())}`;
-}
-// update player lives by player id
-setPlayerLives(playerLives().map((lives, index) => {
-      return index === playerId ? lives - 1 : lives;
-}));
-const livesDisplay = document.querySelectorAll('#hud > div:not(:first-child)');
-const lives = playerLives();
-
-livesDisplay.forEach((display, index) => {
-    if (players[index].nickname !== ''){
-        display.textContent = `${players[index].nickname} ❤️: ${lives[index]}`;
     }
-});
+    // update player lives by player id
+    setPlayerLives(playerLives().map((lives, index) => {
+        return index === playerId ? lives - 1 : lives;
+    }));
+    const livesDisplay = document.querySelectorAll('#hud > div:not(:first-child)');
+    const lives = playerLives();
+    players.forEach((player, index) => {
+        if (player.nickname !== ''){
+            player.lives = lives[index];
+            
+            if (player.lives === 0) {
+                livesDisplay[index].textContent = `${player.nickname} 💔`;
+            }else{
+                livesDisplay[index].textContent = `${player.nickname} ❤️: ${lives[index]}`;
+            }
+        }
+    }
+    );
 }
 
 
@@ -198,13 +205,17 @@ function startTimer(time) {
             endGame();
         }
         updateHUD();
+        // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
+        if (players.filter(player => player.lives > 0).length === 0) {
+            clearInterval(timer);
+            endGame();
+        }
     }, 1000);
 }
 
 // End the game when the countdown reaches 0
 function endGame() {
     console.log('Game over!');
-
     const gameGrid = document.getElementById('gameGrid');
     gameGrid.innerHTML = '';  // Clear the game grid
     
@@ -212,9 +223,14 @@ function endGame() {
     const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
     gameGrid.appendChild(gameOver);
     
-    // Determine the winner
-    const winnerIndex = players.findIndex(player => player.lives > 0); // Get the winner's index
-    if (winnerIndex !== -1) {
+    // Determine the winner with the most lives remaining (if any) otherwise, no winner if all players have 0 lives or equal lives
+    const winnerIndex = players.reduce((winnerIndex, player, index) => {
+        return player.lives > players[winnerIndex].lives ? index : winnerIndex;
+    }, 0);
+
+    console.log('winnerIndex', winnerIndex);
+    console.log("players", players);
+    if (winnerIndex !== -1 && players.filter(player => player.lives > 0).length === 1) {
         const winnerName = players[winnerIndex].nickname; // Get the winner's name
         // Display the winner
         const winnerDisplay = MyFramework.DOM('h2', { class: 'winner-display' }, `${winnerName} is the winner!`);
