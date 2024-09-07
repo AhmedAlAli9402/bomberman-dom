@@ -63,12 +63,14 @@ function explosion(id, powerbomb) {
 }
 
 function checkIfPlayerInBlastRadius(bombPosition) {
-    const bomberman = document.querySelector(`.bomberman${players[3].color}GoingUp, .bomberman${players[3].color}GoingRight, .bomberman${players[3].color}GoingDown, .bomberman${players[3].color}GoingLeft`);
+    for (let i = 0; i < players.length; i++) {
+    const bomberman = document.querySelector(`.bomberman${players[i].color}GoingUp, .bomberman${players[i].color}GoingRight, .bomberman${players[i].color}GoingDown, .bomberman${players[i].color}GoingLeft`);
     const bombermanIndex = availableSquares.indexOf(bomberman);
         console.log(bombPosition, bomberman)
     if ([bombPosition, bombPosition - 1, bombPosition + 1, bombPosition + width, bombPosition - width].includes(bombermanIndex)) {
-        killPlayer(bomberman, 3);
+        killPlayer(bomberman, i);
     }
+}
 }
 
 function killPlayer(bomberman, playerId) {

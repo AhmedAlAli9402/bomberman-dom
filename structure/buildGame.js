@@ -47,8 +47,9 @@ export function buildGame() {
 
     // Set player starting positions
     players.forEach((player) => {
+        if (player.nickname !== ''){
         const playerSquare = availableSquares[player.startPosition];
-        playerSquare.classList.add('bomberman' + player.color + 'GoingDown');
+        playerSquare.classList.add('bomberman' + player.color + 'GoingDown');}
     });
     let emptySquares = availableSquares.filter(
         (square) => !square.getAttribute('class')
@@ -83,9 +84,19 @@ export function buildGame() {
 
     startTimer(countdown());
 
-    // Add event listeners
-    document.addEventListener('keydown', changeDirection);
-    document.addEventListener('keyup', setKeyUp);
+   initializePlayer();
+}
+
+function initializePlayer(connection) {
+    let playerId = 1
+    // for (let i = 0; i < players.length; i++) {
+    //     if (players[i].connection === connection) {
+    //         playerId = i;
+    //         break;
+    //     }
+    // }
+    document.addEventListener('keydown', changeDirection(playerId));
+    document.addEventListener('keyup', setKeyUp(playerId));
 }
 
 function getRandomIndex(length) {
