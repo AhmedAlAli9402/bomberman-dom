@@ -57,6 +57,7 @@ function explosion(bombPosition, powerbomb) {
         const targetSquare = availableSquares[bombPosition + explosionPosition];
         if (targetSquare && !targetSquare.classList.length) {
             targetSquare.classList.add("sideExplosion");
+            checkIfPlayerInBlastRadius(bombPosition + explosionPosition);
             setTimeout(() => targetSquare.classList.remove("sideExplosion"), 200);
         }
     });
