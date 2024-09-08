@@ -10,11 +10,54 @@ const [playersReady, setPlayersReady] = MyFramework.State([]);
 let countdown = minimumTime;
 
 // set the needed players 
-// let neededPlayers = minimumPlayers ; // for mini of 2 players
-let neededPlayers = 1 ; // for testing with 1 player
+let neededPlayers = minimumPlayers ; // for mini of 2 players
+// let neededPlayers = 1 ; // for testing with 1 player
 
 // Get the container element
 export const container = document.getElementById("app");
+
+  export  let ws;
+  let playerId;
+  
+  function connectToWebSocket(nickname) {
+     ws = new WebSocket('ws://localhost:8080');
+  
+    // ws.onopen = () => {
+    //   console.log('Connected to WebSocket server');
+    // };
+    // Handle connection open
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+      if (nickname && nickname.trim()) {
+          ws.send(JSON.stringify({ nickname })); // Send the nickname in the first message
+      } else {
+          alert('Nickname cannot be empty');
+      }
+  };
+
+      ws.onmessage = function (message) {
+        const data = JSON.parse(message.data);
+      
+        if (data.type === 'move') {
+          const { playerId, direction } = data;
+          moveBomberman(direction, playerId);
+        } else if (data.type === 'bomb') {
+          const { playerId, position } = data;
+          dropBombAtPosition(playerId, position);
+        } else if (data.type === 'playersUpdate') {
+          // Handle updates to player list
+          const playerList = data.players;
+          setPlayersReady(playerList.length);
+        } else if (data.type === 'gameState') {
+          // Handle syncing the game state on new connection
+        }
+      };
+      
+  
+      ws.onclose = () => {
+        console.log('Disconnected from WebSocket server');
+      };
+    }
 
 // Define the landing page
 export function showLandingPage() {
@@ -80,6 +123,7 @@ function submitNickname() {
   } else if (nickname.length > 10) {
       nickname = nickname.slice(0, 10);
   }
+  connectToWebSocket(nickname);
 
   // Add the nickname and proceed
   setPlayersReady(playersReady() + 1);
