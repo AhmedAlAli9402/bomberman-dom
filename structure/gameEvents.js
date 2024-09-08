@@ -1,9 +1,10 @@
 // structure/gameEvents.js
 
 import { availableSquares } from './buildGame.js';
-import { width, players } from './model.js';
+import { width, game } from './model.js';
 import { updateHUD } from './buildGame.js';
 
+let players = game.players;
 export function breakWall(id) {
     let bomb = document.getElementById(id);
     let powerbomb = false
@@ -89,4 +90,22 @@ function killPlayer(bomberman, playerId) {
     setTimeout(() => {bomberman.removeAttribute('class');
     availableSquares[recoveryPosition].classList.add(`bomberman${players[playerId].color}GoingDown`);}, 500)
     updateHUD(playerId)
+}
+
+export function movePlayer(payload) {
+    const bombermanClass = bomberman.classList[0].replace(' bomb', '');
+    nextSquare.className = `bomberman${players[payload.playerId].color}Going${capitalize(payload.direction)}`;
+    bomberman.classList.remove(bombermanClass);
+    console.log('Player moved', payload);
+}
+
+export function dropBomb(payload) {
+    if (payload.powerBomb) {
+        availableSquares[payload.position].classList.add('powerBombDropped');
+    } else {
+    availableSquares[payload.position].classList.add('bomb');
+}
+    setTimeout(() => {
+        breakWall(String(payload.position));
+    }, 3000);
 }

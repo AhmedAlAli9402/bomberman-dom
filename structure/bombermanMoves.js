@@ -1,11 +1,12 @@
 // structure/bombermanMoves.js
 import { availableSquares } from './buildGame.js';
 import { breakWall } from './gameEvents.js';
-import { width, height, players, powerUps } from './model.js';
+import { width, height, game, powerUps } from './model.js';
 
 let keyStillDown = false;
 let bombDropped = 0;
 let keyStillDownForSkate = 0;
+let players = game.players;
 
 export function changeDirection(e, playerId) {
     console.log(e, playerId)
@@ -72,6 +73,9 @@ function checkBombDrop(id) {
     } else {
     SendBombDropToWebSocket(id, String(bombermanIndex), false);
 }
+setTimeout(() => {
+    bombDropped--
+}, 3000);
 }
 
 function capitalize(str) {

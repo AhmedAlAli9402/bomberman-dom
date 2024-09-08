@@ -2,19 +2,71 @@
 
 import { MyFramework } from "./vFw/framework.js";
 import { showGameGrid ,buildGame } from "./structure/buildGame.js";
-import { minimumPlayers , maximumPlayers , minimumTime, maximumTime } from "./structure/model.js";
-import {setPlayerNickname} from "./structure/helpers.js";
+import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game } from "./structure/model.js";
+import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
+import { movePlayer, dropBomb } from "./structure/gameEvents.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 
-// set the countdown to the minimum time or maximum time 
+// set the countdown to the minimum time or maximum time
 let countdown = minimumTime;
 
-// set the needed players 
-// let neededPlayers = minimumPlayers ; // for mini of 2 players
-let neededPlayers = 1 ; // for testing with 1 player
+// set the needed players
+let neededPlayers = minimumPlayers ; // for mini of 2 players
+// let neededPlayers = 1 ; // for testing with 1 player
 
 // Get the container element
 export const container = document.getElementById("app");
+
+  export  let ws;
+  let playerId;
+
+  function connectToWebSocket(nickname) {
+     ws = new WebSocket('ws://localhost:8080');
+
+    // ws.onopen = () => {
+    //   console.log('Connected to WebSocket server');
+    // };
+    // Handle connection open
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+      if (nickname && nickname.trim()) {
+          ws.send(JSON.stringify({ nickname })); // Send the nickname in the first message
+      } else {
+          alert('Nickname cannot be empty');
+      }
+  };
+
+      ws.onmessage = function (message) {
+        const data = JSON.parse(message.data);
+        if (data.messageType === 'welcome') {
+          console.log('Welcome message received',data.numberofClients);
+          playerId = data.numberofClients-1;
+          setPlayersReady(data.numberofClients);
+          // setPlayerNickname(playerId, data.nickname);
+          setPlayersNicknames(data.clients);
+          showWaitingArea();
+          console.log('Game grid',data.gameGrid);
+          game.gameGrid = data.gameGrid;
+        } else if (data.messageType === 'move') {
+          const { playerId, direction } = data;
+          movePlayer(direction, playerId);
+        } else if (data.type === 'bomb') {
+          const { playerId, position } = data;
+          dropBombAtPosition(playerId, position);
+        } else if (data.type === 'playersUpdate') {
+          // Handle updates to player list
+          const playerList = data.players;
+          setPlayersReady(playerList.length);
+        } else if (data.type === 'gameState') {
+          // Handle syncing the game state on new connection
+        }
+      };
+
+
+      ws.onclose = () => {
+        console.log('Disconnected from WebSocket server');
+      };
+    }
 
 // Define the landing page
 export function showLandingPage() {
@@ -74,22 +126,20 @@ function showNicknamePopup() {
 
 // Submit the nickname and navigate to the waiting area
 function submitNickname() {
-  let nickname = document.getElementById("nicknameInput").value;
-  if (nickname) {
-    setPlayersReady(playersReady() + 1);
-    // chseck if nickname is not a white space
-    if (nickname.trim() === "") {
-      nickname = "Player " + playersReady().toString();
-    }else if (nickname.length > 10) {
-      nickname = nickname.slice(0,10);
-    }
-    // add the nickname to the playersReady array
-    setPlayerNickname(playersReady()-1,nickname);
-    showWaitingArea();
-  } else {
-    alert("Please enter a nickname!");
+  let nickname = document.getElementById("nicknameInput").value.trim();
+  if (!nickname) {
+      nickname = `Player ${playersReady().toString()}`;
+  } else if (nickname.length > 10) {
+      nickname = nickname.slice(0, 10);
   }
+  connectToWebSocket(nickname);
+
+  // Add the nickname and proceed
+  // setPlayersReady(playersReady() + 1);
+  // setPlayerNickname(playersReady() - 1, nickname);
+  // showWaitingArea();
 }
+
 
 // Show the waiting area
 function showWaitingArea() {
@@ -120,14 +170,14 @@ function showWaitingArea() {
     { img: 'images/powerUps/PowerBombPowerUp.png', text: 'The power bomb power-up makes the bombs you drop twice as powerful.' },
     { img: 'images/powerUps/extraBombPowerUp.png', text: 'The extra bomb power-up allows you to drop two bombs at the same time.' }
   ];
-  
-  const instructionsItems = instructionsContent.map(item => 
+
+  const instructionsItems = instructionsContent.map(item =>
     MyFramework.DOM("div", { class: "instruction-item" },
       MyFramework.DOM('img', { src: item.img, alt: 'Bomberman' }),
       MyFramework.DOM('p', {}, item.text)
     )
   );
-  
+
   const instructionsPage = MyFramework.DOM(
     "div",
     { id: "instructionsPage" },
@@ -135,7 +185,7 @@ function showWaitingArea() {
     MyFramework.DOM('h3', { class: "instruction-objective" }, 'The objective of the game is to eliminate all other players by placing bombs.'),
     ...instructionsItems
   );
-  
+
 
   const waitingArea = MyFramework.DOM(
     "div",
@@ -160,7 +210,7 @@ function showWaitingArea() {
 
 // Start the countdown timer
 function startCountdown() {
-// hide countPlayers,waitingMessage 
+// hide countPlayers,waitingMessage
   // document.getElementById("countPlayers").style.display = "none";
   document.getElementById("waitingMessage").style.display = "none";
   // show countdownTimer
@@ -171,9 +221,9 @@ function startCountdown() {
       "countdownTimer"
     ).textContent = `Starting in ${countdown} seconds...`;
     if (countdown === 0) {
-      clearInterval(timer);
+      clearInterval(timer); 
       showGameGrid();
-      buildGame();
+      buildGame(game.gameGrid);     
     }
   }, 1000);
 }

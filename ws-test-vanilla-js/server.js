@@ -1,66 +1,87 @@
-import players from './model.js';
-import { breakWall } from '../structure/gameEvents.js';
-import { availableSquares } from '../structure/buildGame.js';
-
 const http = require('http');
 const WebSocket = require('ws');
 const fs = require('fs');
 const path = require('path');
-
 // Create an HTTP server
 const server = http.createServer();
 
 // Create a WebSocket server and attach it to the HTTP server
 const wss = new WebSocket.Server({ server });
-const clients = [];
+// Map to store clients' connection information (WebSocket connection and nickname)
+let clients = new Map();
+let gameGrid = new Map();
 
+gameGrid = buildGameObject();
+console.log(gameGrid);
 // Handle WebSocket connections
 wss.on('connection', (ws) => {
-    // Log a new client connection
     console.log('Client connected');
-    //assigning a unique id to each client
-    ws.id = ws._socket.remotePort;
-    // Send a welcome message to the client
-    clients.push(ws.id);
-    for (let i = 0; i < players.length; i++) {
-        if (players[i].connection === ""){
-            players[i].connection = ws.id;
-            console.log(players[i].connection)
-            break
-        }
-    }
-    ws.send('Welcome to the WebSocket server!');
-    //create a message body with messgae text and the id of the sender
-    let DM = "";
-    // Handle incoming messages from the client
+    // Handle incoming messages
     ws.on('message', (message) => {
-        switch (message.event) {
-            case 'message':
-        //add to the message the id of the sender
-        DM = message + ":" + ws.id;
-        // Echo the message back to all clients connected to the server (including the sender)
-        console.log(clients)
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(DM.toString());
-            }
-        });
-                console.log('Game started');
-                break;
-            case 'move':
-                movePlayer(message.payload);
-                break;
-            case 'dropBomb':
-                dropBomb(message.payload);
-                break;
-            default:
-                console.log('Unknown event');
+        let data;
+        try {
+            // Expecting JSON data from the client
+            data = JSON.parse(message);
+        } catch (e) {
+            ws.send(JSON.stringify({ messageType: 'error', message: 'Invalid data format. Expecting JSON.' }));
+            return;
         }
 
+        // If the client is sending their nickname on first connection
+        if (data.nickname && !clients.has(ws)) {
+            // Store the nickname in the map with the WebSocket connection
+            clients.set(ws, data.nickname);
+            ws.nickname = data.nickname; // Store nickname in the WebSocket object for future reference
+
+
+            // Send a welcome message as JSON
+            const welcomeMessage = {
+                messageType: 'welcome',
+                nickname: data.nickname,
+                message: `Welcome, ${data.nickname}!`,
+                clients: Array.from(clients.values()),
+                numberofClients: wss.clients.size,
+                gameGrid: gameGrid
+            };
+            for (let client of wss.clients) {
+                client.send(JSON.stringify(welcomeMessage));
+            }
+            return;
+        }
+
+        // If the client sends a regular message, broadcast it to all clients
+        if (clients.has(ws) && data.message) {
+            const nickname = clients.get(ws);
+            const chatMessage = {
+                messageType: 'chat',
+                nickname: nickname,
+                message: data.message
+            };
+
+            // Broadcast the message to all connected clients
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(chatMessage));
+                }
+            });
+        } else if (clients.has(ws) && data.event){
+            const nickname = clients.get(ws);
+            const actionToSend = {
+                messageType: data.event,
+                nickname: nickname,
+                payload: data.payload
+            };
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(actionToSend));
+                }
+        })
+        }
     });
     // Handle client disconnection
     ws.on('close', () => {
-        console.log('Client disconnected');
+        console.log(`Client disconnected: ${ws.nickname}`);
+        clients.delete(ws); // Remove the client from the map on disconnect
     });
 });
 
@@ -75,21 +96,64 @@ server.listen(8080, () => {
     });
 });
 
-function movePlayer(payload) {
-    const bombermanClass = bomberman.classList[0].replace(' bomb', '');
-    nextSquare.className = `bomberman${players[payload.playerId].color}Going${capitalize(payload.direction)}`;
-    bomberman.classList.remove(bombermanClass);
-    console.log('Player moved', payload);
+function buildGameObject(){
+    let height = 17;
+    let width = 23;
+    let numberOfBreakableWalls = 60;
+    let numberOfPowerUps = 50;
+    let powerUps = ['powerBomb', 'extraBomb', 'skate'];
+    let gameGrid = {allsquares:[], wall:[], breakableWall:[], powerUp:[]};
+    // console.log(grid);
+    // Create the grid squares and append to grid
+    for (let i = 0; i < width * height; i++) {
+        gameGrid.allsquares.push(i)
+    }
+    for (let i = 0; i < width; i++) {
+        gameGrid.wall.push(i);
+        gameGrid.wall.push(i + (height - 1) * width);
+    }
+    for (let i = width; i < width * height; i += width) {
+        gameGrid.wall.push(i);
+        gameGrid.wall.push(i + width - 1);
+    }
+
+    // Create internal walls
+    for (let i = (width * 2) + 2, j = 0; i < width * height; i += 2, j++) {
+        gameGrid.wall.push(i);
+        if (j === (width - 3) / 2) {
+            i += (width + 3)-2;
+            j = -1;
+        }
+    }
+    let emptySquares = gameGrid.allsquares.filter(
+        (square) => !gameGrid.wall.includes(square)
+    );
+    // Place breakable walls
+    for (let i = 0; i < numberOfBreakableWalls; i++) {
+        const random = getRandomIndex(emptySquares[emptySquares.length-1]);
+        const targetSquare = gameGrid.wall.includes(random)
+        if (!targetSquare) {
+            gameGrid.breakableWall.push(random);
+        } else {
+            i--;
+        }
+    }
+    // Place power-ups
+    for (const powerUp of powerUps) {
+        for (let j = 0; j < numberOfPowerUps / powerUps.length; j++) {
+            const random = getRandomIndex(emptySquares.length);
+            const targetSquare = emptySquares[random];
+            if (gameGrid.breakableWall.includes(random)) {
+                gameGrid.powerUp.push({"index":random, "powerUp":powerUp});
+            } else {
+                j--;
+            }
+        }
+    }
+    return gameGrid;
 }
 
-function dropBomb(payload) {
-    if (payload.powerBomb) {
-        availableSquares[bombermanIndex].classList.add('powerBombDropped');
-    } else {
-    availableSquares[bombermanIndex].classList.add('bomb');
+function getRandomIndex(length) {
+    return Math.floor(Math.random() * (length - 1)) + 1;
 }
-    setTimeout(() => {
-        breakWall(String(bombermanIndex));
-        bombDropped--;
-    }, 3000);
-}
+
