@@ -91,6 +91,7 @@ function buildGameObject(){
     let numberOfBreakableWalls = 60;
     let numberOfPowerUps = 50;
     let powerUps = ['powerBomb', 'extraBomb', 'skate'];
+    playerStartPositions = [width + 1, (width*2)-2, (width*height)-(width*2)+1, (width*height)-width-2]
     let gameGrid = {allsquares:[], wall:[], breakableWall:[], powerUp:[]};
     // console.log(grid);
     // Create the grid squares and append to grid
@@ -117,6 +118,8 @@ function buildGameObject(){
     let emptySquares = gameGrid.allsquares.filter(
         (square) => !gameGrid.wall.includes(square)
     );
+
+    emptySquares = emptySquares.filter((square) => !playerStartPositions.includes(square))
     // Place breakable walls
     for (let i = 0; i < numberOfBreakableWalls; i++) {
         const random = getRandomIndex(emptySquares[emptySquares.length-1]);
@@ -132,8 +135,10 @@ function buildGameObject(){
         for (let j = 0; j < numberOfPowerUps / powerUps.length; j++) {
             const random = getRandomIndex(emptySquares.length);
             const targetSquare = emptySquares[random];
-            if (gameGrid.breakableWall.includes(random)) {
+            let alreadyUsedSquare = []
+            if (gameGrid.breakableWall.includes(random) && !alreadyUsedSquare.includes(random)) {
                 gameGrid.powerUp.push({"index":random, "powerUp":powerUp});
+                alreadyUsedSquare.push(random)
             } else {
                 j--;
             }

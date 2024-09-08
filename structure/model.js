@@ -11,6 +11,7 @@ export let game = {gameGrid:{}, players:[
     { nickname: "", powerUp: "", startPosition: (width*height)-(width*2)+1, playerPosition:0, color: "Blue", lives:0, connection: ""},
     { nickname: "", powerUp: "", startPosition: (width*height)-width-2,playerPosition:0, color: "Black", lives:0, connection: ""},
 ]};
+
 export let powerUps = ['powerBomb', 'extraBomb', 'skate'];
 
 // number of players needed to start the game (minimum 2) and maximum 4
