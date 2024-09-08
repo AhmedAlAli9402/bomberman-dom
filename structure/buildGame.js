@@ -2,45 +2,43 @@
 
 import { MyFramework } from '../vFw/framework.js';
 import { changeDirection, setKeyUp } from './bombermanMoves.js';
-import { height, width, players, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js';
+import { height, width, game, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js';
 import { formatTime } from './helpers.js';
 import { container  } from '../app.js';
 import {countdown, setCountdown} from './model.js';
-export let availableSquares = [];
 
+export let availableSquares = [];
+let players = game.players;
 // Initial lives for each player, starting with 3 lives each
 export let initialLives = [3, 3, 3, 3]; // 4 players
 // Initialize player lives as reactive state
 export const [playerLives, setPlayerLives] = MyFramework.State([...initialLives]);
 
-export function buildGame() {
-    console.log('Building game...');
+export function buildGame(gameGrid){
     const grid = document.getElementById('grid');
-    // console.log(grid);
-    // Create the grid squares and append to grid
-    for (let i = 0; i < width * height; i++) {
-        const square = MyFramework.DOM(  'div',  { id: i.toString() } );
+    for (let i = 0; i < gameGrid.allsquares.length; i++) {
+        const square = MyFramework.DOM(  'div',  { id: i } );
         grid.appendChild(square);
     }
+    const createWall = (index) => document.getElementById(index.toString()).classList.add('wall');
 
-    // Create walls along the grid edges
-    const createWall = (index) => document.getElementById(index).classList.add('wall');
-    for (let i = 0; i < width; i++) {
-        createWall(i);
-        createWall(i + (height - 1) * width);
-    }
-    for (let i = width; i < width * height; i += width) {
-        createWall(i);
-        createWall(i + width - 1);
+    for (const wall of gameGrid.wall) {
+        createWall(wall);
     }
 
-    // Create internal walls
-    for (let i = (width * 2) + 2, j = 0; i < width * height; i += 2, j++) {
-        createWall(i);
-        if (j === (width - 3) / 2) {
-            i += (width + 3)-2;
-            j = -1;
-        }
+    const createBreakableWall = (index) => document.getElementById(index).classList.add('breakableWall');
+
+    for (const breakableWall of gameGrid.breakableWall) {
+        createBreakableWall(breakableWall);
+    }
+
+    const createPowerUp = (index, powerUp) => {
+        const square = document.getElementById(index);
+        square.classList.add(powerUp);
+    }
+    
+    for (const { index, powerUp } of gameGrid.powerUp) {
+        createPowerUp(index, powerUp);
     }
 
     availableSquares = Array.from(document.querySelectorAll('.grid div'));
@@ -51,40 +49,11 @@ export function buildGame() {
         const playerSquare = availableSquares[player.startPosition];
         playerSquare.classList.add('bomberman' + player.color + 'GoingDown');}
     });
-    let emptySquares = availableSquares.filter(
-        (square) => !square.getAttribute('class')
-    );
-
-    // Place breakable walls
-    for (let i = 0; i < numberOfBreakableWalls; i++) {
-        const random = getRandomIndex(emptySquares.length);
-        const targetSquare = emptySquares[random];
-        if (!targetSquare.classList.contains('breakableWall')) {
-            targetSquare.classList.add('breakableWall');
-        } else {
-            i--;
-        }
-    }
 
     // Ensure no blocked initial paths
     removeBlockedPaths(availableSquares);
-
-    // Place power-ups
-    for (const powerUp of powerUps) {
-        for (let j = 0; j < numberOfPowerUps / powerUps.length; j++) {
-            const random = getRandomIndex(emptySquares.length);
-            const targetSquare = emptySquares[random];
-            if (targetSquare.classList.contains('breakableWall') && targetSquare.classList.length < 2) {
-                targetSquare.classList.add(powerUp);
-            } else {
-                j--;
-            }
-        }
-    }
-
     startTimer(countdown());
-
-   initializePlayer();
+    initializePlayer();
 }
 
 function initializePlayer(connection) {
@@ -97,10 +66,6 @@ function initializePlayer(connection) {
     // }
     document.addEventListener('keydown', ((ev) =>changeDirection(ev.key, playerId)));
     document.addEventListener('keyup', setKeyUp);
-}
-
-function getRandomIndex(length) {
-    return Math.floor(Math.random() * (length - 1)) + 1;
 }
 
 function removeBlockedPaths(availableSquares) {

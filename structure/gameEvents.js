@@ -1,9 +1,10 @@
 // structure/gameEvents.js
 
 import { availableSquares } from './buildGame.js';
-import { width, players } from './model.js';
+import { width, game } from './model.js';
 import { updateHUD } from './buildGame.js';
 
+let players = game.players;
 export function breakWall(id) {
     let bomb = document.getElementById(id);
     let powerbomb = false

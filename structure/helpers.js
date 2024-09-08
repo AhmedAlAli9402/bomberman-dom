@@ -1,4 +1,6 @@
-import { players } from './model.js';
+import { game } from './model.js';
+
+let players = game.players;
 
 // Format time in minutes and seconds
 export function formatTime(seconds) {

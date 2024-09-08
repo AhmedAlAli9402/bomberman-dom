@@ -2,7 +2,7 @@
 
 import { MyFramework } from "./vFw/framework.js";
 import { showGameGrid ,buildGame } from "./structure/buildGame.js";
-import { minimumPlayers , maximumPlayers , minimumTime, maximumTime } from "./structure/model.js";
+import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game } from "./structure/model.js";
 import {setPlayerNickname} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 
@@ -43,6 +43,8 @@ export const container = document.getElementById("app");
           setPlayersReady(data.numberofClients);
           setPlayerNickname(playerId, data.nickname);
           showWaitingArea();
+          console.log('Game grid',data.gameGrid);
+          game.gameGrid = data.gameGrid;
         } else if (data.type === 'move') {
           const { playerId, direction } = data;
           moveBomberman(direction, playerId);
@@ -217,9 +219,9 @@ function startCountdown() {
       "countdownTimer"
     ).textContent = `Starting in ${countdown} seconds...`;
     if (countdown === 0) {
-      clearInterval(timer);
+      clearInterval(timer); 
       showGameGrid();
-      buildGame();
+      buildGame(game.gameGrid);     
     }
   }, 1000);
 }
