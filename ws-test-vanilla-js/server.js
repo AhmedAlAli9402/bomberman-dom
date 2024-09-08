@@ -33,13 +33,15 @@ wss.on('connection', (ws) => {
             ws.nickname = data.nickname; // Store nickname in the WebSocket object for future reference
 
             // Send a welcome message as JSON
-            ws.send(JSON.stringify({
+            const welcomeMessage = {
                 messageType: 'welcome',
                 nickname: data.nickname,
-                message: `Welcome, ${data.nickname}!`
-            }));
-
-            console.log(`Nickname set for client: ${data.nickname}`);
+                message: `Welcome, ${data.nickname}!`,
+                numberofClients: wss.clients.size
+            };
+            for (let client of wss.clients) {
+                client.send(JSON.stringify(welcomeMessage));
+            }
             return;
         }
 

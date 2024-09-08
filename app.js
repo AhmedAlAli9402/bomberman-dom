@@ -6,10 +6,10 @@ import { minimumPlayers , maximumPlayers , minimumTime, maximumTime } from "./st
 import {setPlayerNickname} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 
-// set the countdown to the minimum time or maximum time 
+// set the countdown to the minimum time or maximum time
 let countdown = minimumTime;
 
-// set the needed players 
+// set the needed players
 let neededPlayers = minimumPlayers ; // for mini of 2 players
 // let neededPlayers = 1 ; // for testing with 1 player
 
@@ -18,10 +18,10 @@ export const container = document.getElementById("app");
 
   export  let ws;
   let playerId;
-  
+
   function connectToWebSocket(nickname) {
      ws = new WebSocket('ws://localhost:8080');
-  
+
     // ws.onopen = () => {
     //   console.log('Connected to WebSocket server');
     // };
@@ -37,8 +37,13 @@ export const container = document.getElementById("app");
 
       ws.onmessage = function (message) {
         const data = JSON.parse(message.data);
-      
-        if (data.type === 'move') {
+        if (data.messageType === 'welcome') {
+          console.log('Welcome message received',data.numberofClients);
+          playerId = data.numberofClients-1;
+          setPlayersReady(data.numberofClients);
+          setPlayerNickname(playerId, data.nickname);
+          showWaitingArea();
+        } else if (data.type === 'move') {
           const { playerId, direction } = data;
           moveBomberman(direction, playerId);
         } else if (data.type === 'bomb') {
@@ -52,8 +57,8 @@ export const container = document.getElementById("app");
           // Handle syncing the game state on new connection
         }
       };
-      
-  
+
+
       ws.onclose = () => {
         console.log('Disconnected from WebSocket server');
       };
@@ -126,9 +131,9 @@ function submitNickname() {
   connectToWebSocket(nickname);
 
   // Add the nickname and proceed
-  setPlayersReady(playersReady() + 1);
-  setPlayerNickname(playersReady() - 1, nickname);
-  showWaitingArea();
+  // setPlayersReady(playersReady() + 1);
+  // setPlayerNickname(playersReady() - 1, nickname);
+  // showWaitingArea();
 }
 
 
@@ -161,14 +166,14 @@ function showWaitingArea() {
     { img: 'images/powerUps/PowerBombPowerUp.png', text: 'The power bomb power-up makes the bombs you drop twice as powerful.' },
     { img: 'images/powerUps/extraBombPowerUp.png', text: 'The extra bomb power-up allows you to drop two bombs at the same time.' }
   ];
-  
-  const instructionsItems = instructionsContent.map(item => 
+
+  const instructionsItems = instructionsContent.map(item =>
     MyFramework.DOM("div", { class: "instruction-item" },
       MyFramework.DOM('img', { src: item.img, alt: 'Bomberman' }),
       MyFramework.DOM('p', {}, item.text)
     )
   );
-  
+
   const instructionsPage = MyFramework.DOM(
     "div",
     { id: "instructionsPage" },
@@ -176,7 +181,7 @@ function showWaitingArea() {
     MyFramework.DOM('h3', { class: "instruction-objective" }, 'The objective of the game is to eliminate all other players by placing bombs.'),
     ...instructionsItems
   );
-  
+
 
   const waitingArea = MyFramework.DOM(
     "div",
@@ -201,7 +206,7 @@ function showWaitingArea() {
 
 // Start the countdown timer
 function startCountdown() {
-// hide countPlayers,waitingMessage 
+// hide countPlayers,waitingMessage
   // document.getElementById("countPlayers").style.display = "none";
   document.getElementById("waitingMessage").style.display = "none";
   // show countdownTimer
