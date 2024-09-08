@@ -5,6 +5,7 @@ import { showGameGrid ,buildGame } from "./structure/buildGame.js";
 import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game } from "./structure/model.js";
 import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
+import { changeDirection,setKeyUp } from './structure/bombermanMoves.js';
 
 // set the countdown to the minimum time or maximum time
 let countdown = minimumTime;
@@ -16,16 +17,11 @@ let neededPlayers = minimumPlayers ; // for mini of 2 players
 // Get the container element
 export const container = document.getElementById("app");
 
-  export  let ws;
-  let playerId;
+  let ws;
 
   function connectToWebSocket(nickname) {
      ws = new WebSocket('ws://localhost:8080');
 
-    // ws.onopen = () => {
-    //   console.log('Connected to WebSocket server');
-    // };
-    // Handle connection open
     ws.onopen = () => {
       console.log('Connected to WebSocket server');
       if (nickname && nickname.trim()) {
@@ -39,26 +35,29 @@ export const container = document.getElementById("app");
         const data = JSON.parse(message.data);
         if (data.messageType === 'welcome') {
           console.log('Welcome message received',data.numberofClients);
-          playerId = data.numberofClients-1;
           setPlayersReady(data.numberofClients);
-          // setPlayerNickname(playerId, data.nickname);
           setPlayersNicknames(data.clients);
           showWaitingArea();
           console.log('Game grid',data.gameGrid);
           game.gameGrid = data.gameGrid;
         } else if (data.type === 'move') {
-          const { playerId, direction } = data;
-          moveBomberman(direction, playerId);
-        } else if (data.type === 'bomb') {
-          const { playerId, position } = data;
-          dropBombAtPosition(playerId, position);
-        } else if (data.type === 'playersUpdate') {
-          // Handle updates to player list
-          const playerList = data.players;
-          setPlayersReady(playerList.length);
-        } else if (data.type === 'gameState') {
-          // Handle syncing the game state on new connection
-        }
+          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+          const { id, direction } = data;
+          // console.log('move-ws',direction,id);
+          // console.log('move-data',data);
+          changeDirection(direction, id)
+          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }else if (data.type === 'keyUp'){
+          const { id } = data;
+          // console.log('keyUp-ws',id);
+            setKeyUp(id);
+        } 
+        // else if (data.type === 'bomb') {
+        //   const { id, position } = data;
+        //   dropBombAtPosition(id, position);
+        // } else if (data.type === 'gameState') {
+        //   // Handle syncing the game state on new connection
+        // }
       };
 
 
@@ -67,6 +66,29 @@ export const container = document.getElementById("app");
       };
     }
 
+    export  function sendPlayerMove(direction) {
+      console.log('sendPlayerMove',"direction",direction.key );
+      if (ws) {
+        ws.send(JSON.stringify({
+          message: {
+            type: 'move',
+            direction: direction.key
+          }
+        }));
+      }
+    }
+
+    export  function sendkeyUp() {
+      console.log('sendkeyUp' );
+      if (ws) {
+        ws.send(JSON.stringify({
+          message: {
+            type: 'keyUp'
+          }
+        }));
+      }
+    }
+    
 // Define the landing page
 export function showLandingPage() {
   const landingPage = MyFramework.DOM(

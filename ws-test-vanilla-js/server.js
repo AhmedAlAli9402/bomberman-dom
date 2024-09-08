@@ -1,3 +1,5 @@
+// ws-test-vanilla-js/server.js
+
 const http = require('http');
 const WebSocket = require('ws');
 const fs = require('fs');
@@ -12,7 +14,6 @@ let clients = new Map();
 let gameGrid = new Map();
 
 gameGrid = buildGameObject();
-console.log(gameGrid);
 // Handle WebSocket connections
 wss.on('connection', (ws) => {
     console.log('Client connected');
@@ -52,18 +53,56 @@ wss.on('connection', (ws) => {
         // If the client sends a regular message, broadcast it to all clients
         if (clients.has(ws) && data.message) {
             const nickname = clients.get(ws);
-            const chatMessage = {
-                messageType: 'chat',
-                nickname: nickname,
-                message: data.message
-            };
+            // get user id as the index of the client in the map
+            const userId = Array.from(clients.keys()).indexOf(ws);
+            let broadcast = {};
+            console.log('111ID',userId,nickname,data.message.type);
+
+             if (data.message.type === 'move') {
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                console.log('move',nickname,data.message);
+                const { direction } = data.message;
+                    broadcast = {
+                    type: 'move',
+                    id: userId,
+                    direction: direction
+                };
+
+                console.log('move-broadcast',broadcast);
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            }else if (data.message.type === 'keyUp') {
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                console.log('keyUp',nickname,data.message);
+                    broadcast = {
+                    type: 'keyUp',
+                    id: userId
+                };
+
+                console.log('keyUp-broadcast',broadcast);
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            }
+            // else if (data.message.type === 'bomb') {
+            //     const { position } = data.message;
+            //         broadcast = {
+            //         type: 'bomb',
+            //         playerId: userId,
+            //         position: position
+            //     };
+            // }else if (data.message.type === 'chat') {
+            //         broadcast = {
+            //         messageType: 'chat',
+            //         nickname: nickname,
+            //         message: data.message
+            //     };
+            // }
 
             // Broadcast the message to all connected clients
             wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify(chatMessage));
+                    client.send(JSON.stringify(broadcast));
                 }
             });
+            return;
         }
     });
 

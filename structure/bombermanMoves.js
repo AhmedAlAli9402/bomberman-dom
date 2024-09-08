@@ -3,14 +3,14 @@ import { availableSquares } from './buildGame.js';
 import { breakWall } from './gameEvents.js';
 import { width, height, game, powerUps } from './model.js';
 
-let keyStillDown = false;
+// let keyStillDown = game.players.keyStillDown;
 let bombDropped = 0;
-let keyStillDownForSkate = 0;
+// let keyStillDownForSkate = 0;
 let players = game.players;
 
-export function changeDirection(e, playerId) {
-    console.log(e, playerId)
-    if (!keyStillDown || (players[playerId].powerUp === "skate" && keyStillDownForSkate < 4)) {
+export function changeDirection(e, id) {
+    console.log(e, id)
+    if (!players[id].keyStillDown || (players[id].powerUp === "skate" && keyStillDownForSkate < 4)) {
         const directions = {
             'ArrowUp': 'up',
             'ArrowRight': 'right',
@@ -19,9 +19,9 @@ export function changeDirection(e, playerId) {
         };
 
         if (directions[e]) {
-            moveBomberman(directions[e], playerId);
+            moveBomberman(directions[e], id);
         } else if (e === 'x') {
-            dropBomb(playerId);
+            dropBomb(id);
         }
     }
 }
@@ -49,18 +49,19 @@ function moveBomberman(direction, id) {
         }
         nextSquare.className = `bomberman${players[id].color}Going${capitalize(direction)}`;
         bomberman.classList.remove(bombermanClass);
-        keyStillDown = true;
+        players[id].keyStillDown = true;
         if (players[id].powerUp === 'skate') {
-            keyStillDownForSkate++
+            players[id].keyStillDownForSkate++
     } else {
-        keyStillDownForSkate = 0
+        players[id].keyStillDownForSkate = 0
     }
 }
 }
 
-export function setKeyUp() {
-    keyStillDownForSkate = 0
-    keyStillDown = false;
+export function setKeyUp(id) {
+    
+    players[id].keyStillDownForSkate = 0;
+    players[id].keyStillDown = false;
 }
 
 function dropBomb(id) {

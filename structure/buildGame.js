@@ -6,6 +6,7 @@ import { height, width, game, powerUps, numberOfBreakableWalls, numberOfPowerUps
 import { formatTime } from './helpers.js';
 import { container  } from '../app.js';
 import {countdown, setCountdown} from './model.js';
+import { sendPlayerMove , sendkeyUp} from '../app.js';
 
 export let availableSquares = [];
 let players = game.players;
@@ -57,15 +58,8 @@ export function buildGame(gameGrid){
 }
 
 function initializePlayer(connection) {
-    let playerId = 0
-    // for (let i = 0; i < players.length; i++) {
-    //     if (players[i].connection === connection) {
-    //         playerId = i;
-    //         break;
-    //     }
-    // }
-    document.addEventListener('keydown', ((ev) =>changeDirection(ev.key, playerId)));
-    document.addEventListener('keyup', setKeyUp);
+    document.addEventListener('keydown', ((ev) => sendPlayerMove(ev)));
+    document.addEventListener('keyup', sendkeyUp);
 }
 
 function removeBlockedPaths(availableSquares) {
@@ -168,7 +162,7 @@ function startTimer(time) {
         }
         updateHUD();
         // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
-        if (players.filter(player => player.lives > 0).length === 0) {
+        if (players.filter(player => player.lives > 0).length === 1) {
             clearInterval(timer);
             endGame();
         }
