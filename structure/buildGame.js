@@ -6,7 +6,7 @@ import { height, width, game, powerUps, numberOfBreakableWalls, numberOfPowerUps
 import { formatTime } from './helpers.js';
 import { container  } from '../app.js';
 import {countdown, setCountdown} from './model.js';
-import { sendPlayerMove , sendkeyUp} from '../app.js';
+import { sendPlayerMove , sendkeyUp, sendplayerGameOver} from '../app.js';
 
 export let availableSquares = [];
 let players = game.players;
@@ -142,6 +142,7 @@ export function updateHUD(playerId) {
             
             if (player.lives === 0) {
                 livesDisplay[index].textContent = `${player.nickname} 💔`;
+                sendplayerGameOver(index)
             }else{
                 livesDisplay[index].textContent = `${player.nickname} ❤️: ${lives[index]}`;
             }

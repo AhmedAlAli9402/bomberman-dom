@@ -5,7 +5,7 @@ import { showGameGrid ,buildGame } from "./structure/buildGame.js";
 import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game } from "./structure/model.js";
 import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
-import { changeDirection,setKeyUp } from './structure/bombermanMoves.js';
+import { changeDirection,setKeyUp, playerGameOver } from './structure/bombermanMoves.js';
 
 // set the countdown to the minimum time or maximum time
 let countdown = minimumTime;
@@ -51,7 +51,10 @@ export const container = document.getElementById("app");
           const { id } = data;
           // console.log('keyUp-ws',id);
             setKeyUp(id);
-        } 
+        } else if (data.type === 'gameover'){
+          const { id } = data;
+          playerGameOver(id)
+        }
         // else if (data.type === 'bomb') {
         //   const { id, position } = data;
         //   dropBombAtPosition(id, position);
@@ -84,6 +87,17 @@ export const container = document.getElementById("app");
         ws.send(JSON.stringify({
           message: {
             type: 'keyUp'
+          }
+        }));
+      }
+    }
+    
+    export  function sendplayerGameOver() {
+      console.log('sendplayerGameOver' );
+      if (ws) {
+        ws.send(JSON.stringify({
+          message: {
+            type: 'gameover'
           }
         }));
       }

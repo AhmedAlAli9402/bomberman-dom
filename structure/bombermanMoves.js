@@ -92,3 +92,14 @@ function AddPowerUpToPlayer(powerUp, id) {
         setTimeout(() => {players[id].powerUp = ''}, 20000);
     }
 }
+
+export function playerGameOver(id){
+    const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
+    bomberman.removeAttribute('class');
+    const gameGrid = document.getElementById('gameGrid');
+    
+    // Display "Game Over" message
+    const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
+    gameGrid.appendChild(gameOver);
+    
+}
