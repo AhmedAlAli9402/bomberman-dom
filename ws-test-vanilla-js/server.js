@@ -8,35 +8,63 @@ const server = http.createServer();
 
 // Create a WebSocket server and attach it to the HTTP server
 const wss = new WebSocket.Server({ server });
-const clients = [];
+// Map to store clients' connection information (WebSocket connection and nickname)
+let clients = new Map();
 
 // Handle WebSocket connections
 wss.on('connection', (ws) => {
-    // Log a new client connection
     console.log('Client connected');
-    //assigning a unique id to each client
-    ws.id = ws._socket.remotePort;
-    // Send a welcome message to the client
-    clients.push(ws.id);
-    ws.send('Welcome to the WebSocket server!');
-    //create a message body with messgae text and the id of the sender
-    let DM = "";
-    // Handle incoming messages from the client
+
+    // Handle incoming messages
     ws.on('message', (message) => {
-        //add to the message the id of the sender
-        DM = message + ":" + ws.id;
-        // Echo the message back to all clients connected to the server (including the sender)
-        console.log(clients)
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(DM.toString());
-            }
-        });
+        let data;
+        try {
+            // Expecting JSON data from the client
+            data = JSON.parse(message);
+        } catch (e) {
+            ws.send(JSON.stringify({ messageType: 'error', message: 'Invalid data format. Expecting JSON.' }));
+            return;
+        }
+
+        // If the client is sending their nickname on first connection
+        if (data.nickname && !clients.has(ws)) {
+            // Store the nickname in the map with the WebSocket connection
+            clients.set(ws, data.nickname);
+            ws.nickname = data.nickname; // Store nickname in the WebSocket object for future reference
+
+            // Send a welcome message as JSON
+            ws.send(JSON.stringify({
+                messageType: 'welcome',
+                nickname: data.nickname,
+                message: `Welcome, ${data.nickname}!`
+            }));
+
+            console.log(`Nickname set for client: ${data.nickname}`);
+            return;
+        }
+
+        // If the client sends a regular message, broadcast it to all clients
+        if (clients.has(ws) && data.message) {
+            const nickname = clients.get(ws);
+            const chatMessage = {
+                messageType: 'chat',
+                nickname: nickname,
+                message: data.message
+            };
+
+            // Broadcast the message to all connected clients
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(chatMessage));
+                }
+            });
+        }
     });
 
     // Handle client disconnection
     ws.on('close', () => {
-        console.log('Client disconnected');
+        console.log(`Client disconnected: ${ws.nickname}`);
+        clients.delete(ws); // Remove the client from the map on disconnect
     });
 });
 

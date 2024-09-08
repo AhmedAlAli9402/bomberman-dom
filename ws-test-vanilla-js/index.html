@@ -1,35 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSocket Client</title>
 </head>
+
 <body>
     <h1>WebSocket Client</h1>
-    <input type="text" id="messageInput" placeholder="Type a message">
+    <input type="text" id="messageInput" placeholder="Type a message" maxlength="100">
     <button id="sendButton">Send Message</button>
     <div id="messages"></div>
 
     <script>
         // Create a WebSocket connection to the server
-        const ws = new WebSocket('ws://10.1.204.52:8080');
+        const ws = new WebSocket('ws://localhost:8080');
 
         // Handle connection open
         ws.onopen = () => {
             console.log('Connected to WebSocket server');
-            ws.send('Hello, Server!');
+            const nickname = prompt('Enter your nickname:');
+            if (nickname && nickname.trim()) {
+                ws.send(JSON.stringify({ nickname })); // Send the nickname in the first message
+            } else {
+                alert('Nickname cannot be empty');
+            }
         };
 
         // Handle incoming messages
         ws.onmessage = (event) => {
-            console.log(event)
             const messagesDiv = document.getElementById('messages');
             const newMessage = document.createElement('div');
-            const data = event.data.split(':');
-            console.log(data)
-            newMessage.textContent = `${data[1]}: ${data[0]}`;
-            messagesDiv.appendChild(newMessage);
+
+            // Assuming incoming message is formatted as JSON
+            try {
+                const data = JSON.parse(event.data);
+                console.log('Received message:', data);
+                if (data && data.nickname && data.message) {
+                    newMessage.textContent = `${data.nickname}: ${data.message}`;
+                    messagesDiv.appendChild(newMessage);
+                }
+            } catch (error) {
+                console.error('Error parsing message', error);
+            }
         };
 
         // Handle connection close
@@ -45,21 +59,31 @@
         // Send a message when the button is clicked
         document.getElementById('sendButton').onclick = () => {
             const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value;
-            ws.send(message);
-            messageInput.value = ''; // Clear the input
+            const message = messageInput.value.trim();
+
+            if (message && message.length <= 100) {
+                ws.send(JSON.stringify({ message })); // Send message as JSON
+                messageInput.value = ''; // Clear the input
+            } else {
+                alert('Message cannot be empty or exceed 100 characters.');
+            }
         };
+
+        // Send message on Enter key press
         document.getElementById('messageInput').addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-
                 const messageInput = document.getElementById('messageInput');
-                const message = messageInput.value;
-                if (message === '' || message === null || message === undefined || message.length > 100) {
-                    return;
+                const message = messageInput.value.trim();
+
+                if (message && message.length <= 100) {
+                    ws.send(JSON.stringify({ message })); // Send message as JSON
+                    messageInput.value = ''; // Clear the input
+                } else {
+                    alert('Message cannot be empty or exceed 100 characters.');
                 }
-                ws.send(message);
-            messageInput.value = '';            }
+            }
         });
     </script>
 </body>
+
 </html>
