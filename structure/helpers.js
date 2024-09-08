@@ -18,3 +18,14 @@ export function setPlayerNickname(index, newNickname) {
       console.error('Invalid player index');
   }
 }
+
+// update all players names and lives by getting an array of nicknames
+export function setPlayersNicknames(nicknames) {
+  players.forEach((player, index) => {
+    console.log('index',nicknames[index]);
+    if (nicknames[index]!==undefined) {
+      player.nickname = nicknames[index];
+      player.lives = 3;
+    }
+  });
+}

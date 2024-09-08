@@ -39,6 +39,7 @@ wss.on('connection', (ws) => {
                 messageType: 'welcome',
                 nickname: data.nickname,
                 message: `Welcome, ${data.nickname}!`,
+                clients: Array.from(clients.values()),
                 numberofClients: wss.clients.size,
                 gameGrid: gameGrid
             };

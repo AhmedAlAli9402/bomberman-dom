@@ -3,7 +3,7 @@
 import { MyFramework } from "./vFw/framework.js";
 import { showGameGrid ,buildGame } from "./structure/buildGame.js";
 import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game } from "./structure/model.js";
-import {setPlayerNickname} from "./structure/helpers.js";
+import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 
 // set the countdown to the minimum time or maximum time
@@ -41,7 +41,8 @@ export const container = document.getElementById("app");
           console.log('Welcome message received',data.numberofClients);
           playerId = data.numberofClients-1;
           setPlayersReady(data.numberofClients);
-          setPlayerNickname(playerId, data.nickname);
+          // setPlayerNickname(playerId, data.nickname);
+          setPlayersNicknames(data.clients);
           showWaitingArea();
           console.log('Game grid',data.gameGrid);
           game.gameGrid = data.gameGrid;
