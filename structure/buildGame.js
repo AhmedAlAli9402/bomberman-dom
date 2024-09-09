@@ -52,7 +52,6 @@ export function buildGame(gameGrid){
     });
 
     // Ensure no blocked initial paths
-    removeBlockedPaths(availableSquares);
     startTimer(countdown());
     initializePlayer();
 }
@@ -60,30 +59,6 @@ export function buildGame(gameGrid){
 function initializePlayer(connection) {
     document.addEventListener('keydown', ((ev) => sendPlayerMove(ev)));
     document.addEventListener('keyup', sendkeyUp);
-}
-
-function removeBlockedPaths(availableSquares) {
-    const pathsToCheck = [
-        { idx1: width + 2, idx2: (width * 2) + 1 }, // top left corner
-        { idx1: width + 2, idx2: (width * 3) + 1 },
-        { idx1: width + 3, idx2: (width * 2) + 1 },
-        { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*3)+1 }, // bottom left corner
-        { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*4)+1 },
-        { idx1: (width*height)-(width*4)+1, idx2: (width*height)-(width*3)+1 },
-        { idx1: (width*2)-3, idx2: (width*3)-2}, // top right corner
-        { idx1: (width*2)-4, idx2: (width*3)-2},
-        { idx1: (width*2)-3, idx2: (width*4)-2},
-        { idx1: (width*height)-width-3, idx2: (width*height)-(width*2)-2 }, // bottom right corner
-        { idx1: (width*height)-width-4, idx2: (width*height)-(width*2)-2 },
-        { idx1: (width*height)-width-3, idx2: (width*height)-(width*3)-2 }
-    ];
-
-    pathsToCheck.forEach(({ idx1, idx2 }) => {
-        // console.log(idx1, idx2)
-        if (availableSquares[idx1].classList.contains('breakableWall') && availableSquares[idx2].classList.contains('breakableWall')) {
-            availableSquares[idx2].classList.remove('breakableWall');
-        }
-    });
 }
 
 // Show the game grid and HUD
