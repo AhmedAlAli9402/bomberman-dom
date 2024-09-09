@@ -154,7 +154,7 @@ function startTimer(time) {
         }
         updateHUD();
         // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
-        if (players.filter(player => player.lives > 0).length === 0) {
+        if (players.filter(player => player.lives > 0).length === 1) {
             clearInterval(timer);
             endGame();
         }
