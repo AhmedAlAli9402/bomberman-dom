@@ -507,7 +507,10 @@ div .dead {
 
 #chatBox {
     display: flex;
-    position:fixed;
+    flex-direction: column;
+    justify-content: end;
+    align-items: stretch;
+    position: fixed;
     bottom: 0;
     right: 0;
     width: 20vw;
@@ -515,11 +518,17 @@ div .dead {
     padding: 1%;
     height: 70vh;
     background-color: #f2f2f2;
-    border-radius: 10px 0 0 0;
-    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    /* Enhanced box-shadow for a more defined shadow */
+    box-shadow: -4px -4px 15px rgba(217, 16, 16, 0.3), 4px 4px 10px rgba(210, 38, 38, 0.1);
     font-family: "Roboto", sans-serif;
-  }
+}
 
+
+  #chatMessages {
+    flex: 1;
+    overflow: auto;
+  }
   #chatBox h2 {
     font-size: 1.2em;
     color: #333;
@@ -531,8 +540,7 @@ div .dead {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    height: 300px;
-    overflow-y: scroll;
+    height: 100%;
   }
 
   #chatBox li {
@@ -542,6 +550,14 @@ div .dead {
 
   #chatBox li:last-child {
     border-bottom: none;
+  }
+
+  #chatInputContainer {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    border-radius: 0 0 10px 10px;
   }
 
   #chatBox input {
