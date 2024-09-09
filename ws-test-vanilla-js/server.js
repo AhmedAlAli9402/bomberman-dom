@@ -78,23 +78,16 @@ wss.on('connection', (ws) => {
                     id: userId
                 };
 
-                console.log('keyUp-broadcast',broadcast);
-                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            }
-            // else if (data.message.type === 'bomb') {
-            //     const { position } = data.message;
-            //         broadcast = {
-            //         type: 'bomb',
-            //         playerId: userId,
-            //         position: position
-            //     };
-            // }else if (data.message.type === 'chat') {
-            //         broadcast = {
-            //         messageType: 'chat',
-            //         nickname: nickname,
-            //         message: data.message
-            //     };
-            // }
+        console.log("keyUp-broadcast", broadcast);
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      } else if (data.message.type === "chat") {
+        console.log("chat", nickname, data.message);
+        broadcast = {
+          messageType: "chat",
+          nickname: nickname,
+          message: data.message,
+        };
+      }
 
             // Broadcast the message to all connected clients
             wss.clients.forEach((client) => {

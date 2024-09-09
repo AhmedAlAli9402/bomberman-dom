@@ -16,8 +16,8 @@ let neededPlayers = minimumPlayers ; // for mini of 2 players
 
 // Get the container element
 export const container = document.getElementById("app");
-
-  let ws;
+export const chatMessages = document.getElementById("chatbox");
+let ws;
 
   function connectToWebSocket(nickname) {
      ws = new WebSocket('ws://localhost:8080');
@@ -31,35 +31,43 @@ export const container = document.getElementById("app");
       }
   };
 
-      ws.onmessage = function (message) {
-        const data = JSON.parse(message.data);
-        if (data.messageType === 'welcome') {
-          console.log('Welcome message received',data.numberofClients);
-          setPlayersReady(data.numberofClients);
-          setPlayersNicknames(data.clients);
-          showWaitingArea();
-          console.log('Game grid',data.gameGrid);
-          game.gameGrid = data.gameGrid;
-        } else if (data.type === 'move') {
-          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-          const { id, direction } = data;
-          // console.log('move-ws',direction,id);
-          // console.log('move-data',data);
-          changeDirection(direction, id)
-          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        }else if (data.type === 'keyUp'){
-          const { id } = data;
-          // console.log('keyUp-ws',id);
-            setKeyUp(id);
-        } 
-        // else if (data.type === 'bomb') {
-        //   const { id, position } = data;
-        //   dropBombAtPosition(id, position);
-        // } else if (data.type === 'gameState') {
-        //   // Handle syncing the game state on new connection
-        // }
-      };
-
+  ws.onmessage = function (message) {
+    const data = JSON.parse(message.data);
+    console.log("Data received", data);
+    if (data.messageType === "welcome") {
+      console.log("Welcome message received", data.numberofClients);
+      setPlayersReady(data.numberofClients);
+      setPlayersNicknames(data.clients);
+      showWaitingArea();
+      showChatBox();
+      console.log("Game grid", data.gameGrid);
+      game.gameGrid = data.gameGrid;
+    } else if (data.type === "move") {
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      const { id, direction } = data;
+      // console.log('move-ws',direction,id);
+      // console.log('move-data',data);
+      changeDirection(direction, id);
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    } else if (data.type === "keyUp") {
+      const { id } = data;
+      // console.log('keyUp-ws',id);
+      setKeyUp(id);
+    } else if (data.messageType === 'chat') {
+      console.log("chat front", data);
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      const { nickname, message } = data;
+      const chatMessage = MyFramework.DOM("div", {}, `${nickname}: ${message.message}`);
+      console.log("chatMessage", chatMessage);
+      chatMessages.appendChild(chatMessage);
+      document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+      document.getElementById("chatInput").value = "";
+      document.getElementById("chatMessages").appendChild(chatMessage);
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    } else if (data.type === 'gameState') {
+      // Handle syncing the game state on new connection
+    }
+  };
 
       ws.onclose = () => {
         console.log('Disconnected from WebSocket server');
@@ -88,7 +96,7 @@ export const container = document.getElementById("app");
         }));
       }
     }
-    
+
 // Define the landing page
 export function showLandingPage() {
   const landingPage = MyFramework.DOM(
@@ -107,8 +115,7 @@ export function showLandingPage() {
     MyFramework.DOM('a', {href: 'https://github.com/AhmedAlAli9402'},'AhmedAlAli9402')
   );
   if (container) {
-    container.innerHTML = "";
-    container.appendChild(landingPage);
+    container.replaceChild(landingPage,document.getElementById("landingPage"));
   }
 }
 
@@ -129,20 +136,21 @@ function showNicknamePopup() {
   const nicknamePopup = MyFramework.DOM(
     "div",
     { id: "nicknamePopup", style: "display: flex;" },
-    MyFramework.DOM('img',{ src: 'images/logo.png', alt: 'Bomberman' } ),
+    MyFramework.DOM("img", { src: "images/logo.png", alt: "Bomberman" }),
     MyFramework.DOM("p", null, "Enter your nickname to start the game"),
     nicknameInput,
     submitButton
   );
   if (container) {
-    container.innerHTML = "";
-    container.appendChild(nicknamePopup);
+    container.replaceChild(nicknamePopup,document.getElementById("landingPage"));
   }
-  document.getElementById('nicknameInput').addEventListener('keyup', function(event) {
-    if (event.key === 'Enter') {
+  document
+    .getElementById("nicknameInput")
+    .addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
         submitNickname();
-    }
-});
+      }
+    });
 }
 
 // Submit the nickname and navigate to the waiting area
@@ -242,11 +250,54 @@ function startCountdown() {
       "countdownTimer"
     ).textContent = `Starting in ${countdown} seconds...`;
     if (countdown === 0) {
-      clearInterval(timer); 
+      clearInterval(timer);
       showGameGrid();
-      buildGame(game.gameGrid);     
+      buildGame(game.gameGrid);
     }
   }, 1000);
+}
+
+// chat box
+function showChatBox() {
+  const chatBox = MyFramework.DOM(
+    "div",
+    { id: "chatBox" },
+    MyFramework.DOM("div", { id: "chatMessages" }),
+    MyFramework.DOM("input", {
+      id: "chatInput",
+      type: "text",
+      placeholder: "Type your message here...",
+    }),
+    MyFramework.DOM(
+      "button",
+      { id: "sendMessageButton", onclick: sendMessage },
+      "Send"
+    )
+  );
+
+  container.appendChild(chatBox);
+
+  document.getElementById("chatInput").addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      sendMessage();
+    }
+  });
+}
+
+function sendMessage() {
+  const message = document.getElementById("chatInput").value.trim();
+  if (message) {
+    if (ws) {
+      ws.send(
+        JSON.stringify({
+          message: {
+            type: "chat",
+            message,
+          },
+        })
+      );
+    }
+  }
 }
 
 // Start the app with the landing page
