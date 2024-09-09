@@ -8,11 +8,13 @@ const [playersReady, setPlayersReady] = MyFramework.State([]);
 import { changeDirection,setKeyUp } from './structure/bombermanMoves.js';
 
 // set the countdown to the minimum time or maximum time
-let countdown = minimumTime;
+// let countdown = minimumTime;
+const [countdown, setCountdown] = MyFramework.State(10);
 
 // set the needed players
 let neededPlayers = minimumPlayers ; // for mini of 2 players
 // let neededPlayers = 1 ; // for testing with 1 player
+let timer;
 
 // Get the container element
 export const container = document.getElementById("app");
@@ -187,7 +189,7 @@ function showWaitingArea() {
   const countdownTimer = MyFramework.DOM(
     "h1",
     { id: "countdownTimer" },
-    `Starting in ${countdown} seconds...`
+    `Starting in ${countdown()} seconds...`
   );
 
   const instructionsContent = [
@@ -239,17 +241,19 @@ function showWaitingArea() {
 
 // Start the countdown timer
 function startCountdown() {
+  // clear the timer if it's already running and set the countdown
+  clearInterval(timer);
+  setCountdown(maximumTime);
 // hide countPlayers,waitingMessage
-  // document.getElementById("countPlayers").style.display = "none";
   document.getElementById("waitingMessage").style.display = "none";
   // show countdownTimer
   document.getElementById("countdownTimer").style.display = "block";
-  const timer = setInterval(() => {
-    countdown--;
+   timer = setInterval(() => {
+    setCountdown(countdown() - 1);
     document.getElementById(
       "countdownTimer"
-    ).textContent = `Starting in ${countdown} seconds...`;
-    if (countdown === 0) {
+    ).textContent = `Starting in ${countdown()} seconds...`;
+    if (countdown() === 0) {
       clearInterval(timer);
       showGameGrid();
       buildGame(game.gameGrid);
