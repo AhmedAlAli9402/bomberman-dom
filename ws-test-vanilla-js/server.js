@@ -4,19 +4,24 @@ const http = require("http");
 const WebSocket = require("ws");
 const fs = require("fs");
 const path = require("path");
+
 // Create an HTTP server
 const server = http.createServer();
 let chatMessages = [];
+
 // Create a WebSocket server and attach it to the HTTP server
 const wss = new WebSocket.Server({ server });
+
 // Map to store clients' connection information (WebSocket connection and nickname)
 let clients = new Map();
 let gameGrid = new Map();
 
 gameGrid = buildGameObject();
+
 // Handle WebSocket connections
 wss.on("connection", (ws) => {
   console.log("Client connected");
+
   // Handle incoming messages
   ws.on("message", (message) => {
     let data;
@@ -35,6 +40,15 @@ wss.on("connection", (ws) => {
 
     // If the client is sending their nickname on first connection
     if (data.nickname && !clients.has(ws)) {
+      // Check if the nickname is already taken and add a number to it
+      if (Array.from(clients.values()).includes(data.nickname)) {
+        let i = 1;
+        while (Array.from(clients.values()).includes(data.nickname + i)) {
+          i++;
+        }
+        data.nickname = data.nickname + i;
+      }
+
       // Store the nickname in the map with the WebSocket connection
       clients.set(ws, data.nickname);
       ws.nickname = data.nickname; // Store nickname in the WebSocket object for future reference
@@ -58,13 +72,12 @@ wss.on("connection", (ws) => {
     // If the client sends a regular message, broadcast it to all clients
     if (clients.has(ws) && data.message) {
       const nickname = clients.get(ws);
-      // get user id as the index of the client in the map
+      // Get user id as the index of the client in the map
       const userId = Array.from(clients.keys()).indexOf(ws);
       let broadcast = {};
       console.log("111ID", userId, nickname, data.message.type);
 
       if (data.message.type === "move") {
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         console.log("move", nickname, data.message);
         const { direction } = data.message;
         broadcast = {
@@ -72,19 +85,14 @@ wss.on("connection", (ws) => {
           id: userId,
           direction: direction,
         };
-
         console.log("move-broadcast", broadcast);
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       } else if (data.message.type === "keyUp") {
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         console.log("keyUp", nickname, data.message);
         broadcast = {
           type: "keyUp",
           id: userId,
         };
-
         console.log("keyUp-broadcast", broadcast);
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       } else if (data.message.type === "chat") {
         chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
         broadcast = {
@@ -109,8 +117,14 @@ wss.on("connection", (ws) => {
     console.log(`Client disconnected: ${ws.nickname}`);
     clients.delete(ws); // Remove the client from the map on disconnect
   });
+
+  // Handle WebSocket errors
+  ws.on("error", (error) => {
+    console.error(`WebSocket error for client ${ws.nickname}:`, error);
+  });
 });
 
+// Serve the index.html file
 const index = fs.readFileSync(path.join(__dirname, "index.html"));
 
 // Start the HTTP server
@@ -122,6 +136,12 @@ server.listen(8080, () => {
   });
 });
 
+// Handle WebSocket server errors
+wss.on("error", (error) => {
+  console.error("WebSocket server error:", error);
+});
+
+// Function to build the game object
 function buildGameObject() {
   const height = 17;
   const width = 23;
@@ -134,7 +154,7 @@ function buildGameObject() {
     width * height - width * 2 + 1,
     width * height - width - 2,
   ];
-  // always keep theses squares empty
+  // Always keep these squares empty
   const keepEmpty = [
     width + 2,
     width * 2 + 1,
@@ -213,6 +233,7 @@ function buildGameObject() {
   return gameGrid;
 }
 
+// Function to get a random index
 function getRandomIndex(length) {
   return Math.floor(Math.random() * length);
 }
