@@ -78,9 +78,7 @@ function checkIfPlayerInBlastRadius(explosionPosition) {
 function killPlayer(bomberman, playerId) {
     bomberman.classList.add('dead');
     let recoveryPosition =players[playerId].startPosition
-    console.log(availableSquares[recoveryPosition])
     if (availableSquares[recoveryPosition].childNodes.length > 0) {
-        console.log('nope')
         for (let i=0;i<players.length;i++){
             if (availableSquares[players[i].startPosition].length === 0){ {
                 recoveryPosition = players[i].startPosition;
