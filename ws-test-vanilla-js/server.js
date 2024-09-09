@@ -157,7 +157,7 @@ wss.on("error", (error) => {
 function buildGameObject() {
   const height = 17;
   const width = 23;
-  const numberOfBreakableWalls = 60;
+  const numberOfBreakableWalls = 100;
   const numberOfPowerUps = 50;
   const powerUps = ["powerBomb", "extraBomb", "skate"];
   const playerStartPositions = [
@@ -170,9 +170,10 @@ function buildGameObject() {
   const keepEmpty = [
     width + 2,
     width * 2 + 1,
+    width * 2 - 3,
     width * 3 - 2,
     width * height - width * 2 + 2,
-    width * height - width * 3 + 2,
+    width * height - width * 3 + 1,
     width * height - width - 3,
     width * height - width * 2 - 2,
   ];
