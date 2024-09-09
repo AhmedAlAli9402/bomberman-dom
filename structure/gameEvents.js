@@ -53,7 +53,7 @@ function explosion(bombPosition, powerbomb) {
             }
         }
     }
-
+    checkIfPlayerInBlastRadius(bombPosition);
     directions.forEach((explosionPosition) => {
         checkIfPlayerInBlastRadius(bombPosition+explosionPosition);
         const targetSquare = availableSquares[bombPosition + explosionPosition];
@@ -93,6 +93,6 @@ function killPlayer(bomberman, playerId) {
 } else {
     sendplayerGameOver(players[playerId].nickname); 
 }
-    ;}, 500)
+    ;}, 1)
     updateHUD(playerId)
 }
