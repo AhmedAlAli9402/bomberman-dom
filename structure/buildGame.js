@@ -37,7 +37,7 @@ export function buildGame(gameGrid){
         const square = document.getElementById(index);
         square.classList.add(powerUp);
     }
-    
+
     for (const { index, powerUp } of gameGrid.powerUp) {
         createPowerUp(index, powerUp);
     }
@@ -52,7 +52,6 @@ export function buildGame(gameGrid){
     });
 
     // Ensure no blocked initial paths
-    removeBlockedPaths(availableSquares);
     startTimer(countdown());
     initializePlayer();
 }
@@ -60,30 +59,6 @@ export function buildGame(gameGrid){
 function initializePlayer(connection) {
     document.addEventListener('keydown', ((ev) => sendPlayerMove(ev)));
     document.addEventListener('keyup', sendkeyUp);
-}
-
-function removeBlockedPaths(availableSquares) {
-    const pathsToCheck = [
-        { idx1: width + 2, idx2: (width * 2) + 1 }, // top left corner
-        { idx1: width + 2, idx2: (width * 3) + 1 },
-        { idx1: width + 3, idx2: (width * 2) + 1 },
-        { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*3)+1 }, // bottom left corner
-        { idx1: (width*height)-(width*2)+2, idx2: (width*height)-(width*4)+1 },
-        { idx1: (width*height)-(width*4)+1, idx2: (width*height)-(width*3)+1 },
-        { idx1: (width*2)-3, idx2: (width*3)-2}, // top right corner
-        { idx1: (width*2)-4, idx2: (width*3)-2},
-        { idx1: (width*2)-3, idx2: (width*4)-2},
-        { idx1: (width*height)-width-3, idx2: (width*height)-(width*2)-2 }, // bottom right corner
-        { idx1: (width*height)-width-4, idx2: (width*height)-(width*2)-2 },
-        { idx1: (width*height)-width-3, idx2: (width*height)-(width*3)-2 }
-    ];
-
-    pathsToCheck.forEach(({ idx1, idx2 }) => {
-        // console.log(idx1, idx2)
-        if (availableSquares[idx1].classList.contains('breakableWall') && availableSquares[idx2].classList.contains('breakableWall')) {
-            availableSquares[idx2].classList.remove('breakableWall');
-        }
-    });
 }
 
 // Show the game grid and HUD
@@ -95,22 +70,21 @@ export function showGameGrid() {
       createHUD(),  // Adding the HUD to the game grid
       MyFramework.DOM("div", { id: "grid", class: "grid" })
     );
-  
-    container.innerHTML = "";
+    container.removeChild(document.getElementById('waitingArea'));
     container.appendChild(gameGrid);
 }
-  
+
 // Create the HUD with player lives and time countdown
 function createHUD() {
     // Filter players that have a nickname, then map to create lives display
     const livesDisplay = players.filter(player => player.nickname).map((player) => {
         return MyFramework.DOM(
           "div",
-          {}, 
+          {},
           `${player.nickname} ❤️: ${player.lives > 0 ? player.lives : '💔'}`
         );
       });
-      
+
     const hud = MyFramework.DOM(
       "div",
       { id: "hud", style: "display: flex; justify-content: space-between;" },
@@ -119,11 +93,11 @@ function createHUD() {
       ...livesDisplay
     );
 
-    
-  
+
+
     return hud;
 }
-  
+
 // Function to update the HUD when player lives change
 export function updateHUD(playerId) {
     const timeDisplay = document.querySelector('#hud > div');
@@ -139,7 +113,7 @@ export function updateHUD(playerId) {
     players.forEach((player, index) => {
         if (player.nickname !== ''){
             player.lives = lives[index];
-            
+
             if (player.lives === 0) {
                 livesDisplay[index].textContent = `${player.nickname} 💔`;
                 sendplayerGameOver(index)
@@ -175,11 +149,11 @@ function endGame() {
     console.log('Game over!');
     const gameGrid = document.getElementById('gameGrid');
     gameGrid.innerHTML = '';  // Clear the game grid
-    
+
     // Display "Game Over" message
     const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
     gameGrid.appendChild(gameOver);
-    
+
     // Determine the winner with the most lives remaining (if any) otherwise, no winner if all players have 0 lives or equal lives
     const winnerIndex = players.reduce((winnerIndex, player, index) => {
         return player.lives > players[winnerIndex].lives ? index : winnerIndex;

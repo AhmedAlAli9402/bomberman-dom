@@ -15,24 +15,24 @@
     max-width: 500px; /* Adjust width as needed */
     font-family: Arial, sans-serif;
   }
-  
+
   /* Styling for HUD elements */
   #hud div {
     margin: 0 10px;
   }
-  
+
   /* Countdown timer styling */
   #hud div:first-child {
     font-size: 16px;
     font-weight: bold;
   }
-  
+
   /* Player lives styling */
   #hud div:nth-child(n+2) {
     font-size: 16px;
     font-weight: normal;
   }
-  
+
   /* Add responsiveness */
   @media (max-width: 600px) {
     #hud {
@@ -42,12 +42,12 @@
       flex-direction: column;
       align-items: center;
     }
-  
+
     #hud div {
       margin: 5px 0;
     }
   }
-  
+
   /* ///////////////////////////////////////////// */
   #waitingArea {
     display: none;
@@ -58,19 +58,19 @@
     background-color: #f2f2f2;
     font-family: 'Roboto', sans-serif;
   }
-  
+
   #waitingArea p {
     font-size: 1.2em;
     color: #333;
   }
-  
+
 
   #countdownTimer {
     display: none;
     font-weight: bold;
     color: #d9534f;
   }
-  
+
   #instructionsPage {
     display: flex;
     flex-direction: column;
@@ -78,18 +78,18 @@
     width: 100%;
     max-width: 800px;
   }
-  
+
   .instruction-title {
     font-size: 16px;
     color: #333;
   }
-  
+
   .instruction-objective {
     font-size: 1.4em;
     color: #666;
     text-align: center;
   }
-  
+
   .instruction-item {
     display: flex;
     align-items: center;
@@ -101,25 +101,25 @@
     width: 100%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   .instruction-item img {
     width: 60px;
     height: 60px;
     margin-right: 20px;
   }
-  
+
   .instruction-item p {
     font-size: 1.1em;
     color: #333;
     margin: 0;
   }
-  
+
   @media (max-width: 600px) {
     .instruction-item {
       flex-direction: column;
       text-align: center;
     }
-  
+
     .instruction-item img {
       margin-bottom: 10px;
     }
@@ -131,14 +131,14 @@
     margin-bottom: 20px;
     text-shadow: 2px 2px #000;
   }
-  
+
   .winner-display {
     font-size: 2em;
     color: #5cb85c;
     text-shadow: 1px 1px #333;
     margin-top: 10px;
   }
-  
+
   #gameGrid h1, #gameGrid h2 {
     font-family: 'Arial', sans-serif;
     text-align: center;
@@ -166,14 +166,14 @@ a {
 }
 #landingPage , #nicknamePopup , #gameGrid{
     display: none;
-    position: flex; 
+    position: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #f2f2f2;
     font-family: 'Roboto', sans-serif;
-    
+
 }
 
 #logo{
@@ -205,7 +205,7 @@ a {
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  
+
   #startGameButton, #submitUsernameButton:hover {
     background-color: #e68900;
   }
@@ -216,7 +216,7 @@ a {
     width:1114px;
     height:820px;
     display: flex;
-    position: flex; 
+    position: flex;
     flex-wrap:wrap;
     background: url('./images/wall/walkable.png') no-repeat;
     background-size: 1500px;
@@ -454,33 +454,33 @@ div .sideExplosion {
         background: url('./images/sideExplosion.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
-    
+
 div .powerBomb {
         background: url('./images/powerUps/PowerBombPowerUp.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
-    
+
 div .extraBomb {
         background: url('./images/powerUps/extraBombPowerUp.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
-    
+
 div .skate {
         background: url('./images/powerUps/speedPowerUp.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
-    
+
 div .breakableWall {
         background: url('./images/wall/wall100.png') no-repeat;
         background-size: 48.4px 48.1px;
     }
-    
+
 div .breakWall {
         animation-name:breakWall;
         animation-duration: 0.5s;
         font-size:10px
     }
-    
+
     @keyframes breakWall {
         100%   {background: url('./images/wall/wall0.png') no-repeat;background-size: 48.4px 48.1px;}
         80%  {background: url('./images/wall/wall10.png') no-repeat;background-size: 48.4px 48.1px;}
@@ -504,3 +504,97 @@ div .dead {
 0%   {background: url('./images/dying25.png') no-repeat;background-size: 48.4px 48.1px;}
 }
 
+
+#chatBox {
+    display: flex;
+    position:fixed;
+    bottom: 0;
+    right: 0;
+    width: 20vw;
+    margin: 1%;
+    padding: 1%;
+    height: 70vh;
+    background-color: #f2f2f2;
+    border-radius: 10px 0 0 0;
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.1);
+    font-family: "Roboto", sans-serif;
+  }
+
+  #chatBox h2 {
+    font-size: 1.2em;
+    color: #333;
+    text-align: center;
+    margin: 10px 0;
+  }
+
+  #chatBox ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    height: 300px;
+    overflow-y: scroll;
+  }
+
+  #chatBox li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  #chatBox li:last-child {
+    border-bottom: none;
+  }
+
+  #chatBox input {
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-radius:10px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+
+  #chatBox input:focus {
+    outline: none;
+  }
+
+  #chatBox button {
+    height: 50px;
+    padding: 2px 10px;
+    margin-left: 5px;
+    background-color: #ff9800;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  #chatBox button:hover {
+    background-color: #e68900;
+  }
+
+  /* Add responsiveness */
+  @media (max-width: 600px) {
+    #chatBox {
+      width: 100%;
+      height: 200px;
+      border-radius: 0;
+    }
+
+    #chatBox h2 {
+      font-size: 1em;
+    }
+
+    #chatBox ul {
+      height: 150px;
+    }
+
+    #chatBox input {
+      height: 40px;
+    }
+    /* add responsiveness to the application */
+
+  }
