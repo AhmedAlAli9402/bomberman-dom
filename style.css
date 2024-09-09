@@ -219,7 +219,7 @@ a {
     position: flex;
     flex-wrap:wrap;
     background: url('./images/wall/walkable.png') no-repeat;
-    background-size: 1500px;
+    background-size: cover; /* Adjust background size to cover the grid */
     border-radius: 20px;
     margin-left: 150px;
     transform: translateZ(1);

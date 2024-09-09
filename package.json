@@ -1,7 +1,7 @@
 {
   "scripts": {
     "compile": "tsc --watch &",
-    "dev": "npm run compile && vite"
+    "dev": "npm run compile && vite --host"
   },
   "type": "module",
   "dependencies": {

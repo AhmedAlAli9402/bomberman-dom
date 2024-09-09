@@ -22,6 +22,9 @@ export const maximumPlayers = 4;
 export const minimumTime = 3;
 export const maximumTime = 20;
 
+const host = 'localhost'; // change to the server IP address
+export const wsUrl = 'ws://' + host + ':8080';
+
 const gameDuration = 180; // 3 minutes
 // const gameDuration = 1; // testing game over with 1 second
 // the countdown for the riming of the game

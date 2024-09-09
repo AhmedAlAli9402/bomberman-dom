@@ -2,7 +2,7 @@
 
 import { MyFramework } from "./vFw/framework.js";
 import { showGameGrid ,buildGame, deinitializePlayer } from "./structure/buildGame.js";
-import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game } from "./structure/model.js";
+import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game ,wsUrl } from "./structure/model.js";
 import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 import { changeDirection,setKeyUp, playerGameOver } from './structure/bombermanMoves.js';
@@ -22,7 +22,7 @@ let ws;
 let chatMessages = [];
 
 function connectToWebSocket(nickname) {
-  ws = new WebSocket("ws://localhost:8080");
+  ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {
     console.log("Connected to WebSocket server");
