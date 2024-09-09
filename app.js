@@ -1,7 +1,7 @@
 // app.js
 
 import { MyFramework } from "./vFw/framework.js";
-import { showGameGrid ,buildGame } from "./structure/buildGame.js";
+import { showGameGrid ,buildGame, deinitializePlayer } from "./structure/buildGame.js";
 import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game } from "./structure/model.js";
 import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
@@ -66,9 +66,9 @@ let ws;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     } else if (data.type === 'gameState') {
       // Handle syncing the game state on new connection
-    } else if (data.type === 'gameover'){
-      const { id } = data;
-      playerGameOver(id)
+    } else if (data.type === 'youDied') {
+      deinitializePlayer()
+      playerGameOver()
     }
   };
 
@@ -100,12 +100,13 @@ let ws;
       }
     }
     
-    export  function sendplayerGameOver() {
+    export function sendplayerGameOver(nickname) {
       console.log('sendplayerGameOver' );
       if (ws) {
         ws.send(JSON.stringify({
           message: {
-            type: 'gameover'
+            type: 'gameover',
+            nickname: nickname
           }
         }));
       }

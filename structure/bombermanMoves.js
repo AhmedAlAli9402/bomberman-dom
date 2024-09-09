@@ -1,16 +1,14 @@
 // structure/bombermanMoves.js
-import { availableSquares } from './buildGame.js';
+import { availableSquares, deinitializePlayer } from './buildGame.js';
 import { breakWall } from './gameEvents.js';
 import { width, height, game, powerUps } from './model.js';
+import { MyFramework } from '../vFw/framework.js';
 
-// let keyStillDown = game.players.keyStillDown;
-let bombDropped = 0;
-// let keyStillDownForSkate = 0;
 let players = game.players;
 
 export function changeDirection(e, id) {
     console.log(e, id)
-    if (!players[id].keyStillDown || (players[id].powerUp === "skate" && keyStillDownForSkate < 4)) {
+    if (!players[id].keyStillDown || (players[id].powerUp === "skate" && players[id].keyStillDownForSkate < 4)) {
         const directions = {
             'ArrowUp': 'up',
             'ArrowRight': 'right',
@@ -65,12 +63,12 @@ export function setKeyUp(id) {
 }
 
 function dropBomb(id) {
-    if ((bombDropped >= 1 && players[id].powerUp !=="extraBomb") || (bombDropped >= 2 && players[id].powerUp === "extraBomb")) return;
+    if ((players[id].bombDropped >= 1 && players[id].powerUp !=="extraBomb") || (players[id].bombDropped >= 2 && players[id].powerUp === "extraBomb")) return;
     const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
     if (!bomberman) return;
 
     const bombermanIndex = availableSquares.indexOf(bomberman);
-    bombDropped++
+    players[id].bombDropped++
     if (players[id].powerUp === 'powerBomb') {
         availableSquares[bombermanIndex].classList.add('powerBombDropped');
     } else {
@@ -78,7 +76,7 @@ function dropBomb(id) {
 }
     setTimeout(() => {
         breakWall(String(bombermanIndex));
-        bombDropped--;
+        players[id].bombDropped--;
     }, 3000);
 }
 
@@ -93,13 +91,10 @@ function AddPowerUpToPlayer(powerUp, id) {
     }
 }
 
-export function playerGameOver(id){
-    const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
-    bomberman.removeAttribute('class');
+export function playerGameOver(){
     const gameGrid = document.getElementById('gameGrid');
-    
     // Display "Game Over" message
-    const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
-    gameGrid.appendChild(gameOver);
-    
+    deinitializePlayer();
+        const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
+        gameGrid.appendChild(gameOver);
 }

@@ -3,6 +3,7 @@
 import { availableSquares } from './buildGame.js';
 import { width, game } from './model.js';
 import { updateHUD } from './buildGame.js';
+import { sendplayerGameOver } from '../app.js';
 
 let players = game.players;
 export function breakWall(id) {
@@ -87,6 +88,11 @@ function killPlayer(bomberman, playerId) {
         }
     }}
     setTimeout(() => {bomberman.removeAttribute('class');
-    availableSquares[recoveryPosition].classList.add(`bomberman${players[playerId].color}GoingDown`);}, 500)
+        if (players[playerId].lives !== 0) {
+    availableSquares[recoveryPosition].classList.add(`bomberman${players[playerId].color}GoingDown`)
+} else {
+    sendplayerGameOver(players[playerId].nickname); 
+}
+    ;}, 500)
     updateHUD(playerId)
 }

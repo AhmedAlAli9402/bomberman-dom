@@ -42,7 +42,7 @@ wss.on('connection', (ws) => {
                 message: `Welcome, ${data.nickname}!`,
                 clients: Array.from(clients.values()),
                 numberofClients: wss.clients.size,
-                gameGrid: gameGrid
+                gameGrid: gameGrid,
             };
             for (let client of wss.clients) {
                 client.send(JSON.stringify(welcomeMessage));
@@ -56,8 +56,6 @@ wss.on('connection', (ws) => {
             // get user id as the index of the client in the map
             const userId = Array.from(clients.keys()).indexOf(ws);
             let broadcast = {};
-            console.log('111ID',userId,nickname,data.message.type);
-
              if (data.message.type === 'move') {
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 console.log('move',nickname,data.message);
@@ -81,10 +79,12 @@ wss.on('connection', (ws) => {
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             }else if (data.message.type === 'gameover') {
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    broadcast = {
-                    type: 'gameover',
-                    id: userId
-                };
+                if (nickname === data.message.nickname){
+                broadcast = {
+                    type: 'youDied'
+                }
+                ws.send(JSON.stringify(broadcast));
+                }
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       } else if (data.message.type === "chat") {
         console.log("chat", nickname, data.message);
@@ -96,13 +96,15 @@ wss.on('connection', (ws) => {
       }
 
             // Broadcast the message to all connected clients
+        if (data.message.type !== "gameover"){
             wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
                     client.send(JSON.stringify(broadcast));
                 }
             });
-            return;
         }
+        return;
+    }    
     });
 
     // Handle client disconnection

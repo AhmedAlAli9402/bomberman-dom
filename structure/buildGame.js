@@ -56,9 +56,14 @@ export function buildGame(gameGrid){
     initializePlayer();
 }
 
-function initializePlayer(connection) {
+function initializePlayer() {
     document.addEventListener('keydown', ((ev) => sendPlayerMove(ev)));
-    document.addEventListener('keyup', sendkeyUp);
+    document.addEventListener('keyup', sendkeyUp, true);
+}
+
+export function deinitializePlayer() {
+    document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)), true);
+        document.removeEventListener('keyup', setKeyUp, true);
 }
 
 // Show the game grid and HUD
@@ -116,7 +121,6 @@ export function updateHUD(playerId) {
 
             if (player.lives === 0) {
                 livesDisplay[index].textContent = `${player.nickname} 💔`;
-                sendplayerGameOver(index)
             }else{
                 livesDisplay[index].textContent = `${player.nickname} ❤️: ${lives[index]}`;
             }
@@ -137,7 +141,7 @@ function startTimer(time) {
         }
         updateHUD();
         // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
-        if (players.filter(player => player.lives > 0).length === 1) {
+        if (players.filter(player => player.lives > 0).length === 0) {
             clearInterval(timer);
             endGame();
         }
