@@ -1,8 +1,7 @@
 // structure/buildGame.js
 
 import { MyFramework } from '../vFw/framework.js';
-import { changeDirection, setKeyUp } from './bombermanMoves.js';
-import { height, width, game, powerUps, numberOfBreakableWalls, numberOfPowerUps } from './model.js';
+import { game } from './model.js';
 import { formatTime } from './helpers.js';
 import { container  } from '../app.js';
 import {countdown, setCountdown} from './model.js';
@@ -57,13 +56,27 @@ export function buildGame(gameGrid){
 }
 
 function initializePlayer() {
-    document.addEventListener('keydown', ((ev) => sendPlayerMove(ev)));
-    document.addEventListener('keyup', sendkeyUp, true);
+    // Add event listeners for player movement
+    document.addEventListener('keydown', (event) => {
+        const key = event.key;
+        if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight' || key === 'x') {
+            sendPlayerMove(event);
+        }
+    }
+    );
+
+    document.addEventListener('keyup', (event) => {
+        const key = event.key;
+        if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight'|| key === 'x') {
+            sendkeyUp();
+        }
+    }
+    );
 }
 
 export function deinitializePlayer() {
-    document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)), true);
-        document.removeEventListener('keyup', setKeyUp, true);
+    document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)));
+        document.removeEventListener('keyup', sendkeyUp);
 }
 
 // Show the game grid and HUD
