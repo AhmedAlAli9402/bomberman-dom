@@ -64,7 +64,7 @@ function connectToWebSocket(nickname) {
     } else if (data.type === 'checkIfPlayerInBlast') {
       let userId = data.id;
       let bombPosition = data.bombPosition
-      checkIfPlayerInBlastRadius(userId, bombPosition, directions);
+      checkIfPlayerInBlastRadius(userId, bombPosition);
     }else if (data.type === 'killPlayer') {
       const { id } = data;
       killPlayer(id);
