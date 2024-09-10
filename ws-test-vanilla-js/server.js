@@ -93,9 +93,9 @@ wss.on("connection", (ws) => {
           id: userId,
         };
         console.log("keyUp-broadcast", broadcast);
-        } else if (data.message.type === "checkIfPlayerInBlast") {
+        } else if (data.message.type === "bombExplosion") {
           broadcast = {
-            type: "checkIfPlayerInBlast",
+            type: "bombExplosion",
             bombPosition:data.bombPosition,
             id: userId,
           }

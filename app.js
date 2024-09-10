@@ -6,7 +6,7 @@ import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game ,wsUrl
 import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 import { changeDirection,setKeyUp, playerGameOver, killPlayer } from './structure/bombermanMoves.js';
-import { checkIfPlayerInBlastRadius } from "./structure/gameEvents.js";
+import { bombExplosion } from "./structure/gameEvents.js";
 
 // set the countdown to the minimum time or maximum time
 // let countdown = minimumTime;
@@ -61,10 +61,10 @@ function connectToWebSocket(nickname) {
       console.log("Chat message received", chatMessages);
     } else if (data.type === "gameState") {
       // Handle syncing the game state on new connection
-    } else if (data.type === 'checkIfPlayerInBlast') {
+    } else if (data.type === 'bombExplosion') {
       let userId = data.id;
       let bombPosition = data.bombPosition
-      checkIfPlayerInBlastRadius(userId, bombPosition);
+      bombExplosion(userId, bombPosition);
     }else if (data.type === 'killPlayer') {
       const { id } = data;
       killPlayer(id);
@@ -106,12 +106,12 @@ export function sendPlayerMove(direction) {
     }
     
         
-    export function sendCheckPlayerInBlastRadius(bombPosition) {
+    export function sendBombExplosion(bombPosition) {
       console.log('checkPlayer' );
       if (ws) {
         ws.send(JSON.stringify({
           message: {
-            type: 'checkIfPlayerInBlast',
+            type: 'bombExplosion',
             bombPosition:bombPosition
           }
         }));

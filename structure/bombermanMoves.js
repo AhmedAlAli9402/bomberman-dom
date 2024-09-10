@@ -2,7 +2,7 @@
 import { availableSquares, deinitializePlayer } from './buildGame.js';
 import { width, height, game, powerUps } from './model.js';
 import { MyFramework } from '../vFw/framework.js';
-import { sendCheckPlayerInBlastRadius } from '../app.js';
+import { sendBombExplosion } from '../app.js';
 
 let players = game.players;
 
@@ -75,7 +75,7 @@ function dropBomb(id) {
     availableSquares[bombermanIndex].classList.add('bomb');
 }
     setTimeout(() => {
-        sendCheckPlayerInBlastRadius(bombermanIndex)
+        sendBombExplosion(bombermanIndex)
         players[id].bombDropped--;
     }, 3000);
 }

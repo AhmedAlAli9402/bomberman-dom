@@ -7,7 +7,7 @@ import { sendplayerGameOver, sendKillPlayer } from '../app.js';
 
 let players = game.players;
 
-export function checkIfPlayerInBlastRadius(userId, bombPosition) {
+export function bombExplosion(userId, bombPosition) {
     let bomb = document.getElementById(bombPosition);
     let powerbomb = false
     if (!bomb.classList.contains('bomb')) {
