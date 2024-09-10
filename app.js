@@ -68,7 +68,7 @@ function connectToWebSocket(nickname) {
     }else if (data.type === 'killPlayer') {
       const { id } = data;
       killPlayer(id);
-    }else if (data.type === 'youDied') {
+    }else if (data.type === 'youLost') {
       deinitializePlayer()
       playerGameOver()
     } 
@@ -131,7 +131,6 @@ export function sendPlayerMove(direction) {
     }
     
     export function sendplayerGameOver(nickname) {
-      console.log('sendplayerGameOver' );
       if (ws) {
         ws.send(JSON.stringify({
           message: {

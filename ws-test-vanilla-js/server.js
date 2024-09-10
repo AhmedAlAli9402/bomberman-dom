@@ -108,7 +108,7 @@ wss.on("connection", (ws) => {
           }else if (data.message.type === 'gameover') {
                 if (nickname === data.message.nickname){
                 broadcast = {
-                    type: 'youDied'
+                    type: 'youLost'
                 }
                 ws.send(JSON.stringify(broadcast));
                 }
