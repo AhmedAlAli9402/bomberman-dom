@@ -5,8 +5,8 @@ import { showGameGrid ,buildGame, deinitializePlayer } from "./structure/buildGa
 import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game ,wsUrl } from "./structure/model.js";
 import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
-import { changeDirection,setKeyUp, playerGameOver, killPlayer } from './structure/bombermanMoves.js';
-import { bombExplosion } from "./structure/gameEvents.js";
+import { changeDirection,setKeyUp, playerGameOver} from './structure/bombermanMoves.js';
+import { checkIfPlayerInBlastRadius, killPlayer  } from "./structure/gameEvents.js";
 
 // set the countdown to the minimum time or maximum time
 // let countdown = minimumTime;
@@ -64,7 +64,8 @@ function connectToWebSocket(nickname) {
     } else if (data.type === 'bombExplosion') {
       let userId = data.id;
       let bombPosition = data.bombPosition
-      bombExplosion(userId, bombPosition);
+      let directions = data.directions
+      checkIfPlayerInBlastRadius(userId, bombPosition, directions);
     }else if (data.type === 'killPlayer') {
       const { id } = data;
       killPlayer(id);
@@ -104,15 +105,15 @@ export function sendPlayerMove(direction) {
         }));
       }
     }
-    
         
-    export function sendBombExplosion(bombPosition) {
+    export function sendBombExplosion(bombPosition, directions) {
       console.log('checkPlayer' );
       if (ws) {
         ws.send(JSON.stringify({
           message: {
             type: 'bombExplosion',
-            bombPosition:bombPosition
+            bombPosition:bombPosition,
+            directions:directions
           }
         }));
       }

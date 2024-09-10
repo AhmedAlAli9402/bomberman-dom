@@ -94,23 +94,25 @@ wss.on("connection", (ws) => {
         };
         console.log("keyUp-broadcast", broadcast);
         } else if (data.message.type === "bombExplosion") {
-          broadcast = {
+          let singleUserMessage = {
             type: "bombExplosion",
-            bombPosition:data.bombPosition,
+            bombPosition:data.message.bombPosition,
+            directions: data.message.directions,
             id: userId,
           }
+          ws.send(JSON.stringify(singleUserMessage));
         } else if (data.message.type === "killPlayer") {
           broadcast = {
             type: "killPlayer",
-            id: data.userId,
+            id: data.message.userId,
           };
           console.log("keyUp-broadcast", broadcast);
           }else if (data.message.type === 'gameover') {
                 if (nickname === data.message.nickname){
-                broadcast = {
+                let singleUserMessage = {
                     type: 'youLost'
                 }
-                ws.send(JSON.stringify(broadcast));
+                ws.send(JSON.stringify(singleUserMessage));
                 }
       } else if (data.message.type === "chat") {
         chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
@@ -122,7 +124,7 @@ wss.on("connection", (ws) => {
       }
 
             // Broadcast the message to all connected clients
-        if (data.message.type !== "gameover"){
+        if (broadcast){
             wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
                     client.send(JSON.stringify(broadcast));

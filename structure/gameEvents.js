@@ -7,20 +7,18 @@ import { sendplayerGameOver, sendKillPlayer } from '../app.js';
 
 let players = game.players;
 
-export function bombExplosion(userId, bombPosition) {
-    let bomb = document.getElementById(bombPosition);
+
+export function breakWall(id) {
+    let bomb = document.getElementById(id);
     let powerbomb = false
     if (!bomb.classList.contains('bomb')) {
         bomb = document.querySelector('.powerBombDropped');
         powerbomb = true;
-        bomb.classList.replace('powerBombDropped', 'explosion');
-    } else {
-        bomb.classList.replace("bomb", 'explosion');
     }
-    setTimeout(() => bomb.classList.remove('explosion'), 200);
-    const directions = [
-        -width, width, -1, 1
-    ];
+    if (!bomb) return;
+    const bombPosition = Number(bomb.getAttribute('id'));
+    let directions = [-1, 1, width, -width];
+
     if (powerbomb) {
         let powerbombDirections = [-width*2, width*2, -2, 2];
         for (let i = 0; i < 4; i++) {
@@ -28,30 +26,48 @@ export function bombExplosion(userId, bombPosition) {
                 directions.push(powerbombDirections[i]);                
             }
         }
-    }
-    const bomberman = document.querySelector(`.bomberman${players[userId].color}GoingUp, .bomberman${players[userId].color}GoingRight, .bomberman${players[userId].color}GoingDown, .bomberman${players[userId].color}GoingLeft`);
-    const bombermanIndex = availableSquares.indexOf(bomberman);
-    directions.forEach((explosionPosition) => {
-        const targetSquare = availableSquares[bombPosition + explosionPosition];
-        if (targetSquare && !targetSquare.classList.length) {
-            targetSquare.classList.add("sideExplosion");
-            setTimeout(() => targetSquare.classList.remove("sideExplosion"), 200);
-        } else if (square && square.classList.contains('breakableWall')) {
+        } 
+
+    directions.forEach((direction) => {
+        const square = availableSquares[bombPosition + direction];
+        if (square && square.classList.contains('breakableWall')) {
             square.classList.replace('breakableWall', 'breakWall');
             setTimeout(() => square.classList.remove('breakWall'), 500);
+        } else if (square && !square.classList.length) {
+            square.classList.add("sideExplosion");
+            setTimeout(() => square.classList.remove("sideExplosion"), 200);
         }
-    if (explosionPosition === bombermanIndex) {
-        sendKillPlayer(userId);
-    }});
-
-    if (bombPosition === bombermanIndex) {
-        sendKillPlayer(userId);
+    });
+    bomb.classList.replace("bomb", 'explosion');
+    if (powerbomb) {
+        bomb.classList.replace('powerBombDropped', 'explosion');
     }
+    setTimeout(() => bomb.classList.remove('explosion'), 200);
+    console.log(directions)
+    return directions;
 }
 
-export function killPlayer(bomberman, playerId) {
+
+export function checkIfPlayerInBlastRadius(userId, bombPosition, directions) {
+    const bomberman = document.querySelector(`.bomberman${players[userId].color}GoingUp, .bomberman${players[userId].color}GoingRight, .bomberman${players[userId].color}GoingDown, .bomberman${players[userId].color}GoingLeft`);
+    const bombermanIndex = availableSquares.indexOf(bomberman);
+    for (let i=0;i<directions.length;i++) {
+        let explosionPosition = bombPosition + directions[i];
+        console.log(explosionPosition, bombermanIndex)
+    if (explosionPosition === bombermanIndex) {
+        sendKillPlayer(userId);
+        return
+    }}
+    if (bombermanIndex === bombPosition) {
+        sendKillPlayer(userId);
+    }
+
+}
+
+export function killPlayer(userId) {
+    const bomberman = document.querySelector(`.bomberman${players[userId].color}GoingUp, .bomberman${players[userId].color}GoingRight, .bomberman${players[userId].color}GoingDown, .bomberman${players[userId].color}GoingLeft`);
     bomberman.classList.add('dead');
-    let recoveryPosition =players[playerId].startPosition
+    let recoveryPosition =players[userId].startPosition
     if (availableSquares[recoveryPosition].childNodes.length > 0) {
         for (let i=0;i<players.length;i++){
             if (availableSquares[players[i].startPosition].length === 0){ {
@@ -60,11 +76,11 @@ export function killPlayer(bomberman, playerId) {
         }
     }}
     setTimeout(() => {bomberman.removeAttribute('class');
-        if (players[playerId].lives !== 0) {
-    availableSquares[recoveryPosition].classList.add(`bomberman${players[playerId].color}GoingDown`)
+        if (players[userId].lives !== 0) {
+    availableSquares[recoveryPosition].classList.add(`bomberman${players[userId].color}GoingDown`)
 } else {
-    sendplayerGameOver(players[playerId].nickname); 
+    sendplayerGameOver(players[userId].nickname); 
 }
     ;}, 10)
-    updateHUD(playerId)
+    updateHUD(userId)
 }
