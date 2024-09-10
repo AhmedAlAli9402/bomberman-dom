@@ -81,13 +81,15 @@ export function deinitializePlayer() {
 
 // Show the game grid and HUD
 export function showGameGrid() {
-    const gameGrid = MyFramework.DOM(
-      "div",
-      { id: "gameGrid", style: "display: inherit;" },
-      MyFramework.DOM("h1", null, "Bomberman Game"),
-      createHUD(),  // Adding the HUD to the game grid
-      MyFramework.DOM("div", { id: "grid", class: "grid" })
+    const gameGrid =MyFramework.DOM('div',
+    { id: "gameGrid", style: "display: inherit;" },
+     MyFramework.DOM("div", { id: "grid", class: "grid" })
     );
+
+    document.getElementById("overlay").innerHTML = "";
+    document.getElementById("overlay").appendChild(MyFramework.DOM("div", { id: "container" },createHUD ));
+    document.getElementById("overlay").appendChild(MyFramework.DOM("h1", null, "Bomberman Game"));
+    document.getElementById("overlay").appendChild(MyFramework.DOM("img",{id:"logo", src: "images/logo.png", alt: "Bomberman" },null));
     container.removeChild(document.getElementById('waitingArea'));
     container.appendChild(gameGrid);
 }

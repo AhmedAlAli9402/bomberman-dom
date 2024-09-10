@@ -88,53 +88,54 @@ wss.on("connection", (ws) => {
       // Get user id as the index of the client in the map
       const userId = Array.from(Games[data.message.gameId].clients.keys()).indexOf(ws);
       let broadcast = {};
-      console.log("111ID", userId, nickname, data.message.type);
+      console.log("111ID", userId, nickname, data.message.messageType);
 
-      if (data.message.type === "move") {
+      if (data.message.messageType === "move") {
         console.log("move", nickname, data.message);
         const { direction } = data.message;
         broadcast = {
-          type: "move",
+          messageType: "move",
           id: userId,
           direction: direction,
         };
         console.log("move-broadcast", broadcast);
-      } else if (data.message.type === "keyUp") {
+      } else if (data.message.messageType === "keyUp") {
         console.log("keyUp", nickname, data.message);
         broadcast = {
-          type: "keyUp",
+          messageType: "keyUp",
           id: userId,
         };
         console.log("keyUp-broadcast", broadcast);
-      } else if (data.message.type === "bombExplosion") {
+      } else if (data.message.messageType === "bombExplosion") {
         let singleUserMessage = {
-          type: "bombExplosion",
+          messageType: "bombExplosion",
           bombPosition: data.message.bombPosition,
           directions: data.message.directions,
           id: userId,
         }
         ws.send(JSON.stringify(singleUserMessage));
-      } else if (data.message.type === "killPlayer") {
+      } else if (data.message.messageType === "killPlayer") {
         broadcast = {
-          type: "killPlayer",
+          messageType: "killPlayer",
           id: data.message.userId,
         };
         console.log("keyUp-broadcast", broadcast);
-      } else if (data.message.type === 'gameover') {
+      } else if (data.message.messageType === 'gameover') {
         if (nickname === data.message.nickname) {
           let singleUserMessage = {
-            type: 'youLost'
+            messageType: 'youLost'
           }
           ws.send(JSON.stringify(singleUserMessage));
         }
-      } else if (data.message.type === "chat") {
-        chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
+      } else if (data.message.messageType === "chat") {
+        Games[data.message.gameId].chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
+        // chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
         broadcast = {
           messageType: "chat",
           nickname: nickname,
           message: data.message,
         };
-      } else if (data.message.type === "newGame") {
+      } else if (data.message.messageType === "newGame") {
         console.log("checkifnew")
         const userId = Array.from(Games[data.message.gameId].clients.keys()).indexOf(ws);
         if (userId === 0) {

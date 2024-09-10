@@ -49,10 +49,10 @@ function connectToWebSocket(nickname) {
       }
       game.gameGrid = data.gameGrid;
       game.gameId = data.gameId;
-    } else if (data.type === "move") {
+    } else if (data.messageType === "move") {
       const { id, direction } = data;
       changeDirection(direction, id);
-    } else if (data.type === "keyUp") {
+    } else if (data.messageType === "keyUp") {
       const { id } = data;
       setKeyUp(id);
     } else if (data.messageType === "chat") {
@@ -60,17 +60,17 @@ function connectToWebSocket(nickname) {
       chatMessages.push(`${nickname}: ${chatMessage.message}`); // Store the message
       addChatMessage(`${nickname}: ${chatMessage.message}`); // Add to the chat
       console.log("Chat message received", chatMessages);
-    } else if (data.type === "gameState") {
+    } else if (data.messageType === "gameState") {
       // Handle syncing the game state on new connection
-    } else if (data.type === 'bombExplosion') {
+    } else if (data.messageType === 'bombExplosion') {
       let userId = data.id;
       let bombPosition = data.bombPosition
       let directions = data.directions
       checkIfPlayerInBlastRadius(userId, bombPosition, directions);
-    } else if (data.type === 'killPlayer') {
+    } else if (data.messageType === 'killPlayer') {
       const { id } = data;
       killPlayer(id);
-    } else if (data.type === 'youLost') {
+    } else if (data.messageType === 'youLost') {
       deinitializePlayer()
       playerGameOver()
     }
@@ -89,7 +89,7 @@ export function sendPlayerMove(direction) {
       JSON.stringify({
         message: {
           gameId: game.gameId,
-          type: "move",
+          messageType: "move",
           direction: direction.key,
         },
       })
@@ -103,7 +103,7 @@ export function sendkeyUp() {
     ws.send(JSON.stringify({
       message: {
         gameId: game.gameId,
-        type: 'keyUp'
+        messageType: 'keyUp'
       }
     }));
   }
@@ -114,7 +114,7 @@ export function sendBombExplosion(bombPosition, directions) {
   if (ws) {
     ws.send(JSON.stringify({
       message: {
-        type: 'bombExplosion',
+        messageType: 'bombExplosion',
         gameId: game.gameId,
         bombPosition: bombPosition,
         directions: directions
@@ -128,7 +128,7 @@ export function sendKillPlayer(userId) {
   if (ws) {
     ws.send(JSON.stringify({
       message: {
-        type: 'killPlayer',
+        messageType: 'killPlayer',
         gameId: game.gameId,
         userId: userId
       }
@@ -140,7 +140,7 @@ export function sendplayerGameOver(nickname) {
   if (ws) {
     ws.send(JSON.stringify({
       message: {
-        type: 'gameover',
+        messageType: 'gameover',
         nickname: nickname,
         gameId: game.gameId,
       }
@@ -169,6 +169,10 @@ export function showLandingPage() {
     )
   );
   if (container) {
+    document.getElementById("overlay").innerHTML = "";
+    document.getElementById("overlay").appendChild(MyFramework.DOM("h1", null, "Bomberman Game"));
+    document.getElementById("overlay").appendChild(MyFramework.DOM("img",{id:"logo", src: "images/logo.png", alt: "Bomberman" },null));
+
     container.replaceChild(landingPage, document.getElementById("landingPage"));
   }
 }
@@ -177,7 +181,7 @@ export function showLandingPage() {
 function showNicknamePopup() {
   const nicknameInput = MyFramework.DOM("input", {
     id: "nicknameInput",
-    type: "text",
+    messageType: "text",
     placeholder: "Enter your nickname",
   });
 
@@ -352,7 +356,7 @@ function showChatBox() {
       { id: "chatInputContainer" },
       MyFramework.DOM("input", {
         id: "chatInput",
-        type: "text",
+        messageType: "text",
         placeholder: "Type your message here...",
       }),
       MyFramework.DOM(
