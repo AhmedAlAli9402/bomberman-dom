@@ -1,8 +1,8 @@
 // structure/bombermanMoves.js
 import { availableSquares, deinitializePlayer } from './buildGame.js';
-import { breakWall } from './gameEvents.js';
 import { width, height, game, powerUps } from './model.js';
 import { MyFramework } from '../vFw/framework.js';
+import { sendCheckPlayerInBlastRadius } from '../app.js';
 
 let players = game.players;
 
@@ -75,7 +75,7 @@ function dropBomb(id) {
     availableSquares[bombermanIndex].classList.add('bomb');
 }
     setTimeout(() => {
-        breakWall(String(bombermanIndex));
+        sendCheckPlayerInBlastRadius(bombermanIndex)
         players[id].bombDropped--;
     }, 3000);
 }

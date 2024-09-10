@@ -5,7 +5,8 @@ import { showGameGrid ,buildGame, deinitializePlayer } from "./structure/buildGa
 import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game ,wsUrl } from "./structure/model.js";
 import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
-import { changeDirection,setKeyUp, playerGameOver } from './structure/bombermanMoves.js';
+import { changeDirection,setKeyUp, playerGameOver, killPlayer } from './structure/bombermanMoves.js';
+import { checkIfPlayerInBlastRadius } from "./structure/gameEvents.js";
 
 // set the countdown to the minimum time or maximum time
 // let countdown = minimumTime;
@@ -60,10 +61,17 @@ function connectToWebSocket(nickname) {
       console.log("Chat message received", chatMessages);
     } else if (data.type === "gameState") {
       // Handle syncing the game state on new connection
-    } else if (data.type === 'youDied') {
+    } else if (data.type === 'checkIfPlayerInBlast') {
+      let userId = data.id;
+      let bombPosition = data.bombPosition
+      checkIfPlayerInBlastRadius(userId, bombPosition, directions);
+    }else if (data.type === 'killPlayer') {
+      const { id } = data;
+      killPlayer(id);
+    }else if (data.type === 'youDied') {
       deinitializePlayer()
       playerGameOver()
-    }
+    } 
   };
 
   ws.onclose = () => {
@@ -97,6 +105,31 @@ export function sendPlayerMove(direction) {
       }
     }
     
+        
+    export function sendCheckPlayerInBlastRadius(bombPosition) {
+      console.log('checkPlayer' );
+      if (ws) {
+        ws.send(JSON.stringify({
+          message: {
+            type: 'checkIfPlayerInBlast',
+            bombPosition:bombPosition
+          }
+        }));
+      }
+    }
+
+    export function sendKillPlayer(userId) {
+      console.log('sendKillPlayer' );
+      if (ws) {
+        ws.send(JSON.stringify({
+          message: {
+            type: 'killPlayer',
+            userId: userId
+          }
+        }));
+      }
+    }
+    
     export function sendplayerGameOver(nickname) {
       console.log('sendplayerGameOver' );
       if (ws) {
@@ -108,8 +141,7 @@ export function sendPlayerMove(direction) {
         }));
       }
     }
-    
-// Define the landing page
+    // Define the landing page
 export function showLandingPage() {
   const landingPage = MyFramework.DOM(
     "div",

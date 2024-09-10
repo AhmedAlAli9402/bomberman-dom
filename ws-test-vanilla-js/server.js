@@ -93,7 +93,19 @@ wss.on("connection", (ws) => {
           id: userId,
         };
         console.log("keyUp-broadcast", broadcast);
-            }else if (data.message.type === 'gameover') {
+        } else if (data.message.type === "checkIfPlayerInBlast") {
+          broadcast = {
+            type: "checkIfPlayerInBlast",
+            bombPosition:data.bombPosition,
+            id: userId,
+          }
+        } else if (data.message.type === "killPlayer") {
+          broadcast = {
+            type: "killPlayer",
+            id: data.userId,
+          };
+          console.log("keyUp-broadcast", broadcast);
+          }else if (data.message.type === 'gameover') {
                 if (nickname === data.message.nickname){
                 broadcast = {
                     type: 'youDied'
