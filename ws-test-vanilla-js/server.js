@@ -13,17 +13,17 @@ const wss = new WebSocket.Server({ server });
 let Games = [];
 CreateNewGame()
 
-function CreateNewGame(){
+function CreateNewGame() {
 
-// let chatMessages = [];
-// Map to store clients' connection information (WebSocket connection and nickname)
-// let gameGrid = new Map();
+  // let chatMessages = [];
+  // Map to store clients' connection information (WebSocket connection and nickname)
+  // let gameGrid = new Map();
 
-Games.push({
-  clients: new Map(),
-   gameGrid: buildGameObject(),
- chatMessages: [],
-});
+  Games.push({
+    clients: new Map(),
+    gameGrid: buildGameObject(),
+    chatMessages: [],
+  });
 }
 // Handle WebSocket connections
 wss.on("connection", (ws) => {
@@ -44,20 +44,20 @@ wss.on("connection", (ws) => {
       );
       return;
     }
-    console.log(Games.length-1, "Games.length-1")
+    console.log(Games.length - 1, "Games.length-1")
     // If the client is sending their nickname on first connection
-    if (data.nickname && !Games[(Games.length-1)].clients.has(ws)) {
+    if (data.nickname && !Games[(Games.length - 1)].clients.has(ws)) {
       // Check if the nickname is already taken and add a number to it
-      if (Array.from(Games[(Games.length-1)].clients.values()).includes(data.nickname)) {
+      if (Array.from(Games[(Games.length - 1)].clients.values()).includes(data.nickname)) {
         let i = 1;
-        while (Array.from(Games[(Games.length-1)].clients.values()).includes(data.nickname + i)) {
+        while (Array.from(Games[(Games.length - 1)].clients.values()).includes(data.nickname + i)) {
           i++;
         }
         data.nickname = data.nickname + i;
       }
 
       // Store the nickname in the map with the WebSocket connection
-      Games[(Games.length-1)].clients.set(ws, data.nickname, Games.length-1);
+      Games[(Games.length - 1)].clients.set(ws, data.nickname, Games.length - 1);
       ws.nickname = data.nickname; // Store nickname in the WebSocket object for future reference
       ws.gameId = Games.length - 1;
       // Send a welcome message as JSON
@@ -65,17 +65,17 @@ wss.on("connection", (ws) => {
         messageType: "welcome",
         nickname: data.nickname,
         message: `Welcome, ${data.nickname}!`,
-        clients: Array.from(Games[(Games.length-1)].clients.values()),
-        numberofClients: Games[(Games.length-1)].clients.size,
-        gameGrid: Games[(Games.length-1)].gameGrid,
+        clients: Array.from(Games[(Games.length - 1)].clients.values()),
+        numberofClients: Games[(Games.length - 1)].clients.size,
+        gameGrid: Games[(Games.length - 1)].gameGrid,
         gameId: Games.length - 1,
-        loadMessages: Games[(Games.length-1)].chatMessages,
+        loadMessages: Games[(Games.length - 1)].chatMessages,
       };
       let length = Games.length - 1;
       console.log(String(message), "message")
 
       // brodcast to all clients.ws the welcome message using the map and normal for loop
-      for (const client of Games[(Games.length-1)].clients.keys()) {
+      for (const client of Games[(Games.length - 1)].clients.keys()) {
         client.send(JSON.stringify(welcomeMessage));
       }
 
@@ -106,27 +106,27 @@ wss.on("connection", (ws) => {
           id: userId,
         };
         console.log("keyUp-broadcast", broadcast);
-        } else if (data.message.type === "bombExplosion") {
+      } else if (data.message.type === "bombExplosion") {
+        let singleUserMessage = {
+          type: "bombExplosion",
+          bombPosition: data.message.bombPosition,
+          directions: data.message.directions,
+          id: userId,
+        }
+        ws.send(JSON.stringify(singleUserMessage));
+      } else if (data.message.type === "killPlayer") {
+        broadcast = {
+          type: "killPlayer",
+          id: data.message.userId,
+        };
+        console.log("keyUp-broadcast", broadcast);
+      } else if (data.message.type === 'gameover') {
+        if (nickname === data.message.nickname) {
           let singleUserMessage = {
-            type: "bombExplosion",
-            bombPosition:data.message.bombPosition,
-            directions: data.message.directions,
-            id: userId,
+            type: 'youLost'
           }
           ws.send(JSON.stringify(singleUserMessage));
-        } else if (data.message.type === "killPlayer") {
-          broadcast = {
-            type: "killPlayer",
-            id: data.message.userId,
-          };
-          console.log("keyUp-broadcast", broadcast);
-          }else if (data.message.type === 'gameover') {
-                if (nickname === data.message.nickname){
-                let singleUserMessage = {
-                    type: 'youLost'
-                }
-                ws.send(JSON.stringify(singleUserMessage));
-                }
+        }
       } else if (data.message.type === "chat") {
         chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
         broadcast = {
@@ -141,22 +141,28 @@ wss.on("connection", (ws) => {
           CreateNewGame()
         }
       }
-            // Broadcast the message to all connected clients
-        if (broadcast){
-          console.log(wss.clients.size, "wss.clients.size")
-          console.log(wss.clients.size, "wss.clients.size")
-          wss.clients.forEach((client) => {
-              console.log("checking", data.message.gameId, client.gameId);
-              if (client.gameId == data.message.gameId) {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify(broadcast));
-                }
-              }
-            });
+      // Broadcast the message to all connected clients
+      if (broadcast) {
+        console.log(wss.clients.size, "wss.clients.size")
+        for (const client of Games[data.message.gameId].clients.keys()) {
+          console.log("checkifnew")
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(broadcast));
+          }
         }
-        return;
-    }    
-    });
+        // wss.clients.forEach((client) => {
+        //   console.log("checking", data.message.gameId, client.gameId);
+        //   if (client.gameId == data.message.gameId) {
+        //     if (client.readyState === WebSocket.OPEN) {
+        //       client.send(JSON.stringify(broadcast));
+        //     }
+        //   }
+        // });
+
+      }
+      return;
+    }
+  });
 
   // Handle client disconnection
   ws.on("close", () => {

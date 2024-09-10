@@ -1,12 +1,12 @@
 // app.js
 
 import { MyFramework } from "./vFw/framework.js";
-import { showGameGrid ,buildGame, deinitializePlayer } from "./structure/buildGame.js";
-import { minimumPlayers , maximumPlayers , minimumTime, maximumTime, game ,wsUrl } from "./structure/model.js";
-import {setPlayerNickname,setPlayersNicknames} from "./structure/helpers.js";
+import { showGameGrid, buildGame, deinitializePlayer } from "./structure/buildGame.js";
+import { minimumPlayers, maximumPlayers, minimumTime, maximumTime, game, wsUrl } from "./structure/model.js";
+import { setPlayerNickname, setPlayersNicknames } from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
-import { changeDirection,setKeyUp, playerGameOver} from './structure/bombermanMoves.js';
-import { checkIfPlayerInBlastRadius, killPlayer  } from "./structure/gameEvents.js";
+import { changeDirection, setKeyUp, playerGameOver } from './structure/bombermanMoves.js';
+import { checkIfPlayerInBlastRadius, killPlayer } from "./structure/gameEvents.js";
 
 // set the countdown to the minimum time or maximum time
 // let countdown = minimumTime;
@@ -34,7 +34,7 @@ function connectToWebSocket(nickname) {
     }
   };
 
-  ws.onmessage = function (message) {
+  ws.onmessage = function(message) {
     const data = JSON.parse(message.data);
     console.log("Data received", data.type);
     if (data.messageType === "welcome") {
@@ -67,13 +67,13 @@ function connectToWebSocket(nickname) {
       let bombPosition = data.bombPosition
       let directions = data.directions
       checkIfPlayerInBlastRadius(userId, bombPosition, directions);
-    }else if (data.type === 'killPlayer') {
+    } else if (data.type === 'killPlayer') {
       const { id } = data;
       killPlayer(id);
-    }else if (data.type === 'youLost') {
+    } else if (data.type === 'youLost') {
       deinitializePlayer()
       playerGameOver()
-    } 
+    }
   };
 
   ws.onclose = () => {
@@ -97,57 +97,57 @@ export function sendPlayerMove(direction) {
   }
 }
 
-    export  function sendkeyUp() {
-      console.log('sendkeyUp' );
-      if (ws) {
-        ws.send(JSON.stringify({
-          message: {
-            gameId: game.gameId,
-            type: 'keyUp'
-          }
-        }));
+export function sendkeyUp() {
+  console.log('sendkeyUp');
+  if (ws) {
+    ws.send(JSON.stringify({
+      message: {
+        gameId: game.gameId,
+        type: 'keyUp'
       }
-    }
-        
-    export function sendBombExplosion(bombPosition, directions) {
-      console.log('checkPlayer' );
-      if (ws) {
-        ws.send(JSON.stringify({
-          message: {
-            type: 'bombExplosion',
-            gameId: game.gameId,
-            bombPosition:bombPosition,
-            directions:directions
-          }
-        }));
-      }
-    }
+    }));
+  }
+}
 
-    export function sendKillPlayer(userId) {
-      console.log('sendKillPlayer' );
-      if (ws) {
-        ws.send(JSON.stringify({
-          message: {
-            type: 'killPlayer',
-            gameId: game.gameId,
-            userId: userId
-          }
-        }));
+export function sendBombExplosion(bombPosition, directions) {
+  console.log('checkPlayer');
+  if (ws) {
+    ws.send(JSON.stringify({
+      message: {
+        type: 'bombExplosion',
+        gameId: game.gameId,
+        bombPosition: bombPosition,
+        directions: directions
       }
-    }
-    
-    export function sendplayerGameOver(nickname) {
-      if (ws) {
-        ws.send(JSON.stringify({
-          message: {
-            type: 'gameover',
-            nickname: nickname,
-            gameId: game.gameId,
-          }
-        }));
+    }));
+  }
+}
+
+export function sendKillPlayer(userId) {
+  console.log('sendKillPlayer');
+  if (ws) {
+    ws.send(JSON.stringify({
+      message: {
+        type: 'killPlayer',
+        gameId: game.gameId,
+        userId: userId
       }
-    }
-    // Define the landing page
+    }));
+  }
+}
+
+export function sendplayerGameOver(nickname) {
+  if (ws) {
+    ws.send(JSON.stringify({
+      message: {
+        type: 'gameover',
+        nickname: nickname,
+        gameId: game.gameId,
+      }
+    }));
+  }
+}
+// Define the landing page
 export function showLandingPage() {
   const landingPage = MyFramework.DOM(
     "div",
@@ -203,7 +203,7 @@ function showNicknamePopup() {
   }
   document
     .getElementById("nicknameInput")
-    .addEventListener("keyup", function (event) {
+    .addEventListener("keyup", function(event) {
       if (event.key === "Enter") {
         submitNickname();
       }
@@ -319,11 +319,11 @@ function startCountdown() {
   // clear the timer if it's already running and set the countdown
   clearInterval(timer);
   setCountdown(maximumTime);
-// hide countPlayers,waitingMessage
+  // hide countPlayers,waitingMessage
   document.getElementById("waitingMessage").style.display = "none";
   // show countdownTimer
   document.getElementById("countdownTimer").style.display = "block";
-   timer = setInterval(() => {
+  timer = setInterval(() => {
     setCountdown(countdown() - 1);
     document.getElementById(
       "countdownTimer"
@@ -366,11 +366,15 @@ function showChatBox() {
   container.appendChild(chatBox);
 
   // Load existing messages if any
-  chatMessages.forEach(msg => addChatMessage(msg));
+  for (const msg of chatMessages) {
+    addChatMessage(msg);
+  }
+
+  // chatMessages.forEach(msg => addChatMessage(msg));
 
   document
     .getElementById("chatInput")
-    .addEventListener("keyup", function (event) {
+    .addEventListener("keyup", function(event) {
       if (event.key === "Enter") {
         sendMessage();
       }
@@ -399,7 +403,10 @@ function loadExistingMessages() {
   //check if the same message is already loaded
   const chatMessagesList = document.getElementById("chatList");
   chatMessagesList.innerHTML = "";
-  chatMessages.forEach(msg => addChatMessage(msg));
+  for (const msg of chatMessages) {
+    addChatMessage(msg);
+  }
+  // chatMessages.forEach(msg => addChatMessage(msg));
 }
 
 // Start the app with the landing page

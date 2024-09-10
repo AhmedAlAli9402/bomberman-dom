@@ -20,16 +20,23 @@ export function createReactiveElement<K extends keyof HTMLElementTagNameMap>(
   const element = document.createElement(tag);
 
   // Set element attributes and event listeners
-  Object.entries(props).forEach(([key, value]: [string, any]) => {
+  for (const [key, value] of Object.entries(props)) {
     if (typeof value === "function") {
       (element as any)[key.toLowerCase()] = value;
     } else {
       element.setAttribute(key, String(value));
     }
-  });
+  }
+  // Object.entries(props).forEach(([key, value]: [string, any]) => {
+  //   if (typeof value === "function") {
+  //     (element as any)[key.toLowerCase()] = value;
+  //   } else {
+  //     element.setAttribute(key, String(value));
+  //   }
+  // });
 
   // Append children elements or handle reactive content
-  children.forEach((child) => {
+  for (const child of children) {
     if (typeof child === "function") {
       createEffect(() => {
         const result = child();
@@ -37,14 +44,13 @@ export function createReactiveElement<K extends keyof HTMLElementTagNameMap>(
           // If the result is a string or number, update the textContent
           element.textContent = result.toString();
         } else if (Array.isArray(result)) {
-          console.log("result", result);
           // If the result is an array, append each Node individually
-          element.innerHTML = ""; // Clear existing content
-          result.forEach((node) => {
+          element.innerHTML = ""; // Clear existing content 
+          for (const node of result) {
             if (node instanceof Node) {
               element.appendChild(node);
             }
-          });
+          }
         } else if (result instanceof Node) {
           // If the result is a Node, append it
           element.innerHTML = ""; // Clear existing content
@@ -58,7 +64,43 @@ export function createReactiveElement<K extends keyof HTMLElementTagNameMap>(
       // Append Node elements directly
       element.appendChild(child);
     }
-  });
+  }
 
+  // children.forEach((child) => {
+  //   if (typeof child === "function") {
+  //     createEffect(() => {
+  //       const result = child();
+  //       if (typeof result === "string" || typeof result === "number") {
+  //         // If the result is a string or number, update the textContent
+  //         element.textContent = result.toString();
+  //       } else if (Array.isArray(result)) {
+  //         console.log("result", result);
+  //         // If the result is an array, append each Node individually
+  //         element.innerHTML = ""; // Clear existing content 
+  //         for (const node of result) {
+  //           if (node instanceof Node) {
+  //             element.appendChild(node);
+  //           }
+  //         }
+  //         // result.forEach((node) => {
+  //         //   if (node instanceof Node) {
+  //         //     element.appendChild(node);
+  //         //   }
+  //         // });
+  //       } else if (result instanceof Node) {
+  //         // If the result is a Node, append it
+  //         element.innerHTML = ""; // Clear existing content
+  //         element.appendChild(result);
+  //       }
+  //     });
+  //   } else if (typeof child === "string") {
+  //     // Append plain strings as text nodes
+  //     element.appendChild(document.createTextNode(child));
+  //   } else if (child instanceof Node) {
+  //     // Append Node elements directly
+  //     element.appendChild(child);
+  //   }
+  // });
+  //
   return element;
 }
