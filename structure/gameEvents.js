@@ -20,7 +20,7 @@ export function breakWall(id) {
     let directions = [-1, 1, width, -width];
 
     if (powerbomb) {
-        let powerbombDirections = [-width*2, width*2, -2, 2];
+        let powerbombDirections = [-2, 2, width*2, -width*2];
         for (let i = 0; i < 4; i++) {
             if (!availableSquares[bombPosition + directions[i]].classList.contains('wall')) {
                 directions.push(powerbombDirections[i]);                
@@ -28,8 +28,8 @@ export function breakWall(id) {
         }
         } 
 
-    directions.forEach((direction) => {
-        const square = availableSquares[bombPosition + direction];
+        for (let i = 0; i < 4; i++) {
+       const square = availableSquares[bombPosition + directions[i]];
         if (square && square.classList.contains('breakableWall')) {
             square.classList.replace('breakableWall', 'breakWall');
             setTimeout(() => square.classList.remove('breakWall'), 500);
@@ -37,7 +37,8 @@ export function breakWall(id) {
             square.classList.add("sideExplosion");
             setTimeout(() => square.classList.remove("sideExplosion"), 200);
         }
-    });
+    };
+
     bomb.classList.replace("bomb", 'explosion');
     if (powerbomb) {
         bomb.classList.replace('powerBombDropped', 'explosion');

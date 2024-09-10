@@ -44,11 +44,11 @@ export function buildGame(gameGrid){
     availableSquares = Array.from(document.querySelectorAll('.grid div'));
 
     // Set player starting positions
-    players.forEach((player) => {
-        if (player.nickname !== ''){
-        const playerSquare = availableSquares[player.startPosition];
-        playerSquare.classList.add('bomberman' + player.color + 'GoingDown');}
-    });
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].nickname !== ''){
+        const playerSquare = availableSquares[players[i].startPosition];
+        playerSquare.classList.add('bomberman' + players[i].color + 'GoingDown');}
+    };
 
     // Ensure no blocked initial paths
     startTimer(countdown());
@@ -128,18 +128,16 @@ export function updateHUD(playerId) {
     }));
     const livesDisplay = document.querySelectorAll('#hud > div:not(:first-child)');
     const lives = playerLives();
-    players.forEach((player, index) => {
-        if (player.nickname !== ''){
-            player.lives = lives[index];
-
-            if (player.lives === 0) {
-                livesDisplay[index].textContent = `${player.nickname} 💔`;
+    for (let i = 0;i<players.length;i++){
+        if (players[i].nickname !== ''){
+            players[i].lives = lives[i];
+            if (players[i].lives === 0) {
+                livesDisplay[i].textContent = `${players[i].nickname} 💔`;
             }else{
-                livesDisplay[index].textContent = `${player.nickname} ❤️: ${lives[index]}`;
+                livesDisplay[i].textContent = `${players[i].nickname} ❤️: ${lives[i]}`;
             }
         }
     }
-    );
 }
 
 
@@ -187,4 +185,10 @@ function endGame() {
         const noWinner = MyFramework.DOM('h2', { class: 'winner-display' }, 'No winner!');
         gameGrid.appendChild(noWinner);
     }
+    const newGameButton = MyFramework.DOM('button', { class: 'startNewGame' , onclick:startNewGame}, 'startNewGame');
+        gameGrid.appendChild(noWinner);
+}
+
+function startNewGame(){
+    window.location.reload();
 }

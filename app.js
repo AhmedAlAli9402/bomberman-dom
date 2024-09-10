@@ -36,7 +36,7 @@ function connectToWebSocket(nickname) {
 
   ws.onmessage = function (message) {
     const data = JSON.parse(message.data);
-    console.log("Data received", data);
+    console.log("Data received", data.type);
     if (data.messageType === "welcome") {
       console.log("Welcome message received", data.numberofClients);
       setPlayersReady(data.numberofClients);
@@ -48,6 +48,7 @@ function connectToWebSocket(nickname) {
         loadExistingMessages();
       }
       game.gameGrid = data.gameGrid;
+      game.gameId = data.gameId;
     } else if (data.type === "move") {
       const { id, direction } = data;
       changeDirection(direction, id);
@@ -87,6 +88,7 @@ export function sendPlayerMove(direction) {
     ws.send(
       JSON.stringify({
         message: {
+          gameId: game.gameId,
           type: "move",
           direction: direction.key,
         },
@@ -100,6 +102,7 @@ export function sendPlayerMove(direction) {
       if (ws) {
         ws.send(JSON.stringify({
           message: {
+            gameId: game.gameId,
             type: 'keyUp'
           }
         }));
@@ -112,6 +115,7 @@ export function sendPlayerMove(direction) {
         ws.send(JSON.stringify({
           message: {
             type: 'bombExplosion',
+            gameId: game.gameId,
             bombPosition:bombPosition,
             directions:directions
           }
@@ -125,6 +129,7 @@ export function sendPlayerMove(direction) {
         ws.send(JSON.stringify({
           message: {
             type: 'killPlayer',
+            gameId: game.gameId,
             userId: userId
           }
         }));
@@ -136,7 +141,8 @@ export function sendPlayerMove(direction) {
         ws.send(JSON.stringify({
           message: {
             type: 'gameover',
-            nickname: nickname
+            nickname: nickname,
+            gameId: game.gameId,
           }
         }));
       }
@@ -325,6 +331,7 @@ function startCountdown() {
     if (countdown() === 0) {
       clearInterval(timer);
       showGameGrid();
+      createNewGameinServer();
       buildGame(game.gameGrid);
     }
   }, 1000);
@@ -381,7 +388,7 @@ function sendMessage() {
   const message = document.getElementById("chatInput").value.trim();
   if (message) {
     if (ws) {
-      ws.send(JSON.stringify({ message: { type: "chat", message } }));
+      ws.send(JSON.stringify({ message: { groupId: game.gameId, type: "chat", message } }));
       // addChatMessage(`You: ${message}`); // Show the sent message immediately
       document.getElementById("chatInput").value = ""; // Clear input
     }
@@ -397,3 +404,9 @@ function loadExistingMessages() {
 
 // Start the app with the landing page
 showLandingPage();
+
+function createNewGameinServer() {
+  if (ws) {
+    ws.send(JSON.stringify({ message: { gameId: game.gameId, type: "newGame" } }));
+  }
+}

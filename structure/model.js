@@ -5,7 +5,7 @@ export let height = 17;
 export let width = 23;
 export let numberOfBreakableWalls = 60;
 export let numberOfPowerUps = 50;
-export let game = {gameGrid:{}, players:[
+export let game = {gameId: 0, gameGrid:{}, players:[
     { nickname: "", powerUp: "", startPosition: width + 1, playerPosition:width + 1, color: "White", lives:0, connection: "" , keyStillDown : false, keyStillDownForSkate : 0, bombDropped: 0},
     { nickname: "", powerUp: "", startPosition: (width*2)-2, playerPosition:0 , color: "Red", lives:0, connection: "",keyStillDown : false, keyStillDownForSkate : 0, bombDropped: 0},
     { nickname: "", powerUp: "", startPosition: (width*height)-(width*2)+1, playerPosition:0, color: "Blue", lives:0, connection: "",keyStillDown : false, keyStillDownForSkate : 0, bombDropped: 0},
