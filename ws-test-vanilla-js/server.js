@@ -78,7 +78,9 @@ wss.on("connection", (ws) => {
       for (const client of Games[(Games.length - 1)].clients.keys()) {
         client.send(JSON.stringify(welcomeMessage));
       }
-
+      if (Games[(Games.length - 1)].clients.size === 4){
+        CreateNewGame()
+      }
       return;
     }
 
