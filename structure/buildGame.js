@@ -5,7 +5,7 @@ import { game } from './model.js';
 import { formatTime } from './helpers.js';
 import { container  } from '../app.js';
 import {countdown, setCountdown} from './model.js';
-import { sendPlayerMove , sendkeyUp, sendplayerGameOver} from '../app.js';
+import { sendPlayerMove , sendkeyUp } from '../app.js';
 
 export let availableSquares = [];
 let players = game.players;

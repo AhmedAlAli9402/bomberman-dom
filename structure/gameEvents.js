@@ -18,7 +18,6 @@ export function breakWall(id) {
     if (!bomb) return;
     const bombPosition = Number(bomb.getAttribute('id'));
     let directions = [-1, 1, width, -width];
-
     if (powerbomb) {
         let powerbombDirections = [-2, 2, width*2, -width*2];
         for (let i = 0; i < 4; i++) {
@@ -28,7 +27,7 @@ export function breakWall(id) {
         }
         } 
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < directions.length; i++) {
        const square = availableSquares[bombPosition + directions[i]];
         if (square && square.classList.contains('breakableWall')) {
             square.classList.replace('breakableWall', 'breakWall');

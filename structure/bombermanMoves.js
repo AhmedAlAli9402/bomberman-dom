@@ -6,6 +6,7 @@ import { sendBombExplosion } from '../app.js';
 import { breakWall } from './gameEvents.js';
 
 let players = game.players;
+let powerUpTimeOut
 
 export function changeDirection(e, id) {
     console.log(e, id)
@@ -45,6 +46,8 @@ function moveBomberman(direction, id) {
     if (nextSquare && (!nextSquare.classList.length || powerUps.includes(nextSquare.classList[0]))) {
         if (powerUps.includes(nextSquare.classList[0])){
             AddPowerUpToPlayer(nextSquare.classList[0], id);
+            clearTimeout(powerUpTimeOut);
+            console.log(nextSquare.classList[0])
         }
         nextSquare.className = `bomberman${players[id].color}Going${capitalize(direction)}`;
         bomberman.classList.remove(bombermanClass);
@@ -90,7 +93,7 @@ function capitalize(str) {
 function AddPowerUpToPlayer(powerUp, id) {
     if (powerUp) {
         players[id].powerUp = powerUp;
-        setTimeout(() => {players[id].powerUp = ''}, 20000);
+        powerUpTimeOut = setTimeout(() => {players[id].powerUp = ''}, 20000);
     }
 }
 
