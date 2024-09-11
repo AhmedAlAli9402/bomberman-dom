@@ -71,7 +71,6 @@ function connectToWebSocket(nickname) {
       const { id } = data;
       killPlayer(id);
     } else if (data.messageType === 'youLost') {
-      deinitializePlayer()
       playerGameOver()
     }
   };

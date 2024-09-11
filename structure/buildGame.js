@@ -14,25 +14,31 @@ export let initialLives = [3, 3, 3, 3]; // 4 players
 // Initialize player lives as reactive state
 export const [playerLives, setPlayerLives] = MyFramework.State([...initialLives]);
 
+// build game depending on the array sent from the server
 export function buildGame(gameGrid){
     const grid = document.getElementById('grid');
+     // create the divs required and number them in ascending order
     for (let i = 0; i < gameGrid.allsquares.length; i++) {
         const square = MyFramework.DOM(  'div',  { id: i } );
         grid.appendChild(square);
     }
+    
+    // create the wall squares
     const createWall = (index) => document.getElementById(index.toString()).classList.add('wall');
 
-    for (const wall of gameGrid.wall) {
+    for (const wall of gameGrid.wall) { 
         createWall(wall);
     }
 
+    // create the breakable walls
     const createBreakableWall = (index) => document.getElementById(index).classList.add('breakableWall');
-
-    for (const breakableWall of gameGrid.breakableWall) {
+    
+    for (const breakableWall of gameGrid.breakableWall) { 
         createBreakableWall(breakableWall);
     }
 
-    const createPowerUp = (index, powerUp) => {
+    // add powerups based on the randomized index sent from server
+    const createPowerUp = (index, powerUp) => { 
         const square = document.getElementById(index);
         square.classList.add(powerUp);
     }
@@ -64,7 +70,6 @@ function initializePlayer() {
         }
     }
     );
-
     document.addEventListener('keyup', (event) => {
         const key = event.key;
         if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight'|| key === 'x') {
@@ -74,10 +79,10 @@ function initializePlayer() {
     );
 }
 
-export function deinitializePlayer() {
-    document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)));
-        document.removeEventListener('keyup', sendkeyUp);
-}
+// export function deinitializePlayer() {
+//     document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)));
+//         document.removeEventListener('keyup', sendkeyUp);
+// }
 
 // Show the game grid and HUD
 export function showGameGrid() {
