@@ -79,11 +79,6 @@ function initializePlayer() {
     );
 }
 
-// export function deinitializePlayer() {
-//     document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)));
-//         document.removeEventListener('keyup', sendkeyUp);
-// }
-
 // Show the game grid and HUD
 export function showGameGrid() {
     const gameGrid =MyFramework.DOM('div',

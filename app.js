@@ -1,7 +1,7 @@
 // app.js
 
 import { MyFramework } from "./vFw/framework.js";
-import { showGameGrid, buildGame, deinitializePlayer } from "./structure/buildGame.js";
+import { showGameGrid, buildGame } from "./structure/buildGame.js";
 import { minimumPlayers, maximumPlayers, minimumTime, maximumTime, game, wsUrl } from "./structure/model.js";
 import { setPlayerNickname, setPlayersNicknames } from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);

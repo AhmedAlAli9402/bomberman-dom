@@ -1,5 +1,5 @@
 // structure/bombermanMoves.js
-import { availableSquares, deinitializePlayer } from './buildGame.js';
+import { availableSquares } from './buildGame.js';
 import { width, height, game, powerUps } from './model.js';
 import { MyFramework } from '../vFw/framework.js';
 import { sendBombExplosion } from '../app.js';
@@ -97,7 +97,6 @@ function AddPowerUpToPlayer(powerUp, id) {
 export function playerGameOver(){
     const gameGrid = document.getElementById('gameGrid');
     // Display "Game Over" message
-    deinitializePlayer();
         const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
         gameGrid.appendChild(gameOver);
 }
