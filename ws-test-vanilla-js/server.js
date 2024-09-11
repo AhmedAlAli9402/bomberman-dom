@@ -14,11 +14,6 @@ let Games = [];
 CreateNewGame()
 
 function CreateNewGame() {
-
-  // let chatMessages = [];
-  // Map to store clients' connection information (WebSocket connection and nickname)
-  // let gameGrid = new Map();
-
   Games.push({
     clients: new Map(),
     gameGrid: buildGameObject(),
@@ -29,9 +24,9 @@ function CreateNewGame() {
 wss.on("connection", (ws) => {
   console.log("Client connected");
   // Handle incoming messages
+  let data;
   ws.on("message", (message) => {
     console.log(String(message), "message")
-    let data;
     try {
       // Expecting JSON data from the client
       data = JSON.parse(message);
@@ -153,14 +148,6 @@ wss.on("connection", (ws) => {
             client.send(JSON.stringify(broadcast));
           }
         }
-        // wss.clients.forEach((client) => {
-        //   console.log("checking", data.message.gameId, client.gameId);
-        //   if (client.gameId == data.message.gameId) {
-        //     if (client.readyState === WebSocket.OPEN) {
-        //       client.send(JSON.stringify(broadcast));
-        //     }
-        //   }
-        // });
 
       }
       return;
@@ -169,8 +156,22 @@ wss.on("connection", (ws) => {
 
   // Handle client disconnection
   ws.on("close", () => {
-    console.log(`Client disconnected: ${ws.nickname}`);
-    Games[data.message.gameId].clients.delete(ws); // Remove the client from the map on disconnect
+    //remove the client from the map based on nickname
+    if (Games[ws.gameId].clients.has(ws)) {
+      const nickname = Games[ws.gameId].clients.get(ws);
+      Games[ws.gameId].clients.delete(ws);
+      // Broadcast the disconnection message to all clients
+      const disconnectMessage = {
+        messageType: "disconnect",
+        nickname: nickname,
+        message: `${nickname} has left the chat.`,
+        clients: Array.from(Games[ws.gameId].clients.values()),
+        numberofClients: Games[ws.gameId].clients.size,
+      };
+      for (const client of Games[ws.gameId].clients.keys()) {
+        client.send(JSON.stringify(disconnectMessage));
+      }
+    }
   });
 
   // Handle WebSocket errors
