@@ -19,8 +19,8 @@ export const minimumPlayers = 2;
 export const maximumPlayers = 4;
 
 // time for the game to start
-export const minimumTime = 3;
-export const maximumTime = 3;
+export const minimumTime = 20;
+export const maximumTime = 10;
 
 const host = 'localhost'; // change to the server IP address
 export const wsUrl = 'ws://' + host + ':8080';

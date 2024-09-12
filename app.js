@@ -49,6 +49,9 @@ function connectToWebSocket(nickname) {
         chatMessages = data.loadMessages
         loadExistingMessages();
       }
+      if (data.numberofClients === 4) {
+        setCountdown(0);
+      }
       game.gameGrid = data.gameGrid;
       game.gameId = data.gameId;
     } else if (data.messageType === "move") {
@@ -314,13 +317,15 @@ function showWaitingArea() {
 function startCountdown() {
   // clear the timer if it's already running and set the countdown
   clearInterval(timer);
-  setCountdown(maximumTime);
+  setCountdown(minimumTime);
   // hide countPlayers,waitingMessage
   document.getElementById("waitingMessage").style.display = "none";
   // show countdownTimer
   document.getElementById("countdownTimer").style.display = "block";
   timer = setInterval(() => {
-    setCountdown(countdown() - 1);
+    if (countdown() !== 0) {
+      setCountdown(countdown() - 1);
+    }
     document.getElementById(
       "countdownTimer"
     ).textContent = `Closing in ${countdown()} seconds...`;
