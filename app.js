@@ -11,11 +11,13 @@ import { checkIfPlayerInBlastRadius, killPlayer } from "./structure/gameEvents.j
 // set the countdown to the minimum time or maximum time
 // let countdown = minimumTime;
 const [countdown, setCountdown] = MyFramework.State(10);
+const [gameTimer, setGameTimer] = MyFramework.State(5);
 
 // set the needed players
 let neededPlayers = minimumPlayers; // for mini of 2 players
 // let neededPlayers = 1 ; // for testing with 1 player
 let timer;
+let gameStartTimer;
 
 // Get the container element
 export const container = document.getElementById("app");
@@ -161,11 +163,7 @@ export function showLandingPage() {
     MyFramework.DOM("a", { href: "https://github.com/amali01" }, "amali01"),
     MyFramework.DOM("a", { href: "https://github.com/sahmedG" }, "sahmedG"),
     MyFramework.DOM("a", { href: "https://github.com/MSK17A" }, "MSK17A"),
-    MyFramework.DOM(
-      "a",
-      { href: "https://github.com/AhmedAlAli9402" },
-      "AhmedAlAli9402"
-    )
+    MyFramework.DOM("a", { href: "https://github.com/AhmedAlAli9402" }, "AhmedAlAli9402")
   );
   if (container) {
     document.getElementById("overlay").innerHTML = "";
@@ -222,11 +220,6 @@ function submitNickname() {
     nickname = nickname.slice(0, 10);
   }
   connectToWebSocket(nickname);
-
-  // Add the nickname and proceed
-  // setPlayersReady(playersReady() + 1);
-  // setPlayerNickname(playersReady() - 1, nickname);
-  // showWaitingArea();
 }
 
 // Show the waiting area
@@ -246,7 +239,7 @@ function showWaitingArea() {
   const countdownTimer = MyFramework.DOM(
     "h1",
     { id: "countdownTimer" },
-    `Starting in ${countdown()} seconds...`
+    `Closing in ${countdown()} seconds...`
   );
 
   const instructionsContent = [
@@ -330,14 +323,37 @@ function startCountdown() {
     setCountdown(countdown() - 1);
     document.getElementById(
       "countdownTimer"
-    ).textContent = `Starting in ${countdown()} seconds...`;
+    ).textContent = `Closing in ${countdown()} seconds...`;
     if (countdown() === 0) {
       clearInterval(timer);
-      showGameGrid();
+      // Start new game in server
       createNewGameinServer();
-      buildGame(game.gameGrid);
+
+      startGameTimer();
     }
   }, 1000);
+
+}
+
+// start game timer
+function startGameTimer() {
+    // Start the game timer
+    clearInterval(gameStartTimer);
+    setGameTimer(maximumTime);
+    gameStartTimer = setInterval(() => {
+      setGameTimer(gameTimer() - 1);
+      document.getElementById(
+        "countdownTimer"
+      ).textContent = `Starting in ${gameTimer()} seconds...`;
+  
+      if (gameTimer() === 0) {
+        clearInterval(gameStartTimer);
+        // Game over
+        showGameGrid();
+        buildGame(game.gameGrid);
+      }
+    }, 1000);
+  
 }
 
 // chat box
@@ -372,8 +388,6 @@ function showChatBox() {
   for (const msg of chatMessages) {
     addChatMessage(msg);
   }
-
-  // chatMessages.forEach(msg => addChatMessage(msg));
 
   document
     .getElementById("chatInput")

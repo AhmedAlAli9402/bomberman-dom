@@ -82,7 +82,7 @@ function initializePlayer() {
 // Show the game grid and HUD
 export function showGameGrid() {
     const gameGrid =MyFramework.DOM('div',
-    { id: "gameGrid", style: "display: inherit;" },
+    { id: "gameGrid" },
      MyFramework.DOM("div", { id: "grid", class: "grid" })
     );
 
