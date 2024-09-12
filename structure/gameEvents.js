@@ -68,9 +68,10 @@ export function killPlayer(userId) {
     const bomberman = document.querySelector(`.bomberman${players[userId].color}GoingUp, .bomberman${players[userId].color}GoingRight, .bomberman${players[userId].color}GoingDown, .bomberman${players[userId].color}GoingLeft`);
     bomberman.classList.add('dead');
     let recoveryPosition =players[userId].startPosition
-    if (availableSquares[recoveryPosition].childNodes.length > 0) {
+    console.log(availableSquares[recoveryPosition].classList.length)
+    if (availableSquares[recoveryPosition].classList.length > 0) {
         for (let i=0;i<players.length;i++){
-            if (availableSquares[players[i].startPosition].length === 0){ {
+            if (availableSquares[players[i].startPosition].classList.length === 0){ {
                 recoveryPosition = players[i].startPosition;
             }
         }
