@@ -38,7 +38,7 @@ function connectToWebSocket(nickname) {
 
   ws.onmessage = function(message) {
     const data = JSON.parse(message.data);
-    console.log("Data received", data.type);
+    console.log("Data received", data.messageType , data);
     if (data.messageType === "welcome") {
       console.log("Welcome message received", data.numberofClients);
       setPlayersReady(data.numberofClients);
@@ -350,7 +350,7 @@ function startGameTimer() {
         clearInterval(gameStartTimer);
         // Game over
         showGameGrid();
-        buildGame(game.gameGrid);
+        requestAnimationFrame( () => buildGame(game.gameGrid));
       }
     }, 1000);
   
@@ -409,7 +409,7 @@ function sendMessage() {
   const message = document.getElementById("chatInput").value.trim();
   if (message) {
     if (ws) {
-      ws.send(JSON.stringify({ message: { groupId: game.gameId, type: "chat", message } }));
+      ws.send(JSON.stringify({ message: { gameId: game.gameId, messageType: "chat", message } }));
       // addChatMessage(`You: ${message}`); // Show the sent message immediately
       document.getElementById("chatInput").value = ""; // Clear input
     }
