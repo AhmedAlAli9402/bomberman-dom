@@ -5,21 +5,21 @@ import { MyFramework } from '../vFw/framework.js';
 import { sendBombExplosion } from '../app.js';
 import { breakWall } from './gameEvents.js';
 
-let players = game.players;
-let powerUpTimeOut
+const players = game.players;
+let powerUpTimeOut;
+
+const directionMap = {
+    'ArrowUp': { direction: 'up', offset: -width },
+    'ArrowRight': { direction: 'right', offset: 1 },
+    'ArrowDown': { direction: 'down', offset: width },
+    'ArrowLeft': { direction: 'left', offset: -1 }
+};
 
 export function changeDirection(e, id) {
-    console.log(e, id)
-    if (!players[id].keyStillDown || (players[id].powerUp === "skate" && players[id].keyStillDownForSkate < 4)) {
-        const directions = {
-            'ArrowUp': 'up',
-            'ArrowRight': 'right',
-            'ArrowDown': 'down',
-            'ArrowLeft': 'left'
-        };
-
-        if (directions[e]) {
-            moveBomberman(directions[e], id);
+    const player = players[id];
+    if (!player.keyStillDown || (player.powerUp === "skate" && player.keyStillDownForSkate < 4)) {
+        if (directionMap[e]) {
+            moveBomberman(directionMap[e].direction, id);
         } else if (e === 'x') {
             dropBomb(id);
         }
@@ -27,79 +27,71 @@ export function changeDirection(e, id) {
 }
 
 function moveBomberman(direction, id) {
-    const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
+    const player = players[id];
+    const bomberman = document.querySelector(`.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`);
     if (!bomberman) return;
 
     const bombermanClass = bomberman.classList[0].replace(' bomb', '');
     const bombermanIndex = availableSquares.indexOf(bomberman);
-
-    const directionMap = {
-        'up': -width,
-        'right': 1,
-        'down': width,
-        'left': -1
-    };
-
-    const newIndex = bombermanIndex + directionMap[direction];
+    const newIndex = bombermanIndex + directionMap[`Arrow${direction.charAt(0).toUpperCase() + direction.slice(1)}`].offset;
     const nextSquare = availableSquares[newIndex];
 
     if (nextSquare && (!nextSquare.classList.length || powerUps.includes(nextSquare.classList[0]))) {
-        if (powerUps.includes(nextSquare.classList[0])){
-            AddPowerUpToPlayer(nextSquare.classList[0], id);
-            clearTimeout(powerUpTimeOut);
-            console.log(nextSquare.classList[0])
+        if (powerUps.includes(nextSquare.classList[0])) {
+            addPowerUpToPlayer(nextSquare.classList[0], id);
         }
-        nextSquare.className = `bomberman${players[id].color}Going${capitalize(direction)}`;
+        nextSquare.className = `bomberman${player.color}Going${direction.charAt(0).toUpperCase() + direction.slice(1)}`;
         bomberman.classList.remove(bombermanClass);
-        players[id].keyStillDown = true;
-        if (players[id].powerUp === 'skate') {
-            players[id].keyStillDownForSkate++
-    } else {
-        players[id].keyStillDownForSkate = 0
+        player.keyStillDown = true;
+        player.keyStillDownForSkate = player.powerUp === 'skate' ? player.keyStillDownForSkate + 1 : 0;
     }
-}
 }
 
 export function setKeyUp(id) {
-    
-    players[id].keyStillDownForSkate = 0;
-    players[id].keyStillDown = false;
+    const player = players[id];
+    player.keyStillDownForSkate = 0;
+    player.keyStillDown = false;
 }
 
 function dropBomb(id) {
-    if ((players[id].bombDropped >= 1 && players[id].powerUp !=="extraBomb") || (players[id].bombDropped >= 2 && players[id].powerUp === "extraBomb")) return;
-    const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
+    const player = players[id];
+    if ((player.bombDropped >= 1 && player.powerUp !== "extraBomb") || (player.bombDropped >= 2 && player.powerUp === "extraBomb")) return;
+
+    const bomberman = document.querySelector(`.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`);
     if (!bomberman) return;
 
     const bombermanIndex = availableSquares.indexOf(bomberman);
-    players[id].bombDropped++
-    if (players[id].powerUp === 'powerBomb') {
-        availableSquares[bombermanIndex].classList.add('powerBombDropped');
-    } else {
-    availableSquares[bombermanIndex].classList.add('bomb');
-    }
+    console.log('bombermanIndex', bombermanIndex);
+    player.bombDropped++;
+    const bombClass = player.powerUp === 'powerBomb' ? 'powerBombDropped' : 'bomb';
+    availableSquares[bombermanIndex].classList.add(bombClass);
+    console.log('bombClass', bombClass);
+    console.log('availableSquares[bombermanIndex].classList', availableSquares[bombermanIndex].classList);
+
+
     setTimeout(() => {
-        console.log(bombermanIndex)
-        players[id].bombDropped--;
-        const directions = breakWall(bombermanIndex);
+        player.bombDropped--;
+        availableSquares[bombermanIndex].classList.remove(bombClass);
+        availableSquares[bombermanIndex].classList.add('explosion');
+        const directions = breakWall(bombermanIndex,player.powerUp);
         sendBombExplosion(bombermanIndex, directions);
+        
+        setTimeout(() => {
+            availableSquares[bombermanIndex].classList.remove('explosion');
+        }, 200);
     }, 3000);
 }
 
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function AddPowerUpToPlayer(powerUp, id) {
+function addPowerUpToPlayer(powerUp, id) {
     if (powerUp) {
         players[id].powerUp = powerUp;
-        powerUpTimeOut = setTimeout(() => {players[id].powerUp = ''}, 20000);
+        clearTimeout(powerUpTimeOut);
+        powerUpTimeOut = setTimeout(() => { players[id].powerUp = ''; }, 20000);
     }
 }
 
-export function playerGameOver(){
+export function playerGameOver() {
     const gameGrid = document.getElementById('gameGrid');
-    // Display "Game Over" message
-        const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
-        gameGrid.appendChild(gameOver);
+    const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
+    gameGrid.appendChild(gameOver);
 }

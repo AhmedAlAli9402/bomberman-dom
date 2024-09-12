@@ -10,114 +10,91 @@ import { sendPlayerMove , sendkeyUp } from '../app.js';
 export let availableSquares = [];
 let players = game.players;
 // Initial lives for each player, starting with 3 lives each
-export let initialLives = [3, 3, 3, 3]; // 4 players
+export const initialLives = [3, 3, 3, 3]; // 4 players
 // Initialize player lives as reactive state
 export const [playerLives, setPlayerLives] = MyFramework.State([...initialLives]);
 
 // build game depending on the array sent from the server
 export function buildGame(gameGrid){
     const grid = document.getElementById('grid');
-     // create the divs required and number them in ascending order
+    const fragment = document.createDocumentFragment();
+    // create the divs required and number them in ascending order
     for (let i = 0; i < gameGrid.allsquares.length; i++) {
-        const square = MyFramework.DOM(  'div',  { id: i } );
-        grid.appendChild(square);
+        const square = MyFramework.DOM('div', { id: i });
+        fragment.appendChild(square);
     }
+    grid.appendChild(fragment);
     
     // create the wall squares
-    const createWall = (index) => document.getElementById(index.toString()).classList.add('wall');
-
-    for (const wall of gameGrid.wall) { 
-        createWall(wall);
-    }
+    gameGrid.wall.forEach(wall => document.getElementById(wall.toString()).classList.add('wall'));
 
     // create the breakable walls
-    const createBreakableWall = (index) => document.getElementById(index).classList.add('breakableWall');
-    
-    for (const breakableWall of gameGrid.breakableWall) { 
-        createBreakableWall(breakableWall);
-    }
+    gameGrid.breakableWall.forEach(breakableWall => document.getElementById(breakableWall).classList.add('breakableWall'));
 
     // add powerups based on the randomized index sent from server
-    const createPowerUp = (index, powerUp) => { 
-        const square = document.getElementById(index);
-        square.classList.add(powerUp);
-    }
-
-    for (const { index, powerUp } of gameGrid.powerUp) {
-        createPowerUp(index, powerUp);
-    }
+    gameGrid.powerUp.forEach(({ index, powerUp }) => document.getElementById(index).classList.add(powerUp));
 
     availableSquares = Array.from(document.querySelectorAll('.grid div'));
 
     // Set player starting positions
-    for (let i = 0; i < players.length; i++) {
-        if (players[i].nickname !== ''){
-        const playerSquare = availableSquares[players[i].startPosition];
-        playerSquare.classList.add('bomberman' + players[i].color + 'GoingDown');}
-    };
+    players.forEach((player, i) => {
+        if (player.nickname !== '') {
+            availableSquares[player.startPosition].classList.add(`bomberman${player.color}GoingDown`);
+        }
+    });
 
     // Ensure no blocked initial paths
     startTimer(countdown());
 
     // Add event listeners for player movement
-    document.addEventListener('keydown', (event) => {
-        const key = event.key;
-        if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight' || key === 'x') {
-            sendPlayerMove(event);
-        }
-    }
-    );
-    document.addEventListener('keyup', (event) => {
-        const key = event.key;
-        if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight'|| key === 'x') {
-            sendkeyUp();
-        }
-    }
-    );
-    // initializePlayer();
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 }
 
-// function initializePlayer() {
+function handleKeyDown(event) {
+    console.log('handleKeyDown', event);
+    const key = event.key;
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'x'].includes(key)) {
+        console.log('here1');
+        sendPlayerMove(event);
+    }
+}
 
-// }
+function handleKeyUp(event) {
+    const key = event.key;
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'x'].includes(key)) {
+        sendkeyUp();
+    }
+}
 
 // Show the game grid and HUD
 export function showGameGrid() {
-    const gameGrid =MyFramework.DOM('div',
+    const gameGrid = MyFramework.DOM('div',
     { id: "gameGrid" },
      MyFramework.DOM("div", { id: "grid", class: "grid" })
     );
 
-    document.getElementById("overlay").innerHTML = "";
-    document.getElementById("overlay").appendChild(MyFramework.DOM("div", { id: "container" },createHUD ));
-    document.getElementById("overlay").appendChild(MyFramework.DOM("h1", null, "Bomberman Game"));
-    document.getElementById("overlay").appendChild(MyFramework.DOM("img",{id:"logo", src: "images/logo.png", alt: "Bomberman" },null));
+    const overlay = document.getElementById("overlay");
+    overlay.innerHTML = "";
+    overlay.appendChild(MyFramework.DOM("div", { id: "container" }, createHUD()));
+    overlay.appendChild(MyFramework.DOM("h1", null, "Bomberman Game"));
+    overlay.appendChild(MyFramework.DOM("img", {id:"logo", src: "images/logo.png", alt: "Bomberman"}, null));
     container.removeChild(document.getElementById('waitingArea'));
     container.appendChild(gameGrid);
 }
 
 // Create the HUD with player lives and time countdown
 function createHUD() {
-    // Filter players that have a nickname, then map to create lives display
-    const livesDisplay = players.filter(player => player.nickname).map((player) => {
-        return MyFramework.DOM(
-          "div",
-          {},
-          `${player.nickname} ❤️: ${player.lives > 0 ? player.lives : '💔'}`
-        );
-      });
+    const livesDisplay = players.filter(player => player.nickname).map((player) => 
+        MyFramework.DOM("div", {}, `${player.nickname} ❤️: ${player.lives > 0 ? player.lives : '💔'}`)
+    );
 
-    const hud = MyFramework.DOM(
+    return MyFramework.DOM(
       "div",
       { id: "hud", style: "display: flex; justify-content: space-between;" },
       MyFramework.DOM("div", {}, `Time: ${formatTime(countdown())}`),
-      // Display player lives
       ...livesDisplay
     );
-
-
-
-    return hud;
 }
 
 // Function to update the HUD when player lives change
@@ -127,39 +104,27 @@ export function updateHUD(playerId) {
       timeDisplay.textContent = `Time: ${formatTime(countdown())}`;
     }
     // update player lives by player id
-    setPlayerLives(playerLives().map((lives, index) => {
-        return index === playerId ? lives - 1 : lives;
-    }));
+    setPlayerLives(playerLives().map((lives, index) => index === playerId ? lives - 1 : lives));
     const livesDisplay = document.querySelectorAll('#hud > div:not(:first-child)');
     const lives = playerLives();
-    for (let i = 0;i<players.length;i++){
-        if (players[i].nickname !== ''){
-            players[i].lives = lives[i];
-            if (players[i].lives === 0) {
-                livesDisplay[i].textContent = `${players[i].nickname} 💔`;
-            }else{
-                livesDisplay[i].textContent = `${players[i].nickname} ❤️: ${lives[i]}`;
-            }
+    players.forEach((player, i) => {
+        if (player.nickname !== '') {
+            player.lives = lives[i];
+            livesDisplay[i].textContent = `${player.nickname} ${player.lives > 0 ? `❤️: ${lives[i]}` : '💔'}`;
         }
-    }
+    });
 }
-
 
 // Start the countdown timer
 function startTimer(time) {
     setCountdown(time); // 3 minutes
     const timer = setInterval(() => {
         setCountdown(countdown() - 1);
-        if (countdown() === 0) {
+        if (countdown() === 0 || players.filter(player => player.lives > 0).length === 1) {
             clearInterval(timer);
             endGame();
         }
         updateHUD();
-        // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
-        if (players.filter(player => player.lives > 0).length === 1) {
-            clearInterval(timer);
-            endGame();
-        }
     }, 1000);
 }
 
@@ -170,34 +135,19 @@ function endGame() {
     gameGrid.innerHTML = '';  // Clear the game grid
 
     // Display "Game Over" message
-    const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
-    gameGrid.appendChild(gameOver);
+    gameGrid.appendChild(MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!'));
 
     // Determine the winner with the most lives remaining (if any) otherwise, no winner if all players have 0 lives or equal lives
-    let winnerIndex = players.reduce((winnerIndex, player, index) => {
-        return player.lives > players[winnerIndex].lives ? index : winnerIndex;
-    }, 0);
+    const maxLives = Math.max(...players.map(player => player.lives));
+    const winners = players.filter(player => player.lives === maxLives);
 
-    // check if there another player with the same number of lives as the winner
-    const equalLives = players.filter(player => player.lives === players[winnerIndex].lives);
-
-    // if there is a player with the same number of lives as the winner, return -1
-    if (equalLives.length > 1) {
-        winnerIndex = -1;
-    }
-    console.log('winnerIndex', winnerIndex);
-    console.log("players", players);
-    if (winnerIndex !== -1 && players.filter(player => player.lives > 0).length >= 1) {
-        const winnerName = players[winnerIndex].nickname; // Get the winner's name
-        // Display the winner
-        const winnerDisplay = MyFramework.DOM('h2', { class: 'winner-display' }, `${winnerName} is the winner!`);
-        gameGrid.appendChild(winnerDisplay);
+    if (winners.length === 1 && maxLives > 0) {
+        gameGrid.appendChild(MyFramework.DOM('h2', { class: 'winner-display' }, `${winners[0].nickname} is the winner!`));
     } else {
-        const noWinner = MyFramework.DOM('h2', { class: 'winner-display' }, 'No winner!');
-        gameGrid.appendChild(noWinner);
+        gameGrid.appendChild(MyFramework.DOM('h2', { class: 'winner-display' }, 'No winner!'));
     }
-    const newGameButton = MyFramework.DOM('button', { class: 'startNewGame' , onclick:startNewGame}, 'startNewGame');
-        gameGrid.appendChild(newGameButton);
+
+    gameGrid.appendChild(MyFramework.DOM('button', { class: 'startNewGame', onclick: startNewGame }, 'Start New Game'));
 }
 
 function startNewGame(){

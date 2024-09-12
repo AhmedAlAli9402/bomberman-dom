@@ -12,17 +12,14 @@ body {
 }
 
 #hud {
-  /* position: absolute; */
-  /* top: 10px;
-  left: 10px; */
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.7);
   color: #fff;
   padding: 10px;
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
   width: fit-content;
-  max-width: 500px; /* Adjust width as needed */
+  max-width: 500px;
   font-family: Arial, sans-serif;
 }
 
@@ -40,45 +37,27 @@ body {
 /* Player lives styling */
 #hud div:nth-child(n + 2) {
   font-size: 16px;
-  font-weight: normal;
 }
 
-/* Add responsiveness */
-/* @media (max-width: 600px) {
-  #hud {
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #hud div {
-    margin: 5px 0;
-  }
-} */
-
-/* ///////////////////////////////////////////// */
 #waitingArea {
   display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* padding: 20px; */
-  /* margin: -2%; */
   height: 70vh;
   width: 74vw;
   background-color: #f2f2f2;
   font-family: "Roboto", sans-serif;
   margin-top: 20vh;
 }
+
 #waitingMessage {
   font-size: 2em;
   color: #333;
   margin-bottom: 20px;
-  /* display: flex; */
   position: relative;
 }
+
 #waitingArea p {
   font-size: 1.2em;
   color: #333;
@@ -132,20 +111,9 @@ body {
 .instruction-item p {
   font-size: 1.1em;
   color: #333;
-  margin: 0px;
+  margin: 0;
 }
 
-@media (max-width: 600px) {
-  .instruction-item {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .instruction-item img {
-    margin-bottom: 10px;
-  }
-}
-/* /////////////////////////////////////////////   */
 .game-over {
   font-size: 3em;
   color: #d9534f;
@@ -175,12 +143,10 @@ body {
 
 #gameGrid h1,
 #gameGrid h2 {
-  font-family: "Arial", sans-serif;
+  font-family: Arial, sans-serif;
   text-align: center;
 }
-/* /////////////////////////////////////////////   */
 
-/*  General styles */
 a {
   color: #1a0404;
   text-decoration: none;
@@ -191,7 +157,6 @@ a {
 
 #overlay {
   display: flex;
-  flex-direction: row;
   position: fixed;
   top: 0;
   left: 0;
@@ -205,35 +170,23 @@ a {
 #app {
   width: 100vw;
   height: 85vh;
-  /* margin-top: 15vh; */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
 }
 
-#gameGrid
-{
-display: flex;
-/* position: absolute; */
-width: 70vw;
-/* height: vh; */
-/* position: flex; */
-flex-direction: column;
-
-/* justify-content: center; */
-align-items: center;
-/* height: 100%; */
-/* background-color: #f2f2f2;
-font-family: "Roboto", sans-serif; */
-margin-top: 10vh;
+#gameGrid {
+  display: flex;
+  width: 70vw;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10vh;
 }
 
 #landingPage,
-#nicknamePopup
-{
+#nicknamePopup {
   display: none;
-  /* position: flex; */
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -244,11 +197,6 @@ margin-top: 10vh;
 
 #logo {
   width: 200px;
-  /* float: right; */
-  /* margin-bottom: 20px; */
-  /* in center */
-  /* display: block; */
-  /* margin-left: auto; */
 }
 
 #nicknameInput {
@@ -261,7 +209,6 @@ margin-top: 10vh;
   margin: 20px;
 }
 
-/* Button styles */
 #startGameButton,
 #submitnicknameButton {
   padding: 10px 20px;
@@ -275,29 +222,28 @@ margin-top: 10vh;
   transition: background-color 0.3s ease;
 }
 
-#startGameButton,
+#startGameButton:hover,
 #submitUsernameButton:hover {
   background-color: #e68900;
 }
+
 :root {
   --g-width: 50vw;
   --bg-size: calc(var(--g-width)/23);
 }
-/* Input styles */
+
 .grid {
   float: center;
   width: var(--g-width);
   height: calc(var(--bg-size)*17);
   display: flex;
-  position: flex;
   flex-wrap: wrap;
   border-radius: 20px;
   background: url('./images/wall/walkable.png') no-repeat;
-  background-size:cover; /* Adjust background size to cover the grid */
-  /* margin-left: 150px; */
+  background-size: cover;
   transform: translateZ(1);
   background-color: black;
-  margin-left: 10% ;
+  margin-left: 10%;
 }
 
 .grid div {
@@ -307,273 +253,99 @@ margin-top: 10vh;
   box-sizing: border-box;
 }
 
-div.wall {
-  background: url("./images/wall/wall.png") no-repeat;
+/* Optimized background rules */
+.wall, .bombermanWhiteGoingDown.bomb, .bombermanWhiteGoingRight.bomb, .bombermanWhiteGoingLeft.bomb, .bombermanWhiteGoingUp.bomb,
+.bombermanWhiteGoingDown, .bombermanWhiteGoingRight, .bombermanWhiteGoingLeft, .bombermanWhiteGoingUp,
+.bombermanRedGoingDown.bomb, .bombermanRedGoingRight.bomb, .bombermanRedGoingLeft.bomb, .bombermanRedGoingUp.bomb,
+.bombermanRedGoingDown, .bombermanRedGoingRight, .bombermanRedGoingLeft, .bombermanRedGoingUp,
+.bombermanBlackGoingDown.bomb, .bombermanBlackGoingRight.bomb, .bombermanBlackGoingLeft.bomb, .bombermanBlackGoingUp.bomb,
+.bombermanBlackGoingDown, .bombermanBlackGoingRight, .bombermanBlackGoingLeft, .bombermanBlackGoingUp,
+.bombermanBlueGoingDown.bomb, .bombermanBlueGoingRight.bomb, .bombermanBlueGoingLeft.bomb, .bombermanBlueGoingUp.bomb,
+.bombermanBlueGoingDown, .bombermanBlueGoingRight, .bombermanBlueGoingLeft, .bombermanBlueGoingUp,
+.bomb, .powerBombDropped, .explosion, .sideExplosion, .powerBomb, .extraBomb, .skate, .breakableWall, .blank, .arrow-down {
+  background-repeat: no-repeat;
   background-size: var(--bg-size) var(--bg-size);
 }
 
+/* Specific background images */
+.wall { background-image: url("./images/wall/wall.png"); }
+.bomb { background-image: url("./images/bomb.png"); }
+.powerBombDropped { background-image: url("./images/powerBomb.png"); }
+.explosion { background-image: url("./images/explosion.png"); }
+.sideExplosion { background-image: url("./images/sideExplosion.png"); }
 
-div .bombermanWhiteGoingDown.bomb {
-  background: url("./images/bombermanWhite/bombermanWhiteGoingDownBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
+/* Bomberman movement images for all colors */
+.bombermanWhiteGoingDown { background-image: url("./images/bombermanWhite/bombermanWhiteGoingDown.png"); }
+.bombermanWhiteGoingRight { background-image: url("./images/bombermanWhite/bombermanWhiteGoingRight.png"); }
+.bombermanWhiteGoingLeft { background-image: url("./images/bombermanWhite/bombermanWhiteGoingLeft.png"); }
+.bombermanWhiteGoingUp { background-image: url("./images/bombermanWhite/bombermanWhiteGoingUp.png"); }
 
-div .bombermanWhiteGoingRight.bomb {
-  background: url("./images/bombermanWhite/bombermanWhiteGoingRightBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
+.bombermanRedGoingDown { background-image: url("./images/bombermanRed/bombermanRedGoingDown.png"); }
+.bombermanRedGoingRight { background-image: url("./images/bombermanRed/bombermanRedGoingRight.png"); }
+.bombermanRedGoingLeft { background-image: url("./images/bombermanRed/bombermanRedGoingLeft.png"); }
+.bombermanRedGoingUp { background-image: url("./images/bombermanRed/bombermanRedGoingUp.png"); }
 
-div .bombermanWhiteGoingLeft.bomb {
-  background: url("./images/bombermanWhite/bombermanWhiteGoingLeftBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
+.bombermanBlackGoingDown { background-image: url("./images/bombermanBlack/bombermanBlackGoingDown.png"); }
+.bombermanBlackGoingRight { background-image: url("./images/bombermanBlack/bombermanBlackGoingRight.png"); }
+.bombermanBlackGoingLeft { background-image: url("./images/bombermanBlack/bombermanBlackGoingLeft.png"); }
+.bombermanBlackGoingUp { background-image: url("./images/bombermanBlack/bombermanBlackGoingUp.png"); }
 
-div .bombermanWhiteGoingUp.bomb {
-  background: url("./images/bombermanWhite/bombermanWhiteGoingUpBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
+.bombermanBlueGoingDown { background-image: url("./images/bombermanBlue/bombermanBlueGoingDown.png"); }
+.bombermanBlueGoingRight { background-image: url("./images/bombermanBlue/bombermanBlueGoingRight.png"); }
+.bombermanBlueGoingLeft { background-image: url("./images/bombermanBlue/bombermanBlueGoingLeft.png"); }
+.bombermanBlueGoingUp { background-image: url("./images/bombermanBlue/bombermanBlueGoingUp.png"); }
 
-div .bombermanWhiteGoingDown {
-  background: url("./images/bombermanWhite/bombermanWhiteGoingDown.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
+/* Bomberman with bomb images for all colors */
+.bombermanWhiteGoingDown.bomb { background-image: url("./images/bombermanWhite/bombermanWhiteGoingDownBomb.png"); }
+.bombermanWhiteGoingRight.bomb { background-image: url("./images/bombermanWhite/bombermanWhiteGoingRightBomb.png"); }
+.bombermanWhiteGoingLeft.bomb { background-image: url("./images/bombermanWhite/bombermanWhiteGoingLeftBomb.png"); }
+.bombermanWhiteGoingUp.bomb { background-image: url("./images/bombermanWhite/bombermanWhiteGoingUpBomb.png"); }
 
-div .bombermanWhiteGoingRight {
-  background: url("./images/bombermanWhite/bombermanWhiteGoingRight.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
+.bombermanRedGoingDown.bomb { background-image: url("./images/bombermanRed/bombermanRedGoingDownBomb.png"); }
+.bombermanRedGoingRight.bomb { background-image: url("./images/bombermanRed/bombermanRedGoingRightBomb.png"); }
+.bombermanRedGoingLeft.bomb { background-image: url("./images/bombermanRed/bombermanRedGoingLeftBomb.png"); }
+.bombermanRedGoingUp.bomb { background-image: url("./images/bombermanRed/bombermanRedGoingUpBomb.png"); }
 
-div .bombermanWhiteGoingLeft {
-  background: url("./images/bombermanWhite/bombermanWhiteGoingLeft.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
+.bombermanBlackGoingDown.bomb { background-image: url("./images/bombermanBlack/bombermanBlackGoingDownBomb.png"); }
+.bombermanBlackGoingRight.bomb { background-image: url("./images/bombermanBlack/bombermanBlackGoingRightBomb.png"); }
+.bombermanBlackGoingLeft.bomb { background-image: url("./images/bombermanBlack/bombermanBlackGoingLeftBomb.png"); }
+.bombermanBlackGoingUp.bomb { background-image: url("./images/bombermanBlack/bombermanBlackGoingUpBomb.png"); }
 
-div .bombermanWhiteGoingUp {
-  background: url("./images/bombermanWhite/bombermanWhiteGoingUp.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
+.bombermanBlueGoingDown.bomb { background-image: url("./images/bombermanBlue/bombermanBlueGoingDownBomb.png"); }
+.bombermanBlueGoingRight.bomb { background-image: url("./images/bombermanBlue/bombermanBlueGoingRightBomb.png"); }
+.bombermanBlueGoingLeft.bomb { background-image: url("./images/bombermanBlue/bombermanBlueGoingLeftBomb.png"); }
+.bombermanBlueGoingUp.bomb { background-image: url("./images/bombermanBlue/bombermanBlueGoingUpBomb.png"); }
+.powerBomb { background-image: url("./images/powerUps/PowerBombPowerUp.png"); }
+.extraBomb { background-image: url("./images/powerUps/extraBombPowerUp.png"); }
+.skate { background-image: url("./images/powerUps/speedPowerUp.png"); }
+.breakableWall { background-image: url("./images/wall/wall100.png"); }
+.blank { background-image: url("./images/blank.png"); }
+.arrow-down { background-image: url("./images/arrow-down.png"); }
 
-div .bombermanRedGoingDown.bomb {
-  background: url("./images/bombermanRed/bombermanRedGoingDownBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanRedGoingRight.bomb {
-  background: url("./images/bombermanRed/bombermanRedGoingRightBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanRedGoingLeft.bomb {
-  background: url("./images/bombermanRed/bombermanRedGoingLeftBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanRedGoingUp.bomb {
-  background: url("./images/bombermanRed/bombermanRedGoingUpBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanRedGoingDown {
-  background: url("./images/bombermanRed/bombermanRedGoingDown.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanRedGoingRight {
-  background: url("./images/bombermanRed/bombermanRedGoingRight.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanRedGoingLeft {
-  background: url("./images/bombermanRed/bombermanRedGoingLeft.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanRedGoingUp {
-  background: url("./images/bombermanRed/bombermanRedGoingUp.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlackGoingDown.bomb {
-  background: url("./images/bombermanBlack/bombermanBlackGoingDownBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlackGoingRight.bomb {
-  background: url("./images/bombermanBlack/bombermanBlackGoingRightBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlackGoingLeft.bomb {
-  background: url("./images/bombermanBlack/bombermanBlackGoingLeftBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlackGoingUp.bomb {
-  background: url("./images/bombermanBlack/bombermanBlackGoingUpBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlackGoingDown {
-  background: url("./images/bombermanBlack/bombermanBlackGoingDown.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlackGoingRight {
-  background: url("./images/bombermanBlack/bombermanBlackGoingRight.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlackGoingLeft {
-  background: url("./images/bombermanBlack/bombermanBlackGoingLeft.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlackGoingUp {
-  background: url("./images/bombermanBlack/bombermanBlackGoingUp.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlueGoingDown.bomb {
-  background: url("./images/bombermanBlue/bombermanBlueGoingDownBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlueGoingRight.bomb {
-  background: url("./images/bombermanBlue/bombermanBlueGoingRightBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlueGoingLeft.bomb {
-  background: url("./images/bombermanBlue/bombermanBlueGoingLeftBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlueGoingUp.bomb {
-  background: url("./images/bombermanBlue/bombermanBlueGoingUpBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlueGoingDown {
-  background: url("./images/bombermanBlue/bombermanBlueGoingDown.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlueGoingRight {
-  background: url("./images/bombermanBlue/bombermanBlueGoingRight.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlueGoingLeft {
-  background: url("./images/bombermanBlue/bombermanBlueGoingLeft.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bombermanBlueGoingUp {
-  background: url("./images/bombermanBlue/bombermanBlueGoingUp.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .bomb {
-  background: url("./images/bomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .powerBombDropped {
-  background: url("./images/powerBomb.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .explosion {
-  background: url("./images/explosion.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .sideExplosion {
-  background: url("./images/sideExplosion.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .powerBomb {
-  background: url("./images/powerUps/PowerBombPowerUp.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .extraBomb {
-  background: url("./images/powerUps/extraBombPowerUp.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .skate {
-  background: url("./images/powerUps/speedPowerUp.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .breakableWall {
-  background: url("./images/wall/wall100.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .blank {
-  background: url("./images/blank.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
-div .arrow-down {
-  background: url("./images/arrow-down.png") no-repeat;
-  background-size: var(--bg-size) var(--bg-size);
-}
-
+/* Optimized keyframe animation */
 @keyframes breakWall {
-  100% {
-    background: url("./images/wall/wall0.png") no-repeat;
-    background-size: var(--bg-size) var(--bg-size);
-  }
-  80% {
-    background: url("./images/wall/wall10.png") no-repeat;
-    background-size: var(--bg-size) var(--bg-size);
-  }
-  60% {
-    background: url("./images/wall/wall20.png") no-repeat;
-    background-size: var(--bg-size) var(--bg-size);
-  }
-  40% {
-    background: url("./images/wall/wall40.png") no-repeat;
-    background-size: var(--bg-size) var(--bg-size);
-  }
-  20% {
-    background: url("./images/wall/wall60.png") no-repeat;
-    background-size: var(--bg-size) var(--bg-size);
-  }
-  10% {
-    background: url("./images/wall/wall80.png") no-repeat;
-    background-size: var(--bg-size) var(--bg-size);
-  }
-  0% {
-    background: url("./images/wall/wall100.png") no-repeat;
-    background-size: var(--bg-size) var(--bg-size);
-  }
+  0% { background-image: url("./images/wall/wall100.png"); }
+  10% { background-image: url("./images/wall/wall80.png"); }
+  20% { background-image: url("./images/wall/wall60.png"); }
+  40% { background-image: url("./images/wall/wall40.png"); }
+  60% { background-image: url("./images/wall/wall20.png"); }
+  80% { background-image: url("./images/wall/wall10.png"); }
+  100% { background-image: url("./images/wall/wall0.png"); }
 }
 
-div .dead {
-  animation-name: dying;
-  animation-duration: 1s;
+.dead {
+  animation: dying 1s;
   font-size: 10px;
 }
 
 @keyframes dying {
-  /* 100% {background: url('./images/headlessWhiteBomberman.png') no-repeat;background-size: 48.4px var(--bg-size);}
-60% {background: url('./images/headlessWhiteBomberman.png') no-repeat;background-size: 48.4px var(--bg-size);}
-30%  {background: url('./images/bombermanWhiteDead.png') no-repeat;background-size: 48.4px var(--bg-size);} */
-  0% {
-    background: url("./images/dying25.png") no-repeat;
-    background-size: var(--bg-size) var(--bg-size);
-  }
+  0% { background-image: url("./images/dying25.png"); }
 }
 
 #chatBox {
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: stretch;
   position: fixed;
   bottom: 0;
@@ -584,7 +356,6 @@ div .dead {
   height: 70vh;
   background-color: #f2f2f2;
   border-radius: 10px;
-  /* Enhanced box-shadow for a more defined shadow */
   box-shadow: -4px -4px 15px rgba(217, 16, 16, 0.3),
     4px 4px 10px rgba(210, 38, 38, 0.1);
   font-family: "Roboto", sans-serif;
@@ -594,6 +365,7 @@ div .dead {
   flex: 1;
   overflow: auto;
 }
+
 #chatBox h2 {
   font-size: 1.2em;
   color: #333;
@@ -657,7 +429,7 @@ div .dead {
   background-color: #e68900;
 }
 
-/* Add responsiveness */
+/* Responsive design */
 @media (max-width: 600px) {
   #chatBox {
     width: 100vw;
@@ -676,5 +448,13 @@ div .dead {
   #chatBox input {
     height: 40px;
   }
-  /* add responsiveness to the application */
+
+  .instruction-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .instruction-item img {
+    margin-bottom: 10px;
+  }
 }

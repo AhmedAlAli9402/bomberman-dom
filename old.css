@@ -1,0 +1,681 @@
+/* styles.css */
+
+/* General HUD container styling */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", sans-serif;
+    background-color: #f2f2f2;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  #hud {
+    /* position: absolute; */
+    /* top: 10px;
+    left: 10px; */
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    width: fit-content;
+    max-width: 500px; /* Adjust width as needed */
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Styling for HUD elements */
+  #hud div {
+    margin: 0 10px;
+  }
+  
+  /* Countdown timer styling */
+  #hud div:first-child {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  /* Player lives styling */
+  #hud div:nth-child(n + 2) {
+    font-size: 16px;
+    font-weight: normal;
+  }
+  
+  /* Add responsiveness */
+  /* @media (max-width: 600px) {
+    #hud {
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    #hud div {
+      margin: 5px 0;
+    }
+  } */
+  
+  /* ///////////////////////////////////////////// */
+  #waitingArea {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* padding: 20px; */
+    /* margin: -2%; */
+    height: 70vh;
+    width: 74vw;
+    background-color: #f2f2f2;
+    font-family: "Roboto", sans-serif;
+    margin-top: 20vh;
+  }
+  #waitingMessage {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 20px;
+    /* display: flex; */
+    position: relative;
+  }
+  #waitingArea p {
+    font-size: 1.2em;
+    color: #333;
+  }
+  
+  #countdownTimer {
+    display: none;
+    font-weight: bold;
+    color: #d9534f;
+  }
+  
+  #instructionsPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    height: 70vh;
+    max-width: 70%;
+  }
+  
+  .instruction-title {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .instruction-objective {
+    font-size: 1.4em;
+    color: #666;
+    text-align: center;
+  }
+  
+  .instruction-item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 5px;
+    margin: 2px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: inherit;
+    max-width: inherit;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .instruction-item img {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+  }
+  
+  .instruction-item p {
+    font-size: 1.1em;
+    color: #333;
+    margin: 0px;
+  }
+  
+  @media (max-width: 600px) {
+    .instruction-item {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .instruction-item img {
+      margin-bottom: 10px;
+    }
+  }
+  /* /////////////////////////////////////////////   */
+  .game-over {
+    font-size: 3em;
+    color: #d9534f;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px #000;
+  }
+  /* startNewGame button */
+  .startNewGame{
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #5cb85c;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: fit-content;
+  }
+  
+  .winner-display {
+    font-size: 2em;
+    color: #5cb85c;
+    text-shadow: 1px 1px #333;
+    margin-top: 10px;
+  }
+  
+  #gameGrid h1,
+  #gameGrid h2 {
+    font-family: "Arial", sans-serif;
+    text-align: center;
+  }
+  /* /////////////////////////////////////////////   */
+  
+  /*  General styles */
+  a {
+    color: #1a0404;
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 1px solid #f5f5f5;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+  }
+  
+  #overlay {
+    display: flex;
+    flex-direction: row;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 10%;
+    background-color: #f2f2f2;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  #app {
+    width: 100vw;
+    height: 85vh;
+    /* margin-top: 15vh; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+  }
+  
+  #gameGrid
+  {
+  display: flex;
+  /* position: absolute; */
+  width: 70vw;
+  /* height: vh; */
+  /* position: flex; */
+  flex-direction: column;
+  
+  /* justify-content: center; */
+  align-items: center;
+  /* height: 100%; */
+  /* background-color: #f2f2f2;
+  font-family: "Roboto", sans-serif; */
+  margin-top: 10vh;
+  }
+  
+  #landingPage,
+  #nicknamePopup
+  {
+    display: none;
+    /* position: flex; */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f2f2f2;
+    font-family: "Roboto", sans-serif;
+  }
+  
+  #logo {
+    width: 200px;
+    /* float: right; */
+    /* margin-bottom: 20px; */
+    /* in center */
+    /* display: block; */
+    /* margin-left: auto; */
+  }
+  
+  #nicknameInput {
+    width: 300px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 16px;
+    margin: 20px;
+  }
+  
+  /* Button styles */
+  #startGameButton,
+  #submitnicknameButton {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #ff9800;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #startGameButton,
+  #submitUsernameButton:hover {
+    background-color: #e68900;
+  }
+  :root {
+    --g-width: 50vw;
+    --bg-size: calc(var(--g-width)/23);
+  }
+  /* Input styles */
+  .grid {
+    float: center;
+    width: var(--g-width);
+    height: calc(var(--bg-size)*17);
+    display: flex;
+    position: flex;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    background: url('./images/wall/walkable.png') no-repeat;
+    background-size:cover; /* Adjust background size to cover the grid */
+    /* margin-left: 150px; */
+    transform: translateZ(1);
+    background-color: black;
+    margin-left: 10% ;
+  }
+  
+  .grid div {
+    background-size: var(--bg-size) var(--bg-size);
+    width: var(--bg-size);
+    height: var(--bg-size);
+    box-sizing: border-box;
+  }
+  
+  div.wall {
+    background: url("./images/wall/wall.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  
+  div .bombermanWhiteGoingDown.bomb {
+    background: url("./images/bombermanWhite/bombermanWhiteGoingDownBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanWhiteGoingRight.bomb {
+    background: url("./") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanWhiteGoingLeft.bomb {
+    background: url("./images/bombermanWhite/bombermanWhiteGoingLeftBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanWhiteGoingUp.bomb {
+    background: url("./images/bombermanWhite/bombermanWhiteGoingUpBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanWhiteGoingDown {
+    background: url("./images/bombermanWhite/bombermanWhiteGoingDown.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanWhiteGoingRight {
+    background: url("./images/bombermanWhite/bombermanWhiteGoingRight.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanWhiteGoingLeft {
+    background: url("./images/bombermanWhite/bombermanWhiteGoingLeft.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanWhiteGoingUp {
+    background: url("./images/bombermanWhite/bombermanWhiteGoingUp.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanRedGoingDown.bomb {
+    background: url("./images/bombermanRed/bombermanRedGoingDownBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanRedGoingRight.bomb {
+    background: url("./images/bombermanRed/bombermanRedGoingRightBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanRedGoingLeft.bomb {
+    background: url("./images/bombermanRed/bombermanRedGoingLeftBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanRedGoingUp.bomb {
+    background: url("./images/bombermanRed/bombermanRedGoingUpBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanRedGoingDown {
+    background: url("./images/bombermanRed/bombermanRedGoingDown.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanRedGoingRight {
+    background: url("./images/bombermanRed/bombermanRedGoingRight.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanRedGoingLeft {
+    background: url("./images/bombermanRed/bombermanRedGoingLeft.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanRedGoingUp {
+    background: url("./images/bombermanRed/bombermanRedGoingUp.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlackGoingDown.bomb {
+    background: url("./images/bombermanBlack/bombermanBlackGoingDownBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlackGoingRight.bomb {
+    background: url("./images/bombermanBlack/bombermanBlackGoingRightBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlackGoingLeft.bomb {
+    background: url("./images/bombermanBlack/bombermanBlackGoingLeftBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlackGoingUp.bomb {
+    background: url("./images/bombermanBlack/bombermanBlackGoingUpBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlackGoingDown {
+    background: url("./images/bombermanBlack/bombermanBlackGoingDown.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlackGoingRight {
+    background: url("./images/bombermanBlack/bombermanBlackGoingRight.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlackGoingLeft {
+    background: url("./images/bombermanBlack/bombermanBlackGoingLeft.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlackGoingUp {
+    background: url("./images/bombermanBlack/bombermanBlackGoingUp.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlueGoingDown.bomb {
+    background: url("./images/bombermanBlue/bombermanBlueGoingDownBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlueGoingRight.bomb {
+    background: url("./images/bombermanBlue/bombermanBlueGoingRightBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlueGoingLeft.bomb {
+    background: url("./images/bombermanBlue/bombermanBlueGoingLeftBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlueGoingUp.bomb {
+    background: url("./images/bombermanBlue/bombermanBlueGoingUpBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlueGoingDown {
+    background: url("./images/bombermanBlue/bombermanBlueGoingDown.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlueGoingRight {
+    background: url("./images/bombermanBlue/bombermanBlueGoingRight.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlueGoingLeft {
+    background: url("./images/bombermanBlue/bombermanBlueGoingLeft.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bombermanBlueGoingUp {
+    background: url("./images/bombermanBlue/bombermanBlueGoingUp.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .bomb {
+    background: url("./images/bomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .powerBombDropped {
+    background: url("./images/powerBomb.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .explosion {
+    background: url("./images/explosion.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .sideExplosion {
+    background: url("./images/sideExplosion.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .powerBomb {
+    background: url("./images/powerUps/PowerBombPowerUp.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .extraBomb {
+    background: url("./images/powerUps/extraBombPowerUp.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .skate {
+    background: url("./images/powerUps/speedPowerUp.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .breakableWall {
+    background: url("./images/wall/wall100.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .blank {
+    background: url("./images/blank.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  div .arrow-down {
+    background: url("./images/arrow-down.png") no-repeat;
+    background-size: var(--bg-size) var(--bg-size);
+  }
+  
+  @keyframes breakWall {
+    100% {
+      background: url("./images/wall/wall0.png") no-repeat;
+      background-size: var(--bg-size) var(--bg-size);
+    }
+    80% {
+      background: url("./images/wall/wall10.png") no-repeat;
+      background-size: var(--bg-size) var(--bg-size);
+    }
+    60% {
+      background: url("./images/wall/wall20.png") no-repeat;
+      background-size: var(--bg-size) var(--bg-size);
+    }
+    40% {
+      background: url("./images/wall/wall40.png") no-repeat;
+      background-size: var(--bg-size) var(--bg-size);
+    }
+    20% {
+      background: url("./images/wall/wall60.png") no-repeat;
+      background-size: var(--bg-size) var(--bg-size);
+    }
+    10% {
+      background: url("./images/wall/wall80.png") no-repeat;
+      background-size: var(--bg-size) var(--bg-size);
+    }
+    0% {
+      background: url("./images/wall/wall100.png") no-repeat;
+      background-size: var(--bg-size) var(--bg-size);
+    }
+  }
+  
+  div .dead {
+    animation-name: dying;
+    animation-duration: 1s;
+    font-size: 10px;
+  }
+  
+  @keyframes dying {
+    /* 100% {background: url('./images/headlessWhiteBomberman.png') no-repeat;background-size: 48.4px var(--bg-size);}
+  60% {background: url('./images/headlessWhiteBomberman.png') no-repeat;background-size: 48.4px var(--bg-size);}
+  30%  {background: url('./images/bombermanWhiteDead.png') no-repeat;background-size: 48.4px var(--bg-size);} */
+    0% {
+      background: url("./images/dying25.png") no-repeat;
+      background-size: var(--bg-size) var(--bg-size);
+    }
+  }
+  
+  #chatBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: stretch;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 15vw;
+    margin: 1% 10% 7% 1%;
+    padding: 1%;
+    height: 70vh;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    /* Enhanced box-shadow for a more defined shadow */
+    box-shadow: -4px -4px 15px rgba(217, 16, 16, 0.3),
+      4px 4px 10px rgba(210, 38, 38, 0.1);
+    font-family: "Roboto", sans-serif;
+  }
+  
+  #chatMessages {
+    flex: 1;
+    overflow: auto;
+  }
+  #chatBox h2 {
+    font-size: 1.2em;
+    color: #333;
+    text-align: center;
+    margin: 10px 0;
+  }
+  
+  #chatBox ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+  }
+  
+  #chatBox li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  #chatBox li:last-child {
+    border-bottom: none;
+  }
+  
+  #chatInputContainer {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    border-radius: 0 0 10px 10px;
+  }
+  
+  #chatBox input {
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+  
+  #chatBox input:focus {
+    outline: none;
+  }
+  
+  #chatBox button {
+    height: 50px;
+    padding: 2px 10px;
+    margin-left: 5px;
+    background-color: #ff9800;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #chatBox button:hover {
+    background-color: #e68900;
+  }
+  
+  /* Add responsiveness */
+  @media (max-width: 600px) {
+    #chatBox {
+      width: 100vw;
+      height: 200px;
+      border-radius: 0;
+    }
+  
+    #chatBox h2 {
+      font-size: 1em;
+    }
+  
+    #chatBox ul {
+      height: 150px;
+    }
+  
+    #chatBox input {
+      height: 40px;
+    }
+    /* add responsiveness to the application */
+  }
+  

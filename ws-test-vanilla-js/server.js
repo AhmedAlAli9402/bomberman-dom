@@ -11,7 +11,7 @@ const server = http.createServer();
 const wss = new WebSocket.Server({ server });
 
 let Games = [];
-CreateNewGame()
+CreateNewGame();
 
 function CreateNewGame() {
   Games.push({
@@ -20,167 +20,176 @@ function CreateNewGame() {
     chatMessages: [],
   });
 }
+
 // Handle WebSocket connections
 wss.on("connection", (ws) => {
   console.log("Client connected");
   // Handle incoming messages
-  let data;
   ws.on("message", (message) => {
-    console.log(String(message), "message")
+    let data;
     try {
-      // Expecting JSON data from the client
       data = JSON.parse(message);
     } catch (e) {
-      ws.send(
-        JSON.stringify({
-          messageType: "error",
-          message: "Invalid data format. Expecting JSON.",
-        })
-      );
-      return;
-    }
-    console.log(Games.length - 1, "Games.length-1")
-    // If the client is sending their nickname on first connection
-    if (data.nickname && !Games[(Games.length - 1)].clients.has(ws)) {
-      // Check if the nickname is already taken and add a number to it
-      if (Array.from(Games[(Games.length - 1)].clients.values()).includes(data.nickname)) {
-        let i = 1;
-        while (Array.from(Games[(Games.length - 1)].clients.values()).includes(data.nickname + i)) {
-          i++;
-        }
-        data.nickname = data.nickname + i;
-      }
-
-      // Store the nickname in the map with the WebSocket connection
-      Games[(Games.length - 1)].clients.set(ws, data.nickname, Games.length - 1);
-      ws.nickname = data.nickname; // Store nickname in the WebSocket object for future reference
-      ws.gameId = Games.length - 1;
-      // Send a welcome message as JSON
-      const welcomeMessage = {
-        messageType: "welcome",
-        nickname: data.nickname,
-        message: `Welcome, ${data.nickname}!`,
-        clients: Array.from(Games[(Games.length - 1)].clients.values()),
-        numberofClients: Games[(Games.length - 1)].clients.size,
-        gameGrid: Games[(Games.length - 1)].gameGrid,
-        gameId: Games.length - 1,
-        loadMessages: Games[(Games.length - 1)].chatMessages,
-      };
-      let length = Games.length - 1;
-      console.log(String(message), "message")
-
-      // brodcast to all clients.ws the welcome message using the map and normal for loop
-      for (const client of Games[(Games.length - 1)].clients.keys()) {
-        client.send(JSON.stringify(welcomeMessage));
-      }
-      // if (Games[(Games.length - 1)].clients.size === 4){
-      //   CreateNewGame()
-      // }
+      ws.send(JSON.stringify({
+        messageType: "error",
+        message: "Invalid data format. Expecting JSON.",
+      }));
       return;
     }
 
-    // If the client sends a regular message, broadcast it to all clients
-    if (Games[data.message.gameId].clients.has(ws) && data.message) {
-      const nickname = Games[data.message.gameId].clients.get(ws);
-      // Get user id as the index of the client in the map
-      const userId = Array.from(Games[data.message.gameId].clients.keys()).indexOf(ws);
-      let broadcast = {};
-      console.log("111ID", userId, nickname, data.message.messageType);
+    const currentGame = Games[Games.length - 1];
 
-      if (data.message.messageType === "move") {
-        console.log("move", nickname, data.message);
-        const { direction } = data.message;
-        broadcast = {
-          messageType: "move",
-          id: userId,
-          direction: direction,
-        };
-        console.log("move-broadcast", broadcast);
-      } else if (data.message.messageType === "keyUp") {
-        console.log("keyUp", nickname, data.message);
-        broadcast = {
-          messageType: "keyUp",
-          id: userId,
-        };
-        console.log("keyUp-broadcast", broadcast);
-      } else if (data.message.messageType === "bombExplosion") {
-        let singleUserMessage = {
-          messageType: "bombExplosion",
-          bombPosition: data.message.bombPosition,
-          directions: data.message.directions,
-          id: userId,
-        }
-        ws.send(JSON.stringify(singleUserMessage));
-        return;
-      } else if (data.message.messageType === "killPlayer") {
-        broadcast = {
-          messageType: "killPlayer",
-          id: data.message.userId,
-        };
-        console.log("keyUp-broadcast", broadcast);
-      } else if (data.message.messageType === 'gameover') {
-        if (nickname === data.message.nickname) {
-          let singleUserMessage = {
-            messageType: 'youLost'
-          }
-          ws.send(JSON.stringify(singleUserMessage));
-          return;
-        }
-      } else if (data.message.messageType === "chat") {
-        Games[data.message.gameId].chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
-        // chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
-        broadcast = {
-          messageType: "chat",
-          nickname: nickname,
-          message: data.message,
-        };
-      } else if (data.message.messageType === "newGame") {
-        console.log("checkifnew")
-        const userId = Array.from(Games[data.message.gameId].clients.keys()).indexOf(ws);
-        if (userId === 0) {
-          CreateNewGame()
-        }
-      }
-      // Broadcast the message to all connected clients
-      if (broadcast) {
-        console.log(wss.clients.size, "wss.clients.size")
-        for (const client of Games[data.message.gameId].clients.keys()) {
-          console.log("checkifnew")
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(broadcast));
-          }
-        }
-
-      }
-      return;
+    if (data.nickname && !currentGame.clients.has(ws) && !data.messageType ) {
+      console.log('handleNewConnection');
+      handleNewConnection(ws, data, currentGame);
+    } else if (Games[data.gameId].clients.has(ws)) {
+      console.log('handleClientMessage');
+      const TheGame = Games[data.gameId];
+      // console.log("currentGame", currentGame);
+      console.log("data", data);
+      handleClientMessage(ws, data, TheGame);
+    } else {
+      console.log('Unhandled message1:', data);
     }
   });
 
   // Handle client disconnection
-  ws.on("close", () => {
-    //remove the client from the map based on nickname
-    if (Games[ws.gameId].clients.has(ws)) {
-      const nickname = Games[ws.gameId].clients.get(ws);
-      Games[ws.gameId].clients.delete(ws);
-      // Broadcast the disconnection message to all clients
-      const disconnectMessage = {
-        messageType: "disconnect",
-        nickname: nickname,
-        message: `${nickname} has left the chat.`,
-        clients: Array.from(Games[ws.gameId].clients.values()),
-        numberofClients: Games[ws.gameId].clients.size,
-      };
-      for (const client of Games[ws.gameId].clients.keys()) {
-        client.send(JSON.stringify(disconnectMessage));
-      }
-    }
-  });
+  ws.on("close", () => handleDisconnection(ws));
 
   // Handle WebSocket errors
   ws.on("error", (error) => {
     console.error(`WebSocket error for client ${ws.nickname}:`, error);
   });
 });
+
+function handleNewConnection(ws, data, currentGame) {
+  const nickname = getUniqueNickname(data.nickname, currentGame);
+  currentGame.clients.set(ws, nickname);
+  ws.nickname = nickname;
+  ws.gameId = Games.length - 1;
+
+  const welcomeMessage = {
+    messageType: "welcome",
+    nickname: nickname,
+    message: `Welcome, ${nickname}!`,
+    clients: Array.from(currentGame.clients.values()),
+    numberofClients: currentGame.clients.size,
+    gameGrid: currentGame.gameGrid,
+    gameId: Games.length - 1,
+    loadMessages: currentGame.chatMessages,
+  };
+
+  broadcastToGame(currentGame, welcomeMessage);
+}
+
+function handleClientMessage(ws, data, currentGame) {
+  const nickname = currentGame.clients.get(ws);
+  const userId = Array.from(currentGame.clients.keys()).indexOf(ws);
+  const messageHandlers = {
+    move: handleMoveMessage,
+    keyUp: handleKeyUpMessage,
+    bombExplosion: handleBombExplosionMessage,
+    killPlayer: handleKillPlayerMessage,
+    gameover: handleGameOverMessage,
+    chat: handleChatMessage,
+    newGame: handleNewGameMessage,
+  };
+  console.log("data.messageType", data.messageType);
+  console.log("data", data);
+  const handler = messageHandlers[data.messageType];
+  if (handler) {
+    handler(ws, data, currentGame, nickname, userId);
+  } else {
+    console.log('Unhandled message2:', data);
+  }
+}
+
+function handleDisconnection(ws) {
+  const game = Games[ws.gameId];
+  if (game && game.clients.has(ws)) {
+    const nickname = game.clients.get(ws);
+    game.clients.delete(ws);
+    broadcastToGame(game, {
+      messageType: "disconnect",
+      nickname: nickname,
+      message: `${nickname} has left the chat.`,
+      clients: Array.from(game.clients.values()),
+      numberofClients: game.clients.size,
+    });
+  }
+}
+
+function getUniqueNickname(nickname, game) {
+  let uniqueNickname = nickname;
+  let i = 1;
+  while (Array.from(game.clients.values()).includes(uniqueNickname)) {
+    uniqueNickname = nickname + i;
+    i++;
+  }
+  return uniqueNickname;
+}
+
+function broadcastToGame(game, message) {
+  console.log("broadcastToGame", message);
+  for (const client of game.clients.keys()) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(message));
+    }
+  }
+}
+
+function handleMoveMessage(ws, data, game, nickname, userId) {
+  console.log("handleMoveMessage", data);
+  broadcastToGame(game, {
+    messageType: "move",
+    id: userId,
+    direction: data.direction,
+  });
+}
+
+function handleKeyUpMessage(ws, data, game, nickname, userId) {
+  broadcastToGame(game, {
+    messageType: "keyUp",
+    id: userId,
+  });
+}
+
+function handleBombExplosionMessage(ws, data, game, nickname, userId) {
+  broadcastToGame(game, {
+    messageType: "bombExplosion",
+    bombPosition: data.bombPosition,
+    directions: data.directions,
+    id: userId,
+  });
+}
+
+function handleKillPlayerMessage(ws, data, game, nickname, userId) {
+  broadcastToGame(game, {
+    messageType: "killPlayer",
+    id: data.userId,
+  });
+}
+
+function handleGameOverMessage(ws, data, game, nickname, userId) {
+  if (nickname === data.nickname) {
+    ws.send(JSON.stringify({ messageType: 'youLost' }));
+  }
+}
+
+function handleChatMessage(ws, data, game, nickname, userId) {
+  game.chatMessages.push(`${nickname}: ${data.message}`);
+  broadcastToGame(game, {
+    messageType: "chat",
+    nickname: nickname,
+    message: data.message,
+  });
+}
+
+function handleNewGameMessage(ws, data, game, nickname, userId) {
+  if (userId === 0) {
+    CreateNewGame();
+  }
+}
 
 // Serve the index.html file
 const index = fs.readFileSync(path.join(__dirname, "index.html"));
@@ -212,7 +221,6 @@ function buildGameObject() {
     width * height - width * 2 + 1,
     width * height - width - 2,
   ];
-  // Always keep these squares empty
   const keepEmpty = [
     width + 2,
     width * 2 + 1,
@@ -224,75 +232,59 @@ function buildGameObject() {
     width * height - width * 2 - 2,
   ];
 
-  // Create the game grid
   let gameGrid = { allsquares: [], wall: [], breakableWall: [], powerUp: [] };
-  let alreadyUsedSquare = [];
+  let alreadyUsedSquare = new Set();
 
-  // Create the grid squares and append to grid
-  for (let i = 0; i < width * height; i++) {
-    gameGrid.allsquares.push(i);
-  }
+  // Create the grid squares
+  gameGrid.allsquares = Array.from({ length: width * height }, (_, i) => i);
+
   // Create external walls
   for (let i = 0; i < width; i++) {
-    gameGrid.wall.push(i);
-    gameGrid.wall.push(i + (height - 1) * width);
+    gameGrid.wall.push(i, i + (height - 1) * width);
   }
-  // Create external walls
   for (let i = width; i < width * height; i += width) {
-    gameGrid.wall.push(i);
-    gameGrid.wall.push(i + width - 1);
+    gameGrid.wall.push(i, i + width - 1);
   }
 
   // Create internal walls
   for (let i = width * 2 + 2, j = 0; i < width * height; i += 2, j++) {
     gameGrid.wall.push(i);
     if (j === (width - 3) / 2) {
-      i += width + 3 - 2;
+      i += width + 1;
       j = -1;
     }
   }
-  // Create empty squares
-  let emptySquares = gameGrid.allsquares.filter(
-    (square) => !gameGrid.wall.includes(square)
-  );
 
-  // Remove player starting positions from empty squares and remove keepEmpty squares also
-  emptySquares = emptySquares.filter(
-    (square) => !playerStartPositions.includes(square)
+  // Create empty squares
+  const wallSet = new Set(gameGrid.wall);
+  const playerStartSet = new Set(playerStartPositions);
+  const keepEmptySet = new Set(keepEmpty);
+  let emptySquares = gameGrid.allsquares.filter(square => 
+    !wallSet.has(square) && !playerStartSet.has(square) && !keepEmptySet.has(square)
   );
-  emptySquares = emptySquares.filter((square) => !keepEmpty.includes(square));
 
   // Place breakable walls
   for (let i = 0; i < numberOfBreakableWalls; i++) {
-    const random = getRandomIndex(emptySquares.length);
-    randomSquare = emptySquares[random];
-    const targetSquare = gameGrid.wall.includes(randomSquare);
-    if (!targetSquare) {
-      gameGrid.breakableWall.push(randomSquare);
-    } else {
-      i--;
-    }
+    const randomIndex = Math.floor(Math.random() * emptySquares.length);
+    const randomSquare = emptySquares[randomIndex];
+    gameGrid.breakableWall.push(randomSquare);
+    emptySquares.splice(randomIndex, 1);
   }
+
   // Place power-ups
+  const powerUpCount = numberOfPowerUps / powerUps.length;
   for (const powerUp of powerUps) {
-    for (let j = 0; j < numberOfPowerUps / powerUps.length; j++) {
-      const random = getRandomIndex(emptySquares.length);
-      randomSquare = emptySquares[random];
-      if (
-        gameGrid.breakableWall.includes(randomSquare) &&
-        !alreadyUsedSquare.includes(randomSquare)
-      ) {
+    for (let j = 0; j < powerUpCount; j++) {
+      const randomIndex = Math.floor(Math.random() * gameGrid.breakableWall.length);
+      const randomSquare = gameGrid.breakableWall[randomIndex];
+      if (!alreadyUsedSquare.has(randomSquare)) {
         gameGrid.powerUp.push({ index: randomSquare, powerUp: powerUp });
-        alreadyUsedSquare.push(randomSquare);
+        alreadyUsedSquare.add(randomSquare);
       } else {
         j--;
       }
     }
   }
-  return gameGrid;
-}
 
-// Function to get a random index
-function getRandomIndex(length) {
-  return Math.floor(Math.random() * length);
+  return gameGrid;
 }
