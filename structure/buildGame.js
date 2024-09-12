@@ -174,13 +174,20 @@ function endGame() {
     gameGrid.appendChild(gameOver);
 
     // Determine the winner with the most lives remaining (if any) otherwise, no winner if all players have 0 lives or equal lives
-    const winnerIndex = players.reduce((winnerIndex, player, index) => {
+    let winnerIndex = players.reduce((winnerIndex, player, index) => {
         return player.lives > players[winnerIndex].lives ? index : winnerIndex;
     }, 0);
 
+    // check if there another player with the same number of lives as the winner
+    const equalLives = players.filter(player => player.lives === players[winnerIndex].lives);
+
+    // if there is a player with the same number of lives as the winner, return -1
+    if (equalLives.length > 1) {
+        winnerIndex = -1;
+    }
     console.log('winnerIndex', winnerIndex);
     console.log("players", players);
-    if (winnerIndex !== -1 && players.filter(player => player.lives > 0).length === 1) {
+    if (winnerIndex !== -1 && players.filter(player => player.lives > 0).length >= 1) {
         const winnerName = players[winnerIndex].nickname; // Get the winner's name
         // Display the winner
         const winnerDisplay = MyFramework.DOM('h2', { class: 'winner-display' }, `${winnerName} is the winner!`);
