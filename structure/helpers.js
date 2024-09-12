@@ -27,12 +27,4 @@ export function setPlayersNicknames(nicknames) {
       players[i].lives = 3;
     }
   }
-
-  // players.forEach((player, index) => {
-  //   console.log('index',nicknames[index]);
-  //   if (nicknames[index]!==undefined) {
-  //     player.nickname = nicknames[index];
-  //     player.lives = 3;
-  //   }
-  // });
 }

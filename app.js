@@ -10,8 +10,8 @@ import { checkIfPlayerInBlastRadius, killPlayer } from "./structure/gameEvents.j
 
 // set the countdown to the minimum time or maximum time
 // let countdown = minimumTime;
-const [countdown, setCountdown] = MyFramework.State(10);
-const [gameTimer, setGameTimer] = MyFramework.State(5);
+const [countdown, setCountdown] = MyFramework.State(maximumTime);
+const [gameTimer, setGameTimer] = MyFramework.State(minimumTime);
 
 // set the needed players
 let neededPlayers = minimumPlayers; // for mini of 2 players
@@ -49,7 +49,7 @@ function connectToWebSocket(nickname) {
         chatMessages = data.loadMessages
         loadExistingMessages();
       }
-      if (data.numberofClients === 4) {
+      if (data.numberofClients === maximumPlayers) {
         setCountdown(0);
       }
       game.gameGrid = data.gameGrid;
@@ -317,7 +317,7 @@ function showWaitingArea() {
 function startCountdown() {
   // clear the timer if it's already running and set the countdown
   clearInterval(timer);
-  setCountdown(minimumTime);
+  setCountdown(maximumTime);
   // hide countPlayers,waitingMessage
   document.getElementById("waitingMessage").style.display = "none";
   // show countdownTimer
@@ -344,7 +344,7 @@ function startCountdown() {
 function startGameTimer() {
     // Start the game timer
     clearInterval(gameStartTimer);
-    setGameTimer(maximumTime);
+    setGameTimer(minimumTime);
     gameStartTimer = setInterval(() => {
       setGameTimer(gameTimer() - 1);
       document.getElementById(
