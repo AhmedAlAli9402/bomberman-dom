@@ -188,7 +188,7 @@ function endGame() {
         gameGrid.appendChild(noWinner);
     }
     const newGameButton = MyFramework.DOM('button', { class: 'startNewGame' , onclick:startNewGame}, 'startNewGame');
-        gameGrid.appendChild(noWinner);
+        gameGrid.appendChild(newGameButton);
 }
 
 function startNewGame(){

@@ -152,6 +152,19 @@ body {
   margin-bottom: 20px;
   text-shadow: 2px 2px #000;
 }
+/* startNewGame button */
+.startNewGame{
+  padding: 10px 20px;
+  margin-top: 20px;
+  background-color: #5cb85c;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: fit-content;
+}
 
 .winner-display {
   font-size: 2em;
@@ -209,7 +222,7 @@ width: 70vw;
 flex-direction: column;
 
 /* justify-content: center; */
-/* align-items: center; */
+align-items: center;
 /* height: 100%; */
 /* background-color: #f2f2f2;
 font-family: "Roboto", sans-serif; */
