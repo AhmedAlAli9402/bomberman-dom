@@ -77,11 +77,11 @@ function dropBomb(id) {
         availableSquares[bombermanIndex].classList.add('powerBombDropped');
     } else {
     availableSquares[bombermanIndex].classList.add('bomb');
-}
+    }
     setTimeout(() => {
         console.log(bombermanIndex)
         players[id].bombDropped--;
-        let directions = breakWall(bombermanIndex);
+        const directions = breakWall(bombermanIndex);
         sendBombExplosion(bombermanIndex, directions);
     }, 3000);
 }

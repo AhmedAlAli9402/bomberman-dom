@@ -12,7 +12,8 @@ import { checkIfPlayerInBlastRadius, killPlayer } from "./structure/gameEvents.j
 // let countdown = minimumTime;
 const [countdown, setCountdown] = MyFramework.State(maximumTime);
 const [gameTimer, setGameTimer] = MyFramework.State(minimumTime);
-
+// set web socket
+const [ws , setWS] = MyFramework.State(null);
 // set the needed players
 let neededPlayers = minimumPlayers; // for mini of 2 players
 // let neededPlayers = 1 ; // for testing with 1 player
@@ -21,22 +22,22 @@ let gameStartTimer;
 
 // Get the container element
 export const container = document.getElementById("app");
-let ws;
+// let ws();
 let chatMessages = [];
 
 function connectToWebSocket(nickname) {
-  ws = new WebSocket(wsUrl);
-
-  ws.onopen = () => {
+ const newWS = new WebSocket(wsUrl);
+ setWS(newWS);
+  ws().onopen = () => {
     console.log("Connected to WebSocket server");
     if (nickname && nickname.trim()) {
-      ws.send(JSON.stringify({ nickname })); // Send the nickname in the first message
+      ws().send(JSON.stringify({ nickname })); // Send the nickname in the first message
     } else {
       alert("Nickname cannot be empty");
     }
   };
 
-  ws.onmessage = function(message) {
+  ws().onmessage = function(message) {
     const data = JSON.parse(message.data);
     console.log("Data received", data.messageType , data);
     if (data.messageType === "welcome") {
@@ -80,7 +81,7 @@ function connectToWebSocket(nickname) {
     }
   };
 
-  ws.onclose = () => {
+  ws().onclose = () => {
     console.log("Disconnected from WebSocket server");
   };
 }
@@ -88,8 +89,8 @@ function connectToWebSocket(nickname) {
 
 export function sendPlayerMove(direction) {
   console.log("sendPlayerMove", "direction", direction.key);
-  if (ws) {
-    ws.send(
+  if (ws()) {
+    ws().send(
       JSON.stringify({
         message: {
           gameId: game.gameId,
@@ -103,8 +104,8 @@ export function sendPlayerMove(direction) {
 
 export function sendkeyUp() {
   console.log('sendkeyUp');
-  if (ws) {
-    ws.send(JSON.stringify({
+  if (ws()) {
+    ws().send(JSON.stringify({
       message: {
         gameId: game.gameId,
         messageType: 'keyUp'
@@ -115,8 +116,8 @@ export function sendkeyUp() {
 
 export function sendBombExplosion(bombPosition, directions) {
   console.log('checkPlayer');
-  if (ws) {
-    ws.send(JSON.stringify({
+  if (ws()) {
+    ws().send(JSON.stringify({
       message: {
         messageType: 'bombExplosion',
         gameId: game.gameId,
@@ -129,8 +130,8 @@ export function sendBombExplosion(bombPosition, directions) {
 
 export function sendKillPlayer(userId) {
   console.log('sendKillPlayer');
-  if (ws) {
-    ws.send(JSON.stringify({
+  if (ws()) {
+    ws().send(JSON.stringify({
       message: {
         messageType: 'killPlayer',
         gameId: game.gameId,
@@ -141,8 +142,8 @@ export function sendKillPlayer(userId) {
 }
 
 export function sendplayerGameOver(nickname) {
-  if (ws) {
-    ws.send(JSON.stringify({
+  if (ws()) {
+    ws().send(JSON.stringify({
       message: {
         messageType: 'gameover',
         nickname: nickname,
@@ -413,8 +414,8 @@ function addChatMessage(msg) {
 function sendMessage() {
   const message = document.getElementById("chatInput").value.trim();
   if (message) {
-    if (ws) {
-      ws.send(JSON.stringify({ message: { gameId: game.gameId, messageType: "chat", message } }));
+    if (ws()) {
+      ws().send(JSON.stringify({ message: { gameId: game.gameId, messageType: "chat", message } }));
       // addChatMessage(`You: ${message}`); // Show the sent message immediately
       document.getElementById("chatInput").value = ""; // Clear input
     }
@@ -435,7 +436,7 @@ function loadExistingMessages() {
 showLandingPage();
 
 function createNewGameinServer() {
-  if (ws) {
-    ws.send(JSON.stringify({ message: { gameId: game.gameId, messageType: "newGame" } }));
+  if (ws()) {
+    ws().send(JSON.stringify({ message: { gameId: game.gameId, messageType: "newGame" } }));
   }
 }
