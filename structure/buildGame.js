@@ -58,10 +58,7 @@ export function buildGame(gameGrid){
 
     // Ensure no blocked initial paths
     startTimer(countdown());
-    initializePlayer();
-}
 
-function initializePlayer() {
     // Add event listeners for player movement
     document.addEventListener('keydown', (event) => {
         const key = event.key;
@@ -77,7 +74,12 @@ function initializePlayer() {
         }
     }
     );
+    // initializePlayer();
 }
+
+// function initializePlayer() {
+
+// }
 
 // Show the game grid and HUD
 export function showGameGrid() {

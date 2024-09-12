@@ -77,10 +77,11 @@ export function killPlayer(userId) {
     }}
     setTimeout(() => {bomberman.removeAttribute('class');
         if (players[userId].lives !== 0) {
-    availableSquares[recoveryPosition].classList.add(`bomberman${players[userId].color}GoingDown`)
-} else {
-    sendplayerGameOver(players[userId].nickname); 
-}
-    ;}, 10)
+        availableSquares[recoveryPosition].classList.add(`bomberman${players[userId].color}GoingDown`)
+        } else {
+            sendplayerGameOver(players[userId].nickname); 
+        }
+       ;})
+
     updateHUD(userId)
 }

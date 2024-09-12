@@ -111,6 +111,7 @@ wss.on("connection", (ws) => {
           id: userId,
         }
         ws.send(JSON.stringify(singleUserMessage));
+        return;
       } else if (data.message.messageType === "killPlayer") {
         broadcast = {
           messageType: "killPlayer",
@@ -123,6 +124,7 @@ wss.on("connection", (ws) => {
             messageType: 'youLost'
           }
           ws.send(JSON.stringify(singleUserMessage));
+          return;
         }
       } else if (data.message.messageType === "chat") {
         Games[data.message.gameId].chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message

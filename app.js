@@ -431,6 +431,6 @@ showLandingPage();
 
 function createNewGameinServer() {
   if (ws) {
-    ws.send(JSON.stringify({ message: { gameId: game.gameId, type: "newGame" } }));
+    ws.send(JSON.stringify({ message: { gameId: game.gameId, messageType: "newGame" } }));
   }
 }
