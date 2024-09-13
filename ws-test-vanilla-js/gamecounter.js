@@ -32,7 +32,7 @@ export function startGameCountdown(currentGame) {
       
       console.log(`Time remaining: ${countdown1} seconds`);
 
-      if (countdown1 <= 0) {
+      if (countdown1 === 1) {
         currentGame.isStarting = true;
         clearInterval(countdownInterval1); // Stop sending timer updates when countdown reaches 0
       }

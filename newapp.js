@@ -65,7 +65,6 @@ function connectToWebSocket(nickname) {
 
 // New function to handle messages from the server
 function handleServerMessage(data) {
-  console.log("Welcome message received", data);
   switch (data.messageType) {
     case "welcome":
       handleWelcomeMessage(data);
@@ -123,9 +122,9 @@ function handleWelcomeMessage(data) {
 }
 
 function handlePlayerMove(data) {
-  console.log("handlePlayerMove", data);
-  const { id, newPosition } = data;
-  window.requestAnimationFrame(() => changeDirection(newPosition, id));
+  const { id, direction } = data;
+  game.players = data.players;
+  changeDirection(direction, id);
 }
 
 function handleKeyUp(data) {
@@ -137,7 +136,6 @@ function handleChatMessage(data) {
   const { nickname, message: chatMessage } = data;
   chatMessages.push(`${nickname}: ${chatMessage.message}`); // Store the message
   addChatMessage(`${nickname}: ${chatMessage.message}`); // Add to the chat
-  console.log("Chat message received", chatMessages);
 }
 
 function syncGameState(data) {
