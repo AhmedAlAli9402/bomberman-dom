@@ -9,10 +9,10 @@ export const game = {
     gameId: 0,
     gameGrid: {},
     players: [
-        { nickname: "", powerUp: "", startPosition: width + 1, playerPosition: width + 1, color: "White", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0 },
-        { nickname: "", powerUp: "", startPosition: (width * 2) - 2, playerPosition: 0, color: "Red", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0 },
-        { nickname: "", powerUp: "", startPosition: (width * height) - (width * 2) + 1, playerPosition: 0, color: "Blue", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0 },
-        { nickname: "", powerUp: "", startPosition: (width * height) - width - 2, playerPosition: 0, color: "Black", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0 },
+        { nickname: "", powerUp: "", startPosition: width + 1, playerPosition: width + 1, color: "White", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0, transform: `translateX(${(width + 1) % width * 40}px) translateY(${Math.floor((width + 1) / width) * 40}px)` },
+        { nickname: "", powerUp: "", startPosition: (width * 2) - 2, playerPosition: 0, color: "Red", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0, transform: `translateX(${((width * 2) - 2) % width * 40}px) translateY(${Math.floor(((width * 2) - 2) / width) * 40}px)` },
+        { nickname: "", powerUp: "", startPosition: (width * height) - (width * 2) + 1, playerPosition: 0, color: "Blue", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0, transform: `translateX(${((width * height) - (width * 2) + 1) % width * 40}px) translateY(${Math.floor(((width * height) - (width * 2) + 1) / width) * 40}px)` },
+        { nickname: "", powerUp: "", startPosition: (width * height) - width - 2, playerPosition: 0, color: "Black", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0, transform: `translateX(${((width * height) - width - 2) % width * 40}px) translateY(${Math.floor(((width * height) - width - 2) / width) * 40}px)` },
     ]
 };
 

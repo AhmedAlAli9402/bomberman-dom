@@ -66,7 +66,10 @@ export function killPlayer(userId) {
     setTimeout(() => {
         bomberman.removeAttribute('class');
         if (players[userId].lives !== 0) {
+            const x = (recoveryPosition % width) * 40;
+            const y = Math.floor(recoveryPosition / width) * 40;
             availableSquares[recoveryPosition].classList.add(`bomberman${players[userId].color}GoingDown`);
+            availableSquares[recoveryPosition].style.transform = `translateX(${x}px) translateY(${y}px)`;
         } else {
             sendplayerGameOver(players[userId].nickname);
         }

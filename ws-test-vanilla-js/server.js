@@ -236,7 +236,10 @@ function buildGameObject() {
   let alreadyUsedSquare = new Set();
 
   // Create the grid squares
-  gameGrid.allsquares = Array.from({ length: width * height }, (_, i) => i);
+  gameGrid.allsquares = Array.from({ length: width * height }, (_, i) => ({
+    id: i,
+    style: `transform: translateX(${(i % width) * 40}px) translateY(${Math.floor(i / width) * 40}px)`
+  }));
 
   // Create external walls
   for (let i = 0; i < width; i++) {
@@ -260,14 +263,14 @@ function buildGameObject() {
   const playerStartSet = new Set(playerStartPositions);
   const keepEmptySet = new Set(keepEmpty);
   let emptySquares = gameGrid.allsquares.filter(square => 
-    !wallSet.has(square) && !playerStartSet.has(square) && !keepEmptySet.has(square)
+    !wallSet.has(square.id) && !playerStartSet.has(square.id) && !keepEmptySet.has(square.id)
   );
 
   // Place breakable walls
   for (let i = 0; i < numberOfBreakableWalls; i++) {
     const randomIndex = Math.floor(Math.random() * emptySquares.length);
     const randomSquare = emptySquares[randomIndex];
-    gameGrid.breakableWall.push(randomSquare);
+    gameGrid.breakableWall.push(randomSquare.id);
     emptySquares.splice(randomIndex, 1);
   }
 

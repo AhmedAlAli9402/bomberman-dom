@@ -9,10 +9,10 @@ const players = game.players;
 let powerUpTimeOut;
 
 const directionMap = {
-    'ArrowUp': { direction: 'up', offset: -width },
-    'ArrowRight': { direction: 'right', offset: 1 },
-    'ArrowDown': { direction: 'down', offset: width },
-    'ArrowLeft': { direction: 'left', offset: -1 }
+    'ArrowUp': { direction: 'up', offset: -width, transform: 'translateY(-100%)' },
+    'ArrowRight': { direction: 'right', offset: 1, transform: 'translateX(100%)' },
+    'ArrowDown': { direction: 'down', offset: width, transform: 'translateY(100%)' },
+    'ArrowLeft': { direction: 'left', offset: -1, transform: 'translateX(-100%)' }
 };
 
 export function changeDirection(e, id) {
@@ -40,8 +40,17 @@ function moveBomberman(direction, id) {
         if (powerUps.includes(nextSquare.classList[0])) {
             addPowerUpToPlayer(nextSquare.classList[0], id);
         }
-        nextSquare.className = `bomberman${player.color}Going${direction.charAt(0).toUpperCase() + direction.slice(1)}`;
-        bomberman.classList.remove(bombermanClass);
+        const transform = directionMap[`Arrow${direction.charAt(0).toUpperCase() + direction.slice(1)}`].transform;
+        bomberman.style.transform = transform;
+        bomberman.style.transition = 'transform 0.002s';
+        
+        setTimeout(() => {
+            nextSquare.className = `bomberman${player.color}Going${direction.charAt(0).toUpperCase() + direction.slice(1)}`;
+            bomberman.classList.remove(bombermanClass);
+            bomberman.style.transform = '';
+            bomberman.style.transition = '';
+        }, 2);
+
         player.keyStillDown = true;
         player.keyStillDownForSkate = player.powerUp === 'skate' ? player.keyStillDownForSkate + 1 : 0;
     }

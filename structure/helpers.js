@@ -29,3 +29,8 @@ export function setPlayersNicknames(nicknames) {
     player.lives = 3;
   }
 }
+
+// // Helper function to generate transform string using translateX and translateY
+// export function getTransformString(x, y) {
+//   return `transform: translateX(${x}px) translateY(${y}px)`;
+// }

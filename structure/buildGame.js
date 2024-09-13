@@ -20,7 +20,10 @@ export function buildGame(gameGrid){
     const fragment = document.createDocumentFragment();
     // create the divs required and number them in ascending order
     for (let i = 0; i < gameGrid.allsquares.length; i++) {
-        const square = MyFramework.DOM('div', { id: i });
+        const square = MyFramework.DOM('div', { 
+            id: i, 
+            // style: `transform: translate(${i % 23 * 100}%, ${Math.floor(i / 23) * 100}%)` 
+        });
         fragment.appendChild(square);
     }
     grid.appendChild(fragment);

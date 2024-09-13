@@ -4,10 +4,10 @@ import { MyFramework } from "./vFw/framework.js";
 import { showGameGrid, buildGame } from "./structure/buildGame.js";
 import { minimumPlayers, maximumPlayers, minimumTime, maximumTime, game, wsUrl } from "./structure/model.js";
 import { setPlayerNickname, setPlayersNicknames } from "./structure/helpers.js";
-const [playersReady, setPlayersReady] = MyFramework.State([]);
 import { changeDirection, setKeyUp, playerGameOver } from './structure/bombermanMoves.js';
 import { checkIfPlayerInBlastRadius, killPlayer } from "./structure/gameEvents.js";
 
+const [playersReady, setPlayersReady] = MyFramework.State([]);
 const [countdown, setCountdown] = MyFramework.State(maximumTime);
 const [gameTimer, setGameTimer] = MyFramework.State(minimumTime);
 const [ws, setWS] = MyFramework.State(null);
@@ -102,14 +102,11 @@ function handleYouLostMessage() {
 }
 
 export function sendPlayerMove(direction) {
-  console.log('sendPlayerMove2', direction);
   sendWebSocketMessage({
     gameId: game.gameId,
     messageType: "move",
     direction: direction.key,
   });
-  console.log('sendPlayerMove4', direction);
-
 }
 
 export function sendkeyUp() {
@@ -145,15 +142,12 @@ export function sendplayerGameOver(nickname) {
 }
 
 function sendWebSocketMessage(message) {
-  console.log('sendWebSocketMessage3', message);
   const websocket = ws();
   if (websocket && websocket.readyState === WebSocket.OPEN) {
     console.log('WebSocket is open, sending message');
     websocket.send(JSON.stringify(message));
   } else {
     console.error('WebSocket is not open. Current state:', websocket ? websocket.readyState : 'undefined');
-    // Optionally, you could implement a retry mechanism here
-    // or queue the message to be sent when the connection is established
   }
 }
 
@@ -231,14 +225,12 @@ function setupNicknameInputListener() {
 }
 
 function submitNickname() {
-  console.log("submitNickname");
   let nickname = document.getElementById("nicknameInput").value.trim();
   if (!nickname) {
     nickname = `Player ${playersReady().toString()}`;
   } else if (nickname.length > 10) {
     nickname = nickname.slice(0, 10);
   }
-  console.log("Nickname submitted", nickname);
   connectToWebSocket(nickname);
 }
 
