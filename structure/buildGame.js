@@ -1,212 +1,280 @@
 // structure/buildGame.js
 
-import { MyFramework } from '../vFw/framework.js';
-import { game } from './model.js';
-import { formatTime } from './helpers.js';
-import { container  } from '../newapp.js';
-import {countdown, setCountdown} from './model.js';
-import { sendPlayerMove , sendkeyUp, sendplayerGameOver} from '../newapp.js';
+import { MyFramework } from "../vFw/framework.js";
+import { game } from "./model.js";
+import { formatTime } from "./helpers.js";
+import { container } from "../newapp.js";
+import { countdown, setCountdown } from "./model.js";
+import { sendPlayerMove, sendkeyUp, sendplayerGameOver } from "../newapp.js";
 
 export let availableSquares = [];
 // Initial lives for each player, starting with 3 lives each
 export let initialLives = [3, 3, 3, 3]; // 4 players
 // Initialize player lives as reactive state
-export const [playerLives, setPlayerLives] = MyFramework.State([...initialLives]);
-const [Players, setPlayers] = "";
+export const [playerLives, setPlayerLives] = MyFramework.State([
+  ...initialLives,
+]);
 
 // build game depending on the array sent from the server
-export function buildGame(gameGrid,players){
-    setPlayers(players);
-    console.log('Players', players);
-    const grid = document.getElementById('grid');
-     // create the divs required and number them in ascending order
-    for (let i = 0; i < gameGrid.gameGrid.allsquares.length; i++) {
-        const square = MyFramework.DOM(  'div',  { id: i } );
-        grid.appendChild(square);
+export function buildGame() {
+  let Players = game.players;
+  const gameGrid = game.gameGrid;
+  const grid = document.getElementById("grid");
+  // create the divs required and number them in ascending order
+  for (let i = 0; i < gameGrid.allsquares.length; i++) {
+    const square = MyFramework.DOM("div", { id: i });
+    grid.appendChild(square);
+  }
+
+  // create the wall squares
+  const createWall = (index) =>
+    document.getElementById(index.toString()).classList.add("wall");
+
+  for (const wall of gameGrid.wall) {
+    createWall(wall);
+  }
+
+  // create the breakable walls
+  const createBreakableWall = (index) =>
+    document.getElementById(index).classList.add("breakableWall");
+
+  for (const breakableWall of gameGrid.breakableWall) {
+    createBreakableWall(breakableWall);
+  }
+
+  // add powerups based on the randomized index sent from server
+  const createPowerUp = (index, powerUp) => {
+    const square = document.getElementById(index);
+    square.classList.add(powerUp);
+  };
+
+  for (const { index, powerUp } of gameGrid.powerUp) {
+    createPowerUp(index, powerUp);
+  }
+
+  availableSquares = Array.from(document.querySelectorAll(".grid div"));
+
+  // Set player starting positions
+  for (let i = 0; i < Players.length; i++) {
+    if (Players[i].nickname !== "") {
+      // Get the player's starting position
+      const { x, y } = Players[i].startPosition;
+
+      // Check if x and y are valid numbers
+      if (typeof x === "number" && typeof y === "number") {
+        // Calculate the square index based on x and y coordinates
+        const playerSquareIndex = y * gameGrid.width + x;
+
+        // Check if the calculated index is valid
+        if (
+          playerSquareIndex >= 0 &&
+          playerSquareIndex < availableSquares.length
+        ) {
+          const playerSquare = availableSquares[playerSquareIndex];
+
+          // Add the player class to the corresponding square
+          playerSquare.classList.add(
+            "bomberman" + Players[i].color + "GoingDown"
+          );
+        } else {
+          console.error(
+            `Invalid player square index for player ${Players[i].nickname}:`,
+            playerSquareIndex
+          );
+        }
+      } else {
+        console.error(
+          `Invalid coordinates for player ${Players[i].nickname}:`,
+          { x, y }
+        );
+      }
     }
+  }
 
-    // create the wall squares
-    const createWall = (index) => document.getElementById(index.toString()).classList.add('wall');
-
-    for (const wall of gameGrid.gameGrid.wall) {
-        createWall(wall);
-    }
-
-    // create the breakable walls
-    const createBreakableWall = (index) => document.getElementById(index).classList.add('breakableWall');
-
-    for (const breakableWall of gameGrid.gameGrid.breakableWall) {
-        createBreakableWall(breakableWall);
-    }
-
-    // add powerups based on the randomized index sent from server
-    const createPowerUp = (index, powerUp) => {
-        const square = document.getElementById(index);
-        square.classList.add(powerUp);
-    }
-
-    for (const { index, powerUp } of gameGrid.gameGrid.powerUp) {
-        createPowerUp(index, powerUp);
-    }
-
-    availableSquares = Array.from(document.querySelectorAll('.grid div'));
-
-    // Set player starting positions
-    for (let i = 0; i < Players.length; i++) {
-        if (Players[i].nickname !== ''){
-        const playerSquare = availableSquares[Players[i].startPosition];
-        playerSquare.classList.add('bomberman' + Players[i].color + 'GoingDown');}
-    };
-
-    // Ensure no blocked initial paths
-    startTimer(countdown());
-    initializePlayer();
+  // Ensure no blocked initial paths
+  startTimer(countdown());
+  initializePlayer();
 }
 
 const keyStates = {
-    ArrowUp: false,
-    ArrowDown: false,
-    ArrowLeft: false,
-    ArrowRight: false,
-    x: false // Add any other keys you want to track
+  ArrowUp: false,
+  ArrowDown: false,
+  ArrowLeft: false,
+  ArrowRight: false,
+  x: false, // Add any other keys you want to track
 };
 
 function initializePlayer() {
-    // Add event listeners for player movement
-    document.addEventListener('keydown', (event) => {
-        const key = event.key;
-        if (keyStates.hasOwnProperty(key) && !keyStates[key]) {
-            keyStates[key] = true; // Set the key state to pressed
-            sendPlayerMove(event); // Send the initial move message
-        }
-    });
+  // Add event listeners for player movement
+  document.addEventListener("keydown", (event) => {
+    const key = event.key;
+    if (keyStates.hasOwnProperty(key) && !keyStates[key]) {
+      keyStates[key] = true; // Set the key state to pressed
+      sendPlayerMove(event); // Send the initial move message
+    }
+  });
 
-    document.addEventListener('keyup', (event) => {
-        const key = event.key;
-        if (keyStates.hasOwnProperty(key)) {
-            keyStates[key] = false; // Set the key state to not pressed
-            sendkeyUp(event); // Handle key up event
-        }
-    });
+  document.addEventListener("keyup", (event) => {
+    const key = event.key;
+    if (keyStates.hasOwnProperty(key)) {
+      keyStates[key] = false; // Set the key state to not pressed
+      sendkeyUp(event); // Handle key up event
+    }
+  });
 }
 
-
 export function deinitializePlayer() {
-    document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)));
-        document.removeEventListener('keyup', sendkeyUp);
+  document.removeEventListener("keydown", (ev) => sendPlayerMove(ev));
+  document.removeEventListener("keyup", sendkeyUp);
 }
 
 // Show the game grid and HUD
 export function showGameGrid() {
-    const gameGrid =MyFramework.DOM('div',
+  const gameGrid = MyFramework.DOM(
+    "div",
     { id: "gameGrid", style: "display: inherit;" },
-     MyFramework.DOM("div", { id: "grid", class: "grid" })
-    );
+    MyFramework.DOM("div", { id: "grid", class: "grid" })
+  );
 
-    document.getElementById("overlay").innerHTML = "";
-    document.getElementById("overlay").appendChild(MyFramework.DOM("div", { id: "container" },createHUD ));
-    document.getElementById("overlay").appendChild(MyFramework.DOM("h1", null, "Bomberman Game"));
-    document.getElementById("overlay").appendChild(MyFramework.DOM("img",{id:"logo", src: "images/logo.png", alt: "Bomberman" },null));
-    container.removeChild(document.getElementById('waitingArea'));
-    container.appendChild(gameGrid);
+  document.getElementById("overlay").innerHTML = "";
+  document
+    .getElementById("overlay")
+    .appendChild(MyFramework.DOM("div", { id: "container" }, createHUD));
+  document
+    .getElementById("overlay")
+    .appendChild(MyFramework.DOM("h1", null, "Bomberman Game"));
+  document
+    .getElementById("overlay")
+    .appendChild(
+      MyFramework.DOM(
+        "img",
+        { id: "logo", src: "images/logo.png", alt: "Bomberman" },
+        null
+      )
+    );
+  container.removeChild(document.getElementById("waitingArea"));
+  container.appendChild(gameGrid);
 }
 
 // Create the HUD with player lives and time countdown
 function createHUD() {
-    console.log('Players', Players);
-    // Filter players that have a nickname, then map to create lives display
-    const livesDisplay = Players.filter(player => player.nickname).map((player) => {
-        return MyFramework.DOM(
-          "div",
-          {},
-          `${player.nickname} ❤️: ${player.lives > 0 ? player.lives : '💔'}`
-        );
-      });
+  let Players = game.players;
+  // Filter players that have a nickname, then map to create lives display
+  const livesDisplay = Players.filter((player) => player.nickname).map(
+    (player) => {
+      return MyFramework.DOM(
+        "div",
+        {},
+        `${player.nickname} ❤️: ${player.lives > 0 ? player.lives : "💔"}`
+      );
+    }
+  );
 
-    const hud = MyFramework.DOM(
-      "div",
-      { id: "hud", style: "display: flex; justify-content: space-between;" },
-      MyFramework.DOM("div", {}, `Time: ${formatTime(countdown())}`),
-      // Display player lives
-      ...livesDisplay
-    );
+  const hud = MyFramework.DOM(
+    "div",
+    { id: "hud", style: "display: flex; justify-content: space-between;" },
+    MyFramework.DOM("div", {}, `Time: ${formatTime(countdown())}`),
+    // Display player lives
+    ...livesDisplay
+  );
 
-    return hud;
+  return hud;
 }
 
 // Function to update the HUD when player lives change
 export function updateHUD(playerId) {
-    const timeDisplay = document.querySelector('#hud > div');
-    if (timeDisplay) {
-      timeDisplay.textContent = `Time: ${formatTime(countdown())}`;
+    let Players = game.players;
+  const timeDisplay = document.querySelector("#hud > div");
+  if (timeDisplay) {
+    timeDisplay.textContent = `Time: ${formatTime(countdown())}`;
+  }
+  // update player lives by player id
+  setPlayerLives(
+    playerLives().map((lives, index) => {
+      return index === playerId ? lives - 1 : lives;
+    })
+  );
+  const livesDisplay = document.querySelectorAll(
+    "#hud > div:not(:first-child)"
+  );
+  const lives = playerLives();
+  for (let i = 0; i < Players.length; i++) {
+    if (Players[i].nickname !== "") {
+      Players[i].lives = lives[i];
+      if (Players[i].lives === 0) {
+        livesDisplay[i].textContent = `${Players[i].nickname} 💔`;
+      } else {
+        livesDisplay[i].textContent = `${Players[i].nickname} ❤️: ${lives[i]}`;
+      }
     }
-    // update player lives by player id
-    setPlayerLives(playerLives().map((lives, index) => {
-        return index === playerId ? lives - 1 : lives;
-    }));
-    const livesDisplay = document.querySelectorAll('#hud > div:not(:first-child)');
-    const lives = playerLives();
-    for (let i = 0;i<Players.length;i++){
-        if (Players[i].nickname !== ''){
-            Players[i].lives = lives[i];
-            if (players[i].lives === 0) {
-                livesDisplay[i].textContent = `${Players[i].nickname} 💔`;
-            }else{
-                livesDisplay[i].textContent = `${Players[i].nickname} ❤️: ${lives[i]}`;
-            }
-        }
-    }
+  }
 }
-
 
 // Start the countdown timer
 function startTimer(time) {
-    setCountdown(time); // 3 minutes
-    const timer = setInterval(() => {
-        setCountdown(countdown() - 1);
-        if (countdown() === 0) {
-            clearInterval(timer);
-            endGame();
-        }
-        updateHUD();
-        // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
-        if (players.filter(player => player.lives > 0).length > 4) {
-            clearInterval(timer);
-            endGame();
-        }
-    }, 1000);
+    let Players = game.players;
+  setCountdown(time); // 3 minutes
+  const timer = setInterval(() => {
+    setCountdown(countdown() - 1);
+    if (countdown() === 0) {
+      clearInterval(timer);
+      endGame();
+    }
+    updateHUD();
+    // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
+    if (Players.filter((player) => player.lives > 0).length > 4) {
+      clearInterval(timer);
+      endGame();
+    }
+  }, 1000);
 }
 
 // End the game when the countdown reaches 0
 function endGame() {
-    console.log('Game over!');
-    const gameGrid = document.getElementById('gameGrid');
-    gameGrid.innerHTML = '';  // Clear the game grid
+    let Players = game.players;
+  console.log("Game over!");
+  const gameGrid = document.getElementById("gameGrid");
+  gameGrid.innerHTML = ""; // Clear the game grid
 
-    // Display "Game Over" message
-    const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
-    gameGrid.appendChild(gameOver);
+  // Display "Game Over" message
+  const gameOver = MyFramework.DOM("h1", { class: "game-over" }, "Game Over!");
+  gameGrid.appendChild(gameOver);
 
-    // Determine the winner with the most lives remaining (if any) otherwise, no winner if all players have 0 lives or equal lives
-    const winnerIndex = players.reduce((winnerIndex, player, index) => {
-        return player.lives > players[winnerIndex].lives ? index : winnerIndex;
-    }, 0);
+  // Determine the winner with the most lives remaining (if any) otherwise, no winner if all players have 0 lives or equal lives
+  const winnerIndex = Players.reduce((winnerIndex, player, index) => {
+    return player.lives > Players[winnerIndex].lives ? index : winnerIndex;
+  }, 0);
 
-    console.log('winnerIndex', winnerIndex);
-    console.log("players", players);
-    if (winnerIndex !== -1 && players.filter(player => player.lives > 0).length === 1) {
-        const winnerName = players[winnerIndex].nickname; // Get the winner's name
-        // Display the winner
-        const winnerDisplay = MyFramework.DOM('h2', { class: 'winner-display' }, `${winnerName} is the winner!`);
-        gameGrid.appendChild(winnerDisplay);
-    } else {
-        const noWinner = MyFramework.DOM('h2', { class: 'winner-display' }, 'No winner!');
-        gameGrid.appendChild(noWinner);
-    }
-    const newGameButton = MyFramework.DOM('button', { class: 'startNewGame' , onclick:startNewGame}, 'startNewGame');
-        gameGrid.appendChild(noWinner);
+  console.log("winnerIndex", winnerIndex);
+  console.log("players", Players);
+  if (
+    winnerIndex !== -1 &&
+    Players.filter((player) => player.lives > 0).length === 1
+  ) {
+    const winnerName = Players[winnerIndex].nickname; // Get the winner's name
+    // Display the winner
+    const winnerDisplay = MyFramework.DOM(
+      "h2",
+      { class: "winner-display" },
+      `${winnerName} is the winner!`
+    );
+    gameGrid.appendChild(winnerDisplay);
+  } else {
+    const noWinner = MyFramework.DOM(
+      "h2",
+      { class: "winner-display" },
+      "No winner!"
+    );
+    gameGrid.appendChild(noWinner);
+  }
+  const newGameButton = MyFramework.DOM(
+    "button",
+    { class: "startNewGame", onclick: startNewGame },
+    "startNewGame"
+  );
+  gameGrid.appendChild(noWinner);
 }
 
-function startNewGame(){
-    window.location.reload();
+function startNewGame() {
+  window.location.reload();
 }

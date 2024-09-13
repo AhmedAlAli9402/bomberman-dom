@@ -7,28 +7,23 @@ if (currentGame.clients.has(ws) && data.message) {
     let broadcast = {};
     if (data.message.messageType === "move") {
       const { direction } = data.message;
-      console.log(data.message)
-      // Get the current position of the player
-      console.log('currentGame.players',currentGame.players);
-      console.log('nickname',nickname);
-      console.log('currentGame.players.get(nickname)',currentGame.players);;
-      const playerPosition = currentGame.players.get(nickname);
-      console.log('playerPosition',playerPosition);
+      const playerId = Array.from(currentGame.clients.keys()).indexOf(ws);
+      const player = currentGame.players[playerId];
+      const playerPosition = player.playerPosition;
+      
       // Calculate new position based on direction
-      const newPosition = calculateNewPosition(
-        playerPosition,
-        direction,
-        currentGame.gameGrid
-      );
-
+      const newPosition = calculateNewPosition(playerPosition, direction, currentGame.gameGrid);
+      
       // Validate the move (e.g., check if the new position is free)
-    //   if (isMoveValid(newPosition, currentGame)) {
-        currentGame.players.set(nickname, newPosition); // Update position on server
+      if (isMoveValid(newPosition, currentGame)) {
+        player.playerPosition = newPosition;
+        console.log('newPosition', newPosition);
+        
         broadcast = {
-          messageType: "move",
-          id: userId,
+          messageType: "updatePosition",
+          id: playerId,
           newPosition: newPosition,
-        // };
+        };
       }
     } else if (data.message.messageType === "keyUp") {
       broadcast = {

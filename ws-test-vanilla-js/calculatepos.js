@@ -1,30 +1,47 @@
 // Function to calculate the new position based on the direction
 export function calculateNewPosition(currentPosition, direction, gameGrid) {
+  let newX = currentPosition.x;
+  let newY = currentPosition.y;
+  console.log('currentPosition', direction);
   switch (direction) {
-    case "up":
-      return currentPosition - gameGrid.width;
-    case "down":
-      return currentPosition + gameGrid.width;
-    case "left":
-      return currentPosition - 1;
-    case "right":
-      return currentPosition + 1;
+    case "ArrowUp":
+      newY = Math.max(0, newY - 1); // Prevent moving out of bounds
+      break;
+    case "ArrowDown":
+      newY = Math.min(gameGrid.height - 1, newY + 1); // Prevent moving out of bounds
+      break;
+    case "ArrowLeft":
+      newX = Math.max(0, newX - 1); // Prevent moving out of bounds
+      break;
+    case "ArrowRight":
+      newX = Math.min(gameGrid.width - 1, newX + 1); // Prevent moving out of bounds
+      break;
     default:
       return currentPosition; // No movement
   }
+  
+  return { x: newX, y: newY }; // Return the new position
+}
+
+// Function to convert x, y to a single position index
+function positionToIndex(position, gameGrid) {
+  return position.y * gameGrid.width + position.x;
 }
 
 // Function to check if the move is valid
 export function isMoveValid(newPosition, currentGame) {
   const walls = currentGame.gameGrid.wall;
-  const breakableWalls = currentGame.breakableWall;
+  const breakableWalls = currentGame.gameGrid.breakableWall;
+
+  // Convert new position to index
+  const newIndex = positionToIndex(newPosition, currentGame.gameGrid);
+
   return (
-    newPosition >= 0 &&
-    !walls.includes(newPosition) &&
-    !breakableWalls.includes(newPosition)
+    newIndex >= 0 &&
+    !walls.includes(newIndex) &&
+    !breakableWalls.includes(newIndex)
   );
 }
-
 // Function to get player start positions based on game grid dimensions
 export function getPlayerStartPositions(width, height, breakableWalls) {
   const possibleStartPositions = [];

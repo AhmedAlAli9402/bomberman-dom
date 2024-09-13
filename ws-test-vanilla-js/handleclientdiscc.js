@@ -1,8 +1,10 @@
 export function handleClientDisconnection(ws, currentGame,Games) {
+  console.log("Client disconnected",ws, currentGame,Games);
     if (currentGame.clients.has(ws)) {
       const nickname = currentGame.clients.get(ws);
       currentGame.clients.delete(ws);
-      currentGame.players.delete(ws); // Remove player position on disconnect
+      // remove player from players
+      currentGame.players.pop(ws)
 
       // Clear the timer if it's running
       clearTimeout(currentGame.timer);

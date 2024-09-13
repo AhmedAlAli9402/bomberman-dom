@@ -1,20 +1,38 @@
 // app.js
 
 import { MyFramework } from "./vFw/framework.js";
-import { showGameGrid, buildGame, deinitializePlayer } from "./structure/buildGame.js";
-import { minimumPlayers, maximumPlayers, minimumTime, maximumTime, game, wsUrl } from "./structure/model.js";
+import {
+  showGameGrid,
+  buildGame,
+  deinitializePlayer,
+} from "./structure/buildGame.js";
+import {
+  minimumPlayers,
+  maximumPlayers,
+  minimumTime,
+  maximumTime,
+  game,
+  wsUrl,
+} from "./structure/model.js";
 import { setPlayerNickname, setPlayersNicknames } from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
-import { changeDirection, setKeyUp, playerGameOver } from './structure/bombermanMoves.js';
-import { checkIfPlayerInBlastRadius, killPlayer } from "./structure/gameEvents.js";
+import {
+  changeDirection,
+  setKeyUp,
+  playerGameOver,
+} from "./structure/bombermanMoves.js";
+import {
+  checkIfPlayerInBlastRadius,
+  killPlayer,
+} from "./structure/gameEvents.js";
 
 // set the countdown to the minimum time or maximum time
 // let countdown = minimumTime;
 const [countdown, setCountdown] = MyFramework.State(10);
 
 // set the needed players
-// let neededPlayers = minimumPlayers; // for mini of 2 players
-let neededPlayers = 1 ; // for testing with 1 player
+let neededPlayers = minimumPlayers; // for mini of 2 players
+// let neededPlayers = 1 ; // for testing with 1 player
 let timer;
 
 // Get the container element
@@ -34,68 +52,80 @@ function connectToWebSocket(nickname) {
     }
   };
 
-  ws.onmessage = function(message) {
+  ws.onmessage = function (message) {
     const data = JSON.parse(message.data);
     handleServerMessage(data);
   };
 
   ws.onclose = () => {
+    ws.send(JSON.stringify({ message: { messageType: "disconnect" } }));
     console.log("Disconnected from WebSocket server");
   };
 }
 
 // New function to handle messages from the server
 function handleServerMessage(data) {
+  console.log("Welcome message received", data);
   switch (data.messageType) {
     case "welcome":
       handleWelcomeMessage(data);
       break;
-    case "move":
-      console.log("movesssss");
-      handlePlayerMove(data);
+    case "lockIn":
+      startCountdownLockin(data); // Start the lock-in countdown
+      break;
+    case "updateTimer":
+      handleUpdateTimer(data); // Handle lock-in timer update
+      break;
+    case "lastChance":
+      startCountGameStarting(data); // Notify about last chance to join
+      break;
+    case "gameStarted":
+      handleGameStartedMessage(); // Start the game
+      break;
+    case "updatePosition":
+      console.log("move", data);
+      handlePlayerMove(data); // Handle player movement
       break;
     case "keyUp":
-      handleKeyUp(data);
+      handleKeyUp(data); // Handle key release event
       break;
     case "chat":
-      handleChatMessage(data);
+      handleChatMessage(data); // Handle chat messages
       break;
     case "gameState":
-      syncGameState(data);
+      syncGameState(data); // Sync the game state with the server
       break;
     case "bombExplosion":
-      handleBombExplosion(data);
+      handleBombExplosion(data); // Handle bomb explosion events
       break;
     case "killPlayer":
-      handleKillPlayer(data);
+      handleKillPlayer(data); // Handle player elimination
       break;
     case "youLost":
-      playerGameOver();
+      playerGameOver(); // Handle player game over event
       break;
     default:
-      console.warn("Unknown message type:", data.messageType);
+      console.warn("Unknown message type:", data.messageType); // Warn if an unknown message type is received
   }
 }
 
-
 function handleWelcomeMessage(data) {
-  console.log("handleWelcomeMessage", data);
   setPlayersReady(data.numberofClients);
-  setPlayersNicknames(data.clients);
-  showWaitingArea(data.gameGrid.gameGrid,data.players);
+  showWaitingArea();
   showChatBox();
   if (data.loadMessages) {
     chatMessages = data.loadMessages;
     loadExistingMessages();
   }
-  game.gameGrid = data.gameGrid;
+  game.gameGrid = data.gameGrid.gameGrid;
   game.gameId = data.gameId;
+  game.players = data.gameGrid.players;
 }
 
 function handlePlayerMove(data) {
   console.log("handlePlayerMove", data);
-  const { id, direction } = data;
-  window.requestAnimationFrame(() => changeDirection(direction, id));
+  const { id, newPosition } = data;
+  window.requestAnimationFrame(() => changeDirection(newPosition, id));
 }
 
 function handleKeyUp(data) {
@@ -113,6 +143,9 @@ function handleChatMessage(data) {
 function syncGameState(data) {
   // Update the local game state based on the server's game state
   // For example, this could include player positions, scores, etc.
+  console.log("Syncing game state", data);
+  game.gameGrid = data.gameGrid;
+  game.players = data.players;
 }
 
 function handleBombExplosion(data) {
@@ -129,55 +162,67 @@ function handleKillPlayer(data) {
   killPlayer(id);
 }
 
+function handleGameStartedMessage() {
+  showGameGrid();
+  buildGame();
+}
 
 export function sendkeyUp() {
-  console.log('sendkeyUp');
+  console.log("sendkeyUp");
   if (ws) {
-    ws.send(JSON.stringify({
-      message: {
-        gameId: game.gameId,
-        messageType: 'keyUp'
-      }
-    }));
+    ws.send(
+      JSON.stringify({
+        message: {
+          gameId: game.gameId,
+          messageType: "keyUp",
+        },
+      })
+    );
   }
 }
 
 export function sendBombExplosion(bombPosition, directions) {
-  console.log('checkPlayer');
+  console.log("checkPlayer");
   if (ws) {
-    ws.send(JSON.stringify({
-      message: {
-        messageType: 'bombExplosion',
-        gameId: game.gameId,
-        bombPosition: bombPosition,
-        directions: directions
-      }
-    }));
+    ws.send(
+      JSON.stringify({
+        message: {
+          messageType: "bombExplosion",
+          gameId: game.gameId,
+          bombPosition: bombPosition,
+          directions: directions,
+        },
+      })
+    );
   }
 }
 
 export function sendKillPlayer(userId) {
-  console.log('sendKillPlayer');
+  console.log("sendKillPlayer");
   if (ws) {
-    ws.send(JSON.stringify({
-      message: {
-        messageType: 'killPlayer',
-        gameId: game.gameId,
-        userId: userId
-      }
-    }));
+    ws.send(
+      JSON.stringify({
+        message: {
+          messageType: "killPlayer",
+          gameId: game.gameId,
+          userId: userId,
+        },
+      })
+    );
   }
 }
 
 export function sendplayerGameOver(nickname) {
   if (ws) {
-    ws.send(JSON.stringify({
-      message: {
-        messageType: 'gameover',
-        nickname: nickname,
-        gameId: game.gameId,
-      }
-    }));
+    ws.send(
+      JSON.stringify({
+        message: {
+          messageType: "gameover",
+          nickname: nickname,
+          gameId: game.gameId,
+        },
+      })
+    );
   }
 }
 
@@ -195,7 +240,6 @@ export function sendPlayerMove(direction) {
     );
   }
 }
-
 
 // Define the landing page
 export function showLandingPage() {
@@ -220,11 +264,21 @@ export function showLandingPage() {
   );
   if (container) {
     const upper = document.querySelector(".main");
-    const overlay = MyFramework.DOM("div", { id: "overlay" },
-      MyFramework.DOM("div", { id: "container" }, MyFramework.DOM("h1", null, "Bomberman Game")),
-      MyFramework.DOM("img", { id: "logo", src: "images/logo.png", alt: "Bomberman" })
+    const overlay = MyFramework.DOM(
+      "div",
+      { id: "overlay" },
+      MyFramework.DOM(
+        "div",
+        { id: "container" },
+        MyFramework.DOM("h1", null, "Bomberman Game")
+      ),
+      MyFramework.DOM("img", {
+        id: "logo",
+        src: "images/logo.png",
+        alt: "Bomberman",
+      })
     );
-    upper.replaceChild(overlay,document.getElementById("overlay"));
+    upper.replaceChild(overlay, document.getElementById("overlay"));
     container.replaceChild(landingPage, document.getElementById("landingPage"));
   }
 }
@@ -259,7 +313,7 @@ function showNicknamePopup() {
   }
   document
     .getElementById("nicknameInput")
-    .addEventListener("keyup", function(event) {
+    .addEventListener("keyup", function (event) {
       if (event.key === "Enter") {
         submitNickname();
       }
@@ -278,7 +332,7 @@ function submitNickname() {
 }
 
 // Show the waiting area
-function showWaitingArea(gameGrid,players) {
+function showWaitingArea() {
   const waitingMessage = MyFramework.DOM(
     "h1",
     { id: "waitingMessage" },
@@ -360,53 +414,52 @@ function showWaitingArea(gameGrid,players) {
     // container.replaceChild(waitingArea, document.getElementById("nicknamePopup"));
     container.appendChild(waitingArea);
   }
-
-  if (playersReady() >= neededPlayers) {
-    startCountdown(gameGrid,players);
-  }
 }
 
-// Start the countdown timer
-function startCountdown(gameGrid,players) {
-  // Clear any existing timer and set the countdown
-  clearInterval(timer);
-  setCountdown(maximumTime);
-  // Hide countPlayers and waitingMessage
-  document.getElementById("waitingMessage").style.display = "none";
-  // Show countdownTimer
-  document.getElementById("countdownTimer").style.display = "block";
+let countdownInterval; // Store the interval ID to clear it later if needed
 
-  let lastUpdate = performance.now(); // Initialize last update time
+// Function to start the lock-in countdown
+function startCountdownLockin(data) {
+  setCountdown(data.remainingTime);
 
-  const updateCountdown = (currentTime) => {
-    if (currentTime - lastUpdate >= 1000) { // Check if 1 second has passed
-      const remainingTime = countdown();
-      setCountdown(remainingTime - 1); // Decrement countdown
+  const waitingMessageEl = document.getElementById("waitingMessage");
+  const countdownTimerEl = document.getElementById("countdownTimer");
 
-      // Update the countdown display
-      document.getElementById("countdownTimer").textContent = `Starting in ${remainingTime} seconds...`;
+  if (waitingMessageEl) waitingMessageEl.style.display = "none";
+  if (countdownTimerEl) countdownTimerEl.style.display = "block";
 
-      lastUpdate = currentTime; // Update last update time
+  countdownTimerEl.textContent = `${data.message}`;
+}
 
-      if (remainingTime <= 1) {
-        // Countdown finished
-        showGameGrid();
-        createNewGameinServer();
-        console.log("Game starting...",gameGrid,players);
-        buildGame(gameGrid,players);
-        return; // Exit the function
+// Function to start the game countdown
+function startCountGameStarting(data) {
+  setCountdown(data.remainingTime);
+  const countdownTimerEl = document.getElementById("countdownTimer");
+
+  countdownTimerEl.textContent = ``;
+  countdownTimerEl.textContent = `${data.message}`;
+
+}
+
+// Function to handle the updateTimer message from the server
+function handleUpdateTimer(data) {
+  const { remainingTime, message } = data;
+
+  if (remainingTime != null) {
+    // Update the countdown based on the received remaining time
+    setCountdown(remainingTime);
+
+    // Update the message if provided
+    if (message) {
+      const countdownTimerEl = document.getElementById("countdownTimer");
+      if (countdownTimerEl) {
+        // clear old textcontent
+        countdownTimerEl.textContent = "";
+        countdownTimerEl.textContent = `${message}`;
       }
     }
-
-    // Request the next animation frame
-    requestAnimationFrame(updateCountdown);
-  };
-
-  // Start the countdown
-  requestAnimationFrame(updateCountdown);
+  }
 }
-
-
 
 // chat box
 function showChatBox() {
@@ -445,7 +498,7 @@ function showChatBox() {
 
   document
     .getElementById("chatInput")
-    .addEventListener("keyup", function(event) {
+    .addEventListener("keyup", function (event) {
       if (event.key === "Enter") {
         sendMessage();
       }
@@ -456,14 +509,19 @@ function addChatMessage(msg) {
   const chatMessage = MyFramework.DOM("li", {}, msg);
   const chatMessagesList = document.getElementById("chatList");
   chatMessagesList.appendChild(chatMessage);
-  document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+  document.getElementById("chatMessages").scrollTop =
+    document.getElementById("chatMessages").scrollHeight;
 }
 
 function sendMessage() {
   const message = document.getElementById("chatInput").value.trim();
   if (message) {
     if (ws) {
-      ws.send(JSON.stringify({ message: { gameId: game.gameId, messageType: "chat", message } }));
+      ws.send(
+        JSON.stringify({
+          message: { gameId: game.gameId, messageType: "chat", message },
+        })
+      );
       // addChatMessage(`You: ${message}`); // Show the sent message immediately
       document.getElementById("chatInput").value = ""; // Clear input
     }
@@ -484,6 +542,10 @@ window.requestAnimationFrame(showLandingPage);
 
 function createNewGameinServer() {
   if (ws) {
-    ws.send(JSON.stringify({ message: { gameId: game.gameId, messageType: "newGame" } }));
+    ws.send(
+      JSON.stringify({
+        message: { gameId: game.gameId, messageType: "newGame" },
+      })
+    );
   }
 }

@@ -1,4 +1,5 @@
 import { getPlayerStartPositions } from "./calculatepos.js";
+
 // Function to build the game object
 export function buildGameObject() {
   const height = 17;
@@ -12,6 +13,7 @@ export function buildGameObject() {
     width * height - width * 2 + 1,
     width * height - width - 2,
   ];
+
   // Always keep these squares empty
   const keepEmpty = [
     width + 2,
@@ -24,22 +26,40 @@ export function buildGameObject() {
     width * height - width * 2 - 2,
   ];
 
-
+  const playerStartCoordinates = playerStartPositions.map(position => {
+    const x = position % width;
+    const y = Math.floor(position / width);
+    return { x, y };
+  });
 
   // Create the game grid
-  let gameGrid = { allsquares: [], wall: [], breakableWall: [], powerUp: [] ,height: height, width: width, numberOfBreakableWalls: numberOfBreakableWalls, numberOfPowerUps: numberOfPowerUps, powerUps: powerUps, playerStartPositions: playerStartPositions, keepEmpty: keepEmpty};
+  let gameGrid = {
+    allsquares: [],
+    wall: [],
+    breakableWall: [],
+    powerUp: [],
+    height: height,
+    width: width,
+    numberOfBreakableWalls: numberOfBreakableWalls,
+    numberOfPowerUps: numberOfPowerUps,
+    powerUps: powerUps,
+    playerStartPositions: playerStartCoordinates, // Updated to use coordinates
+    keepEmpty: keepEmpty,
+  };
   let alreadyUsedSquare = [];
 
   // Create the grid squares and append to grid
   for (let i = 0; i < width * height; i++) {
     gameGrid.allsquares.push(i);
   }
+
   // Create external walls
   for (let i = 0; i < width; i++) {
     gameGrid.wall.push(i);
     gameGrid.wall.push(i + (height - 1) * width);
   }
-  // Create external walls
+
+  // Create internal walls
   for (let i = width; i < width * height; i += width) {
     gameGrid.wall.push(i);
     gameGrid.wall.push(i + width - 1);
@@ -53,16 +73,16 @@ export function buildGameObject() {
       j = -1;
     }
   }
+
   // Create empty squares
   let emptySquares = gameGrid.allsquares.filter(
     (square) => !gameGrid.wall.includes(square)
   );
 
-  // Remove player starting positions from empty squares and remove keepEmpty squares also
+  // Remove player starting positions from empty squares and keepEmpty squares
   emptySquares = emptySquares.filter(
-    (square) => !playerStartPositions.includes(square)
+    (square) => !playerStartPositions.includes(square) && !keepEmpty.includes(square)
   );
-  emptySquares = emptySquares.filter((square) => !keepEmpty.includes(square));
 
   // Place breakable walls
   for (let i = 0; i < numberOfBreakableWalls; i++) {
@@ -75,6 +95,7 @@ export function buildGameObject() {
       i--;
     }
   }
+
   // Place power-ups
   for (const powerUp of powerUps) {
     for (let j = 0; j < numberOfPowerUps / powerUps.length; j++) {
@@ -91,6 +112,7 @@ export function buildGameObject() {
       }
     }
   }
+
   return gameGrid;
 }
 
@@ -98,4 +120,3 @@ export function buildGameObject() {
 function getRandomIndex(length) {
   return Math.floor(Math.random() * length);
 }
-

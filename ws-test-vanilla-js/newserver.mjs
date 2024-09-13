@@ -87,7 +87,6 @@ wss.on("connection", (ws) => {
 
   // Handle incoming messages
   ws.on("message", (message) => {
-    console.log(String(message), "message");
     try {
       data = JSON.parse(message);
     } catch (e) {
@@ -129,6 +128,7 @@ wss.on("connection", (ws) => {
       // Store the nickname and initial position in the players map
       currentGame.players[playerId].nickname = data.nickname; // Track initial position for the player
       currentGame.players[playerId].startPosition = initialPosition; // Track initial position for the player
+      currentGame.players[playerId].playerPosition = initialPosition; // Track initial position for the player
       currentGame.players[playerId].connection = ws; // Track the connection for the player
       currentGame.players[playerId].lives = 3; // Track the lives for the player
 
