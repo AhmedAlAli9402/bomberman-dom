@@ -3,7 +3,7 @@ import { availableSquares } from './buildGame.js';
 import { width, height, game, powerUps } from './model.js';
 import { MyFramework } from '../vFw/framework.js';
 import { sendBombExplosion } from '../app.js';
-import { breakWall } from './gameEvents.js';
+import { breakWall, findExplosionDirections } from './gameEvents.js';
 
 let players = game.players;
 let powerUpTimeOut
@@ -77,11 +77,11 @@ function dropBomb(id) {
         availableSquares[bombermanIndex].classList.add('powerBombDropped');
     } else {
     availableSquares[bombermanIndex].classList.add('bomb');
-    }
-    setTimeout(() => {
-        console.log(bombermanIndex)
-        players[id].bombDropped--;
-        const directions = breakWall(bombermanIndex);
+}
+const directions = findExplosionDirections(bombermanIndex);
+setTimeout(() => {
+    players[id].bombDropped--;
+         breakWall(bombermanIndex, directions);
         sendBombExplosion(bombermanIndex, directions);
     }, 3000);
 }

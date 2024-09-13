@@ -7,8 +7,7 @@ import { sendplayerGameOver, sendKillPlayer } from '../app.js';
 
 let players = game.players;
 
-
-export function breakWall(id) {
+export function findExplosionDirections(id){
     let bomb = document.getElementById(id);
     let powerbomb = false
     if (!bomb.classList.contains('bomb')) {
@@ -26,7 +25,13 @@ export function breakWall(id) {
             }
         }
         } 
+        return directions
+        ;
+    }
 
+export function breakWall(id, directions) {
+    let bomb = document.getElementById(id);
+    const bombPosition = Number(bomb.getAttribute('id'));
         for (let i = 0; i < directions.length; i++) {
        const square = availableSquares[bombPosition + directions[i]];
         if (square && square.classList.contains('breakableWall')) {
@@ -37,14 +42,12 @@ export function breakWall(id) {
             setTimeout(() => square.classList.remove("sideExplosion"), 200);
         }
     };
-
     bomb.classList.replace("bomb", 'explosion');
-    if (powerbomb) {
+    if (bomb.classList.contains('powerBombDropped')) {
         bomb.classList.replace('powerBombDropped', 'explosion');
     }
     setTimeout(() => bomb.classList.remove('explosion'), 200);
     console.log(directions)
-    return directions;
 }
 
 
