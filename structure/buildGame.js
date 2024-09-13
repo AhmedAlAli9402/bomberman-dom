@@ -3,57 +3,59 @@
 import { MyFramework } from '../vFw/framework.js';
 import { game } from './model.js';
 import { formatTime } from './helpers.js';
-import { container  } from '../app.js';
+import { container  } from '../newapp.js';
 import {countdown, setCountdown} from './model.js';
-import { sendPlayerMove , sendkeyUp, sendplayerGameOver} from '../app.js';
+import { sendPlayerMove , sendkeyUp, sendplayerGameOver} from '../newapp.js';
 
 export let availableSquares = [];
-let players = game.players;
 // Initial lives for each player, starting with 3 lives each
 export let initialLives = [3, 3, 3, 3]; // 4 players
 // Initialize player lives as reactive state
 export const [playerLives, setPlayerLives] = MyFramework.State([...initialLives]);
+const [Players, setPlayers] = "";
 
 // build game depending on the array sent from the server
-export function buildGame(gameGrid){
+export function buildGame(gameGrid,players){
+    setPlayers(players);
+    console.log('Players', players);
     const grid = document.getElementById('grid');
      // create the divs required and number them in ascending order
-    for (let i = 0; i < gameGrid.allsquares.length; i++) {
+    for (let i = 0; i < gameGrid.gameGrid.allsquares.length; i++) {
         const square = MyFramework.DOM(  'div',  { id: i } );
         grid.appendChild(square);
     }
-    
+
     // create the wall squares
     const createWall = (index) => document.getElementById(index.toString()).classList.add('wall');
 
-    for (const wall of gameGrid.wall) { 
+    for (const wall of gameGrid.gameGrid.wall) {
         createWall(wall);
     }
 
     // create the breakable walls
     const createBreakableWall = (index) => document.getElementById(index).classList.add('breakableWall');
-    
-    for (const breakableWall of gameGrid.breakableWall) { 
+
+    for (const breakableWall of gameGrid.gameGrid.breakableWall) {
         createBreakableWall(breakableWall);
     }
 
     // add powerups based on the randomized index sent from server
-    const createPowerUp = (index, powerUp) => { 
+    const createPowerUp = (index, powerUp) => {
         const square = document.getElementById(index);
         square.classList.add(powerUp);
     }
 
-    for (const { index, powerUp } of gameGrid.powerUp) {
+    for (const { index, powerUp } of gameGrid.gameGrid.powerUp) {
         createPowerUp(index, powerUp);
     }
 
     availableSquares = Array.from(document.querySelectorAll('.grid div'));
 
     // Set player starting positions
-    for (let i = 0; i < players.length; i++) {
-        if (players[i].nickname !== ''){
-        const playerSquare = availableSquares[players[i].startPosition];
-        playerSquare.classList.add('bomberman' + players[i].color + 'GoingDown');}
+    for (let i = 0; i < Players.length; i++) {
+        if (Players[i].nickname !== ''){
+        const playerSquare = availableSquares[Players[i].startPosition];
+        playerSquare.classList.add('bomberman' + Players[i].color + 'GoingDown');}
     };
 
     // Ensure no blocked initial paths
@@ -61,28 +63,38 @@ export function buildGame(gameGrid){
     initializePlayer();
 }
 
+const keyStates = {
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+    x: false // Add any other keys you want to track
+};
+
 function initializePlayer() {
     // Add event listeners for player movement
     document.addEventListener('keydown', (event) => {
         const key = event.key;
-        if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight' || key === 'x') {
-            sendPlayerMove(event);
+        if (keyStates.hasOwnProperty(key) && !keyStates[key]) {
+            keyStates[key] = true; // Set the key state to pressed
+            sendPlayerMove(event); // Send the initial move message
         }
-    }
-    );
+    });
+
     document.addEventListener('keyup', (event) => {
         const key = event.key;
-        if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight'|| key === 'x') {
-            sendkeyUp();
+        if (keyStates.hasOwnProperty(key)) {
+            keyStates[key] = false; // Set the key state to not pressed
+            sendkeyUp(event); // Handle key up event
         }
-    }
-    );
+    });
 }
 
-// export function deinitializePlayer() {
-//     document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)));
-//         document.removeEventListener('keyup', sendkeyUp);
-// }
+
+export function deinitializePlayer() {
+    document.removeEventListener('keydown', ((ev) => sendPlayerMove(ev)));
+        document.removeEventListener('keyup', sendkeyUp);
+}
 
 // Show the game grid and HUD
 export function showGameGrid() {
@@ -101,8 +113,9 @@ export function showGameGrid() {
 
 // Create the HUD with player lives and time countdown
 function createHUD() {
+    console.log('Players', Players);
     // Filter players that have a nickname, then map to create lives display
-    const livesDisplay = players.filter(player => player.nickname).map((player) => {
+    const livesDisplay = Players.filter(player => player.nickname).map((player) => {
         return MyFramework.DOM(
           "div",
           {},
@@ -117,8 +130,6 @@ function createHUD() {
       // Display player lives
       ...livesDisplay
     );
-
-
 
     return hud;
 }
@@ -135,13 +146,13 @@ export function updateHUD(playerId) {
     }));
     const livesDisplay = document.querySelectorAll('#hud > div:not(:first-child)');
     const lives = playerLives();
-    for (let i = 0;i<players.length;i++){
-        if (players[i].nickname !== ''){
-            players[i].lives = lives[i];
+    for (let i = 0;i<Players.length;i++){
+        if (Players[i].nickname !== ''){
+            Players[i].lives = lives[i];
             if (players[i].lives === 0) {
-                livesDisplay[i].textContent = `${players[i].nickname} 💔`;
+                livesDisplay[i].textContent = `${Players[i].nickname} 💔`;
             }else{
-                livesDisplay[i].textContent = `${players[i].nickname} ❤️: ${lives[i]}`;
+                livesDisplay[i].textContent = `${Players[i].nickname} ❤️: ${lives[i]}`;
             }
         }
     }
@@ -159,7 +170,7 @@ function startTimer(time) {
         }
         updateHUD();
         // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
-        if (players.filter(player => player.lives > 0).length === 1) {
+        if (players.filter(player => player.lives > 0).length > 4) {
             clearInterval(timer);
             endGame();
         }

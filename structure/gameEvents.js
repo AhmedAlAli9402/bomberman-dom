@@ -3,7 +3,7 @@
 import { availableSquares } from './buildGame.js';
 import { width, game } from './model.js';
 import { updateHUD } from './buildGame.js';
-import { sendplayerGameOver, sendKillPlayer } from '../app.js';
+import { sendplayerGameOver, sendKillPlayer } from '../newapp.js';
 
 let players = game.players;
 
@@ -23,10 +23,10 @@ export function breakWall(id) {
         let powerbombDirections = [-2, 2, width*2, -width*2];
         for (let i = 0; i < 4; i++) {
             if (!availableSquares[bombPosition + directions[i]].classList.contains('wall')) {
-                directions.push(powerbombDirections[i]);                
+                directions.push(powerbombDirections[i]);
             }
         }
-        } 
+        }
 
         for (let i = 0; i < 4; i++) {
        const square = availableSquares[bombPosition + directions[i]];
@@ -80,7 +80,7 @@ export function killPlayer(userId) {
         if (players[userId].lives !== 0) {
     availableSquares[recoveryPosition].classList.add(`bomberman${players[userId].color}GoingDown`)
 } else {
-    sendplayerGameOver(players[userId].nickname); 
+    sendplayerGameOver(players[userId].nickname);
 }
     ;}, 10)
     updateHUD(userId)

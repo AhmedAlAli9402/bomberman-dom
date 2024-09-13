@@ -201,7 +201,8 @@ a {
 
 #gameGrid
 {
-display: none;
+display: flex;
+flex-direction: column;
 /* position: absolute; */
 width: 70vw;
 /* height: vh; */
