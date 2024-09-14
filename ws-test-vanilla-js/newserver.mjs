@@ -29,7 +29,6 @@ function CreateNewGame() {
         playerPosition: 0,
         color: "White",
         lives: 0,
-        connection: "",
         keyStillDown: false,
         keyStillDownForSkate: 0,
         bombDropped: 0,
@@ -41,7 +40,6 @@ function CreateNewGame() {
         playerPosition: 0,
         color: "Red",
         lives: 0,
-        connection: "",
         keyStillDown: false,
         keyStillDownForSkate: 0,
         bombDropped: 0,
@@ -53,7 +51,6 @@ function CreateNewGame() {
         playerPosition: 0,
         color: "Blue",
         lives: 0,
-        connection: "",
         keyStillDown: false,
         keyStillDownForSkate: 0,
         bombDropped: 0,
@@ -65,7 +62,6 @@ function CreateNewGame() {
         playerPosition: 0,
         color: "Black",
         lives: 0,
-        connection: "",
         keyStillDown: false,
         keyStillDownForSkate: 0,
         bombDropped: 0,
@@ -101,7 +97,6 @@ wss.on("connection", (ws) => {
 
     // If the client is sending their nickname on first connection
     if (data.nickname) {
-      // Create a new game if no current game or if the current game is starting
       if (Games.length === 0 || Games[Games.length - 1].isStarting) {
         currentGame = CreateNewGame();
       } else {
@@ -118,21 +113,18 @@ wss.on("connection", (ws) => {
         data.nickname = data.nickname + i;
       }
 
-      currentGame.gameGrid;
-
       // Assign the initial player position based on the current client count
-      const playerId = currentGame.clients.size; // Player ID is based on the current number of clients
+      const playerId = currentGame.clients.size;
       const initialPosition =
-        currentGame.gameGrid.playerStartPositions[playerId]; // Get the initial position based on the player ID
-      currentGame.clients.set(ws, data.nickname); // Store the client connection and nickname in the clients map
-      // Store the nickname and initial position in the players map
-      currentGame.players[playerId].nickname = data.nickname; // Track initial position for the player
-      currentGame.players[playerId].startPosition = initialPosition; // Track initial position for the player
-      currentGame.players[playerId].playerPosition = initialPosition; // Track initial position for the player
-      currentGame.players[playerId].connection = ws; // Track the connection for the player
-      currentGame.players[playerId].lives = 3; // Track the lives for the player
+        currentGame.gameGrid.playerStartPositions[playerId];
+      currentGame.clients.set(ws, data.nickname);
 
-      // Send a welcome message as JSON
+      currentGame.players[playerId].nickname = data.nickname;
+      currentGame.players[playerId].startPosition = initialPosition;
+      currentGame.players[playerId].playerPosition = initialPosition;
+      currentGame.players[playerId].lives = 3;
+
+      // Send a welcome message
       const welcomeMessage = {
         messageType: "welcome",
         nickname: data.nickname,
@@ -145,24 +137,36 @@ wss.on("connection", (ws) => {
         players: currentGame.players,
         timer: currentGame.timer,
       };
+      ws.send(JSON.stringify(welcomeMessage));
 
-      // Broadcast welcome message
-      for (const client of currentGame.clients.keys()) {
-        client.send(JSON.stringify(welcomeMessage));
+      // Sync countdown for new players
+      if (currentGame.isStarting && !currentGame.isStarted) {
+        if (currentGame.countdown1 > 0) {
+          const lockInMessage = {
+            messageType: "lockIn",
+            message: `The game is locking in ${currentGame.countdown1} seconds! More players can still join.`,
+            remainingTime: currentGame.countdown1,
+          };
+          ws.send(JSON.stringify(lockInMessage));
+        } else if (currentGame.countdown2 > 0) {
+          const lastChanceMessage = {
+            messageType: "lastChance",
+            message: `The game is starting in ${currentGame.countdown2} seconds!`,
+            remainingTime: currentGame.countdown2,
+          };
+          ws.send(JSON.stringify(lastChanceMessage));
+        }
       }
 
       // Start the countdown timer if there are at least 2 players
-      if (currentGame.clients.size === 2 && !currentGame.isStarting) {
+      if (currentGame.clients.size === 2) {
         startGameCountdown(currentGame);
       }
 
-      // Create a new game if there are 4 players
-      if (currentGame.clients.size === 4) {
-        CreateNewGame();
-      }
       return;
     }
-    // If the client sends a regular message, broadcast it to all clients
+
+    // Handle regular messages
     handleMessages(data, ws, currentGame);
   });
 

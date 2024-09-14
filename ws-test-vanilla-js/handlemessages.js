@@ -13,13 +13,13 @@ if (currentGame.clients.has(ws) && data.message) {
       player.startPosition = player.playerPosition;
       // Calculate new position based on direction
       const newPosition = calculateNewPosition(player.playerPosition, direction, currentGame.gameGrid);
-      
+
       // Validate the move (e.g., check if the new position is free)
       if (isMoveValid(newPosition, currentGame)) {
         player.playerPosition = newPosition;
         console.log('playerPosition', player.startPosition);
         console.log('newPosition', newPosition);
-        
+
         broadcast = {
           messageType: "updatePosition",
           id: playerId,
@@ -72,10 +72,18 @@ if (currentGame.clients.has(ws) && data.message) {
       };
     }
 
+    const updateGameState = {
+      messageType: "updateGameState",
+      gameGrid: currentGame.gameGrid,
+      players: currentGame.players,
+      chatMessages: currentGame.chatMessages,
+    };
+
     // Broadcast the message to all connected clients
-    if (broadcast) {
+    if (broadcast || updateGameState) {
       for (const client of currentGame.clients.keys()) {
         if (client.readyState === ws.OPEN) {
+          client.send(JSON.stringify(updateGameState));
           client.send(JSON.stringify(broadcast));
         }
       }

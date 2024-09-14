@@ -4,17 +4,11 @@ import { MyFramework } from "./vFw/framework.js";
 import {
   showGameGrid,
   buildGame,
-  deinitializePlayer,
 } from "./structure/buildGame.js";
 import {
-  minimumPlayers,
-  maximumPlayers,
-  minimumTime,
-  maximumTime,
   game,
   wsUrl,
 } from "./structure/model.js";
-import { setPlayerNickname, setPlayersNicknames } from "./structure/helpers.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 import {
   changeDirection,
@@ -27,13 +21,7 @@ import {
 } from "./structure/gameEvents.js";
 
 // set the countdown to the minimum time or maximum time
-// let countdown = minimumTime;
 const [countdown, setCountdown] = MyFramework.State(10);
-
-// set the needed players
-let neededPlayers = minimumPlayers; // for mini of 2 players
-// let neededPlayers = 1 ; // for testing with 1 player
-let timer;
 
 // Get the container element
 export const container = document.getElementById("app");
@@ -82,7 +70,6 @@ function handleServerMessage(data) {
       handleGameStartedMessage(); // Start the game
       break;
     case "updatePosition":
-      console.log("move", data);
       handlePlayerMove(data); // Handle player movement
       break;
     case "keyUp":
@@ -91,7 +78,7 @@ function handleServerMessage(data) {
     case "chat":
       handleChatMessage(data); // Handle chat messages
       break;
-    case "gameState":
+    case "updateGameState":
       syncGameState(data); // Sync the game state with the server
       break;
     case "bombExplosion":
@@ -123,7 +110,6 @@ function handleWelcomeMessage(data) {
 
 function handlePlayerMove(data) {
   const { id, direction } = data;
-  game.players = data.players;
   changeDirection(direction, id);
 }
 
