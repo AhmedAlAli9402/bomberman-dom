@@ -129,6 +129,7 @@ export function deinitializePlayer() {
 }
 
 // Show the game grid and HUD
+let count = 0;
 export function showGameGrid() {
   const gameGrid = MyFramework.DOM(
     "div",
@@ -152,7 +153,10 @@ export function showGameGrid() {
         null
       )
     );
-  container.removeChild(document.getElementById("waitingArea"));
+  if (count === 0) {
+    container.removeChild(document.getElementById("waitingArea"));
+    count++;
+  }
   container.appendChild(gameGrid);
 }
 
@@ -183,7 +187,7 @@ function createHUD() {
 
 // Function to update the HUD when player lives change
 export function updateHUD(playerId) {
-    let Players = game.players;
+  let Players = game.players;
   const timeDisplay = document.querySelector("#hud > div");
   if (timeDisplay) {
     timeDisplay.textContent = `Time: ${formatTime(countdown())}`;
@@ -212,7 +216,7 @@ export function updateHUD(playerId) {
 
 // Start the countdown timer
 function startTimer(time) {
-    let Players = game.players;
+  let Players = game.players;
   setCountdown(time); // 3 minutes
   const timer = setInterval(() => {
     setCountdown(countdown() - 1);
@@ -231,7 +235,7 @@ function startTimer(time) {
 
 // End the game when the countdown reaches 0
 function endGame() {
-    let Players = game.players;
+  let Players = game.players;
   const gameGrid = document.getElementById("gameGrid");
   gameGrid.innerHTML = ""; // Clear the game grid
 
@@ -243,7 +247,6 @@ function endGame() {
   const winnerIndex = Players.reduce((winnerIndex, player, index) => {
     return player.lives > Players[winnerIndex].lives ? index : winnerIndex;
   }, 0);
-
 
   if (
     winnerIndex !== -1 &&
