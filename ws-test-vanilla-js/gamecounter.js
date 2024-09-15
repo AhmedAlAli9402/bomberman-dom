@@ -86,23 +86,3 @@ export function broadcastToClients(currentGame, message) {
     client.send(JSON.stringify(message));
   }
 }
-
-export function newPlayerJoined(currentGame) {
-  const lockInCountInterval = setInterval(() => {
-    currentGame.lockInCount--;
-    const timerUpdateMessage = {
-      messageType: "updateTimer",
-      message: `The game is locking in ${currentGame.lockInCount} seconds! More players can still join.`,
-      remainingTime: currentGame.lockInCount,
-    };
-
-    // Notify all clients with the remaining time
-    broadcastToClients(currentGame, timerUpdateMessage);
-
-    if (currentGame.lockInCount <= 0) {
-      clearInterval(lockInCountInterval); // Stop sending timer updates
-      // currentGame.startingCount = 10; // Set countdown for the last 10 seconds
-      startPreGameCountdown(currentGame); // Start the final countdown
-    }
-  }, 1000); // Update every second
-}

@@ -93,6 +93,7 @@ function handleServerMessage(data) {
       handleKillPlayer(data); // Handle player elimination
       break;
     case "updateHUD":
+      console.log("Update HUD", data.gameTimer);
       // Update the HUD with the latest game state
       // updateHUD(data);
       break;

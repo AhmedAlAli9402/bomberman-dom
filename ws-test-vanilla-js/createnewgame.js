@@ -59,7 +59,7 @@ export function CreateNewGame() {
       isStarting: false, // Game is not starting
       isStarted: false, // Game is not started
       gameId:0,
-      timer: 180, // To track the timer
+      gameTimer: 10, // To track the timer
     };
   
     Games.push(newGame);
