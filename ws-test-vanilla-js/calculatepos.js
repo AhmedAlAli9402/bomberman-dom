@@ -2,7 +2,6 @@
 export function calculateNewPosition(currentPosition, direction, gameGrid) {
   let newX = currentPosition.x;
   let newY = currentPosition.y;
-  console.log('currentPosition', direction);
   switch (direction) {
     case "ArrowUp":
       newY = Math.max(0, newY - 1); // Prevent moving out of bounds

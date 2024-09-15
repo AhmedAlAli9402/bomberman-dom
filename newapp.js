@@ -67,7 +67,7 @@ function handleServerMessage(data) {
       startCountGameStarting(data); // Notify about last chance to join
       break;
     case "gameStarted":
-      handleGameStartedMessage(); // Start the game
+      handleGameStartedMessage(data); // Start the game
       break;
     case "updatePosition":
       handlePlayerMove(data); // Handle player movement
@@ -103,9 +103,6 @@ function handleWelcomeMessage(data) {
     chatMessages = data.loadMessages;
     loadExistingMessages();
   }
-  game.gameGrid = data.gameGrid.gameGrid;
-  game.gameId = data.gameId;
-  game.players = data.gameGrid.players;
 }
 
 function handlePlayerMove(data) {
@@ -146,7 +143,13 @@ function handleKillPlayer(data) {
   killPlayer(id);
 }
 
-function handleGameStartedMessage() {
+function handleGameStartedMessage(data) {
+  console.log("Game started", data);
+  game.gameGrid = data.currentGame.gameGrid;
+  game.players = data.currentGame.players;
+  game.gameId = data.game
+  game.gameTimer = data.currentGame.timer;
+
   showGameGrid();
   buildGame();
 }

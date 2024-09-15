@@ -7,16 +7,14 @@ import { handleClientDisconnection } from "./handleclientdiscc.js";
 import { buildGameObject } from "./gamebuild.js";
 import { handleMessages } from "./handlemessages.js";
 import { startGameCountdown } from "./gamecounter.js";
-import { getPlayerStartPositions } from "./calculatepos.js";
+
 const server = http.createServer();
 const wss = new WebSocketServer({ server });
 
-const Games = []; // Array to track all games
+export const Games = []; // Array to track all games
 
 // Function to create a new game
 function CreateNewGame() {
-  const gameData = buildGameObject();
-
   const newGame = {
     clients: new Map(),
     gameGrid: buildGameObject(),
@@ -65,9 +63,15 @@ function CreateNewGame() {
         keyStillDown: false,
         keyStillDownForSkate: 0,
         bombDropped: 0,
+
       },
     ], // To track player positions
+    lockInCount: 5, // Countdown for locking in
+    startingCount: 3, // Countdown for starting
+    isLockingIn: false, // Game is not locking in
     isStarting: false, // Game is not starting
+    isStarted: false, // Game is not started
+    gameId:0,
     timer: null, // To track the timer
   };
 
@@ -129,37 +133,32 @@ wss.on("connection", (ws) => {
         messageType: "welcome",
         nickname: data.nickname,
         message: `Welcome, ${data.nickname}!`,
-        clients: Array.from(currentGame.clients.values()),
         numberofClients: currentGame.clients.size,
-        gameGrid: currentGame,
-        gameId: Games.length - 1,
         loadMessages: currentGame.chatMessages,
-        players: currentGame.players,
-        timer: currentGame.timer,
       };
       ws.send(JSON.stringify(welcomeMessage));
 
       // Sync countdown for new players
-      if (currentGame.isStarting && !currentGame.isStarted) {
-        if (currentGame.countdown1 > 0) {
-          const lockInMessage = {
-            messageType: "lockIn",
-            message: `The game is locking in ${currentGame.countdown1} seconds! More players can still join.`,
-            remainingTime: currentGame.countdown1,
-          };
-          ws.send(JSON.stringify(lockInMessage));
-        } else if (currentGame.countdown2 > 0) {
-          const lastChanceMessage = {
-            messageType: "lastChance",
-            message: `The game is starting in ${currentGame.countdown2} seconds!`,
-            remainingTime: currentGame.countdown2,
-          };
-          ws.send(JSON.stringify(lastChanceMessage));
-        }
-      }
+      // if (currentGame.isStarting && !currentGame.isStarted) {
+      //   if (currentGame.countdown1 > 0) {
+      //     const lockInMessage = {
+      //       messageType: "lockIn",
+      //       message: `The game is locking in ${currentGame.countdown1} seconds! More players can still join.`,
+      //       remainingTime: currentGame.countdown1,
+      //     };
+      //     ws.send(JSON.stringify(lockInMessage));
+      //   } else if (currentGame.countdown2 > 0) {
+      //     const lastChanceMessage = {
+      //       messageType: "lastChance",
+      //       message: `The game is starting in ${currentGame.countdown2} seconds!`,
+      //       remainingTime: currentGame.countdown2,
+      //     };
+      //     ws.send(JSON.stringify(lastChanceMessage));
+      //   }
+      // }
 
       // Start the countdown timer if there are at least 2 players
-      if (currentGame.clients.size === 2) {
+      if (currentGame.clients.size === 4) {
         startGameCountdown(currentGame);
       }
 

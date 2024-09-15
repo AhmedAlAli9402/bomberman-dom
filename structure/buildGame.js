@@ -232,7 +232,6 @@ function startTimer(time) {
 // End the game when the countdown reaches 0
 function endGame() {
     let Players = game.players;
-  console.log("Game over!");
   const gameGrid = document.getElementById("gameGrid");
   gameGrid.innerHTML = ""; // Clear the game grid
 
@@ -245,8 +244,7 @@ function endGame() {
     return player.lives > Players[winnerIndex].lives ? index : winnerIndex;
   }, 0);
 
-  console.log("winnerIndex", winnerIndex);
-  console.log("players", Players);
+
   if (
     winnerIndex !== -1 &&
     Players.filter((player) => player.lives > 0).length === 1

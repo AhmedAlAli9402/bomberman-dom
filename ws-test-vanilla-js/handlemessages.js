@@ -17,8 +17,6 @@ if (currentGame.clients.has(ws) && data.message) {
       // Validate the move (e.g., check if the new position is free)
       if (isMoveValid(newPosition, currentGame)) {
         player.playerPosition = newPosition;
-        console.log('playerPosition', player.startPosition);
-        console.log('newPosition', newPosition);
 
         broadcast = {
           messageType: "updatePosition",
