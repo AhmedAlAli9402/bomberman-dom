@@ -26,6 +26,13 @@ if (currentGame.clients.has(ws) && data.message) {
           currentGame: currentGame,
           direction: direction,
         };
+      } else {
+        broadcast = {
+          messageType: "invalidMove",
+          id: playerId,
+          currentGame: currentGame,
+          direction: direction,
+        };
       }
     } else if (data.message.messageType === "keyUp") {
       broadcast = {

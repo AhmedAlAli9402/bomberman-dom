@@ -74,6 +74,9 @@ function handleServerMessage(data) {
     case "updatePosition":
       handlePlayerMove(data); // Handle player movement
       break;
+    case "invalidMove":
+      console.log("Invalid move");
+      break;
     case "keyUp":
       handleKeyUp(data); // Handle key release event
       break;

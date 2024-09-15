@@ -72,8 +72,15 @@ wss.on("connection", (ws) => {
       ws.send(JSON.stringify(welcomeMessage));
 
       // Start the countdown timer if there are at least 2 players
-      if (currentGame.clients.size >= 2) {
+      if (currentGame.clients.size === 2) {
         startGameCountdown(currentGame);
+      } else if (currentGame.isLockingIn) {
+        const lockInMessage = {
+          messageType: "lockIn",
+          message: `The game is locking in ${currentGame.lockInCount} seconds! More players can still join.`,
+          remainingTime: currentGame.lockInCount,
+        };
+        ws.send(JSON.stringify(lockInMessage));
       }
       return;
     }
