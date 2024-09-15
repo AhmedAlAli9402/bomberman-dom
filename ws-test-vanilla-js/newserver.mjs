@@ -77,7 +77,7 @@ wss.on("connection", (ws) => {
       } else if (currentGame.isLockingIn) {
         const lockInMessage = {
           messageType: "lockIn",
-          message: `The game is locking in ${currentGame.lockInCount} seconds! More players can still join.`,
+          message: `More players can still join, ${currentGame.lockInCount} seconds!.`,
           remainingTime: currentGame.lockInCount,
         };
         ws.send(JSON.stringify(lockInMessage));

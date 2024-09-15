@@ -12,7 +12,7 @@ export function startGameCountdown(currentGame) {
     const lockInMessage = {
       messageType: "lockIn",
       message:
-        `The game is locking in ${currentGame.lockInCount} seconds! More players can still join.`,
+        `More players can still join, ${currentGame.lockInCount} seconds!.`,
       remainingTime: currentGame.lockInCount,
     };
 
@@ -24,7 +24,7 @@ export function startGameCountdown(currentGame) {
       currentGame.lockInCount--;
       const timerUpdateMessage = {
         messageType: "updateTimer",
-        message: `The game is locking in ${currentGame.lockInCount} seconds! More players can still join.`,
+        message: `More players can still join, ${currentGame.lockInCount} seconds!.`,
         remainingTime: currentGame.lockInCount,
       };
 
