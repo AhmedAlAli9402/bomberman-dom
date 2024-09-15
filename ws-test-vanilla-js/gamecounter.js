@@ -1,5 +1,5 @@
 import { Games } from "./newserver.mjs";
-
+import { startGameTimer } from "./gameTimer.js";
 export function startGameCountdown(currentGame) {
   if (
     currentGame.clients.size >= 2 &&
@@ -75,6 +75,7 @@ function startPreGameCountdown(currentGame) {
       };
       broadcastToClients(currentGame, gameStartMessage);
       currentGame.isStarted = true; // Mark the game as started
+      startGameTimer(currentGame); // Start the game timer
     }
   }, 1000); // Update every second
 }

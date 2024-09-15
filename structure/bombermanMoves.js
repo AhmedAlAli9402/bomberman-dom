@@ -26,7 +26,7 @@ export function changeDirection(e, id) {
     }
 }
 
-function moveBomberman(direction, id) {
+export function moveBomberman(direction, id) {
     const player = players[id];
     const bomberman = document.querySelector(`.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`);
     if (!bomberman) return;

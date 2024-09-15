@@ -4,6 +4,7 @@ import { MyFramework } from "./vFw/framework.js";
 import {
   showGameGrid,
   buildGame,
+  updateHUD,
 } from "./structure/buildGame.js";
 import {
   game,
@@ -14,6 +15,7 @@ import {
   changeDirection,
   setKeyUp,
   playerGameOver,
+  moveBomberman,
 } from "./structure/bombermanMoves.js";
 import {
   checkIfPlayerInBlastRadius,
@@ -87,6 +89,10 @@ function handleServerMessage(data) {
     case "killPlayer":
       handleKillPlayer(data); // Handle player elimination
       break;
+    case "updateHUD":
+      // Update the HUD with the latest game state
+      // updateHUD(data);
+      break;
     case "youLost":
       playerGameOver(); // Handle player game over event
       break;
@@ -106,6 +112,9 @@ function handleWelcomeMessage(data) {
 }
 
 function handlePlayerMove(data) {
+  game.gameGrid = data.currentGame.gameGrid;
+  game.players = data.currentGame.players;
+  
   const { id, direction } = data;
   changeDirection(direction, id);
 }
