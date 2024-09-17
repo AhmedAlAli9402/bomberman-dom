@@ -13,10 +13,18 @@ if (currentGame.clients.has(ws) && data.message) {
       player.startPosition = player.playerPosition;
       // Calculate new position based on direction
       const newPosition = calculateNewPosition(player.playerPosition, direction, currentGame.gameGrid);
+      player.playerPosition = newPosition;
 
+      broadcast = {
+        messageType: "updatePosition",
+        id: playerId,
+        currentGame: currentGame,
+        direction: direction,
+      };
 
 
       // Validate the move (e.g., check if the new position is free)
+      /*
       if (isMoveValid(newPosition, currentGame)) {
         player.playerPosition = newPosition;
 
@@ -34,6 +42,7 @@ if (currentGame.clients.has(ws) && data.message) {
           direction: direction,
         };
       }
+      */
     } else if (data.message.messageType === "keyUp") {
       broadcast = {
         messageType: "keyUp",

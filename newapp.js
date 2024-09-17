@@ -118,7 +118,7 @@ function handleWelcomeMessage(data) {
 function handlePlayerMove(data) {
   game.gameGrid = data.currentGame.gameGrid;
   game.players = data.currentGame.players;
-  
+
   const { id, direction } = data;
   changeDirection(direction, id);
 }
@@ -289,6 +289,7 @@ function showNicknamePopup() {
     id: "nicknameInput",
     messageType: "text",
     placeholder: "Enter your nickname",
+    autofocus: true,
   });
 
   const submitButton = MyFramework.DOM(
