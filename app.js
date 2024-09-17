@@ -1,18 +1,10 @@
 // app.js
 
 import { MyFramework } from "./vFw/framework.js";
-import {
-  showGameGrid,
-  buildGame,
-  updateHUD,
-} from "./structure/buildGame.js";
-import {
-  game,
-  wsUrl,
-} from "./structure/model.js";
+import { showGameGrid, buildGame, updateHUD } from "./structure/buildGame.js";
+import { game, wsUrl, updateGame } from "./structure/model.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 import {
-  changeDirection,
   setKeyUp,
   playerGameOver,
   moveBomberman,
@@ -118,9 +110,9 @@ function handleWelcomeMessage(data) {
 function handlePlayerMove(data) {
   game.gameGrid = data.currentGame.gameGrid;
   game.players = data.currentGame.players;
-console.log("handlePlayerMove", data.currentGame.players);
+  console.log("handlePlayerMove", data.currentGame.players);
   const { id, direction } = data;
-  changeDirection(direction, id);
+  moveBomberman(direction, id);
 }
 
 function handleKeyUp(data) {
@@ -160,9 +152,10 @@ function handleGameStartedMessage(data) {
   console.log("Game started", data);
   game.gameGrid = data.currentGame.gameGrid;
   game.players = data.currentGame.players;
-  game.gameId = data.game
+  game.gameId = data.game;
   game.gameTimer = data.currentGame.timer;
 
+  updateGame(game);
   showGameGrid();
   buildGame();
 }
@@ -439,7 +432,6 @@ function startCountGameStarting(data) {
 
   countdownTimerEl.textContent = ``;
   countdownTimerEl.textContent = `${data.message}`;
-
 }
 
 // Function to handle the updateTimer message from the server

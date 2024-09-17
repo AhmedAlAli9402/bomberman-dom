@@ -1,57 +1,42 @@
-// structure/bombermanMoves.js
 import { availableSquares } from './buildGame.js';
-import { width, height, game, powerUps } from './model.js';
-import { MyFramework } from '../vFw/framework.js';
+import { width, game, powerUps } from './model.js';
 import { sendBombExplosion } from '../app.js';
 import { breakWall } from './gameEvents.js';
 
 let powerUpTimeOut;
 
+// Function to convert x, y to a single position index
+const positionToIndex = (position, gameGrid) => position.y * gameGrid.width + position.x;
+
 const directionMap = {
-    'ArrowUp': { direction: 'up', offset: -width, transform: 'translateY(-100%)' },
-    'ArrowRight': { direction: 'right', offset: 1, transform: 'translateX(100%)' },
-    'ArrowDown': { direction: 'down', offset: width, transform: 'translateY(100%)' },
-    'ArrowLeft': { direction: 'left', offset: -1, transform: 'translateX(-100%)' }
+    ArrowUp: { offset: -width, transform: 'translateY(-100%)' },
+    ArrowRight: { offset: 1, transform: 'translateX(100%)' },
+    ArrowDown: { offset: width, transform: 'translateY(100%)' },
+    ArrowLeft: { offset: -1, transform: 'translateX(-100%)' }
 };
 
-export function changeDirection(e, id) {
-    const players = game.players;
-    const player = players[id];
-    if (!player.keyStillDown || (player.powerUp === "skate" && player.keyStillDownForSkate < 4)) {
-        if (directionMap[e]) {
-            moveBomberman(directionMap[e].direction, id);
-        } else if (e === 'x') {
-            dropBomb(id);
-        }
-    }
-}
-
 export function moveBomberman(direction, id) {
-    const players = game.players;
-    console.log('moveBomberman', direction,id,players);
-    const player = players[id];
+    const player = game.players[id];
     const bomberman = document.querySelector(`.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`);
     if (!bomberman) return;
 
     const bombermanClass = bomberman.classList[0].replace(' bomb', '');
-    const bombermanIndex = availableSquares.indexOf(bomberman);
-    const newIndex = bombermanIndex + directionMap[`Arrow${direction.charAt(0).toUpperCase() + direction.slice(1)}`].offset;
-    const nextSquare = availableSquares[newIndex];
+    const bombermanNextIndex = positionToIndex(player.playerPosition, game.gameGrid);
 
-    if (nextSquare && (!nextSquare.classList.length || powerUps.includes(nextSquare.classList[0]))) {
-        if (powerUps.includes(nextSquare.classList[0])) {
-            addPowerUpToPlayer(nextSquare.classList[0], id);
-        }
-        const transform = directionMap[`Arrow${direction.charAt(0).toUpperCase() + direction.slice(1)}`].transform;
+    const nextSquare = document.querySelectorAll(".grid div")[bombermanNextIndex];
+    const classDirection = direction.split('Arrow').slice(1).join('');
+    if (nextSquare) {
+        // Move the bomberman visually
+        const transform = directionMap[direction].transform;
         bomberman.style.transform = transform;
-        bomberman.style.transition = 'transform 0.002s';
+        bomberman.style.transition = 'transform 0.2s'; // Increased duration for visibility
 
-        setTimeout(() => {
-            nextSquare.className = `bomberman${player.color}Going${direction.charAt(0).toUpperCase() + direction.slice(1)}`;
+        requestAnimationFrame(() => {
             bomberman.classList.remove(bombermanClass);
+            nextSquare.className = `bomberman${player.color}Going${classDirection}`;
             bomberman.style.transform = '';
             bomberman.style.transition = '';
-        }, 2);
+        });
 
         player.keyStillDown = true;
         player.keyStillDownForSkate = player.powerUp === 'skate' ? player.keyStillDownForSkate + 1 : 0;

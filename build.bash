@@ -4,7 +4,7 @@
 cd ws-test-vanilla-js
 
 # Run node server.js
-node server.js &
+node server.mjs &
 
 # Wait for the server to start
 echo "Waiting for the server to start..."
