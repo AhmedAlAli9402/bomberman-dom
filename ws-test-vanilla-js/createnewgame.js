@@ -1,4 +1,4 @@
-import { Games } from "./newserver.mjs";
+import { Games } from "./server.mjs";
 import { buildGameObject } from "./gamebuild.js";
 
 export function CreateNewGame() {
@@ -11,7 +11,7 @@ export function CreateNewGame() {
           nickname: "",
           powerUp: "",
           startPosition: 0,
-          playerPosition: 0,
+          playerPosition: { x: 0, y: 0 },
           color: "White",
           lives: 0,
           keyStillDown: false,
@@ -22,7 +22,7 @@ export function CreateNewGame() {
           nickname: "",
           powerUp: "",
           startPosition: 0,
-          playerPosition: 0,
+          playerPosition: { x: 0, y: 0 },
           color: "Red",
           lives: 0,
           keyStillDown: false,
@@ -33,7 +33,7 @@ export function CreateNewGame() {
           nickname: "",
           powerUp: "",
           startPosition: 0,
-          playerPosition: 0,
+          playerPosition: { x: 0, y: 0 },
           color: "Blue",
           lives: 0,
           keyStillDown: false,
@@ -44,13 +44,13 @@ export function CreateNewGame() {
           nickname: "",
           powerUp: "",
           startPosition: 0,
-          playerPosition: 0,
+          playerPosition: { x: 0, y: 0 },
           color: "Black",
           lives: 0,
           keyStillDown: false,
           keyStillDownForSkate: 0,
           bombDropped: 0,
-  
+
         },
       ], // To track player positions
       lockInCount: 5, // Countdown for locking in
@@ -61,7 +61,7 @@ export function CreateNewGame() {
       gameId:0,
       gameTimer: 10, // To track the timer
     };
-  
+
     Games.push(newGame);
     return newGame;
   }

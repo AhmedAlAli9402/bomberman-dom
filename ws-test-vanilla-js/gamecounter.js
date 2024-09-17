@@ -1,4 +1,4 @@
-import { Games } from "./newserver.mjs";
+import { Games } from "./server.mjs";
 import { startGameTimer } from "./gameTimer.js";
 export function startGameCountdown(currentGame) {
   if (

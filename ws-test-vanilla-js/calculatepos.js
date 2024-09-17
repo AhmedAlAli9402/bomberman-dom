@@ -2,6 +2,7 @@
 export function calculateNewPosition(currentPosition, direction, gameGrid) {
   let newX = currentPosition.x;
   let newY = currentPosition.y;
+  if (newX && newY) {
   switch (direction) {
     case "ArrowUp":
       newY = Math.max(0, newY - 1); // Prevent moving out of bounds
@@ -18,7 +19,9 @@ export function calculateNewPosition(currentPosition, direction, gameGrid) {
     default:
       return currentPosition; // No movement
   }
-  
+  }else{
+    console.log("No x and y");
+  }
   return { x: newX, y: newY }; // Return the new position
 }
 
@@ -34,7 +37,7 @@ export function isMoveValid(newPosition, currentGame) {
 
   // Convert new position to index
   const newIndex = positionToIndex(newPosition, currentGame.gameGrid);
-
+  console.log(newIndex);
   return (
     newIndex >= 0 &&
     !walls.includes(newIndex) &&

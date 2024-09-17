@@ -1,21 +1,29 @@
 // app.js
 
 import { MyFramework } from "./vFw/framework.js";
-import { showGameGrid, buildGame, deinitializePlayer } from "./structure/buildGame.js";
-import { minimumPlayers, maximumPlayers, minimumTime, maximumTime, game, wsUrl } from "./structure/model.js";
-import { setPlayerNickname, setPlayersNicknames } from "./structure/helpers.js";
+import {
+  showGameGrid,
+  buildGame,
+  updateHUD,
+} from "./structure/buildGame.js";
+import {
+  game,
+  wsUrl,
+} from "./structure/model.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
-import { changeDirection, setKeyUp, playerGameOver } from './structure/bombermanMoves.js';
-import { checkIfPlayerInBlastRadius, killPlayer } from "./structure/gameEvents.js";
+import {
+  changeDirection,
+  setKeyUp,
+  playerGameOver,
+  moveBomberman,
+} from "./structure/bombermanMoves.js";
+import {
+  checkIfPlayerInBlastRadius,
+  killPlayer,
+} from "./structure/gameEvents.js";
 
 // set the countdown to the minimum time or maximum time
-// let countdown = minimumTime;
 const [countdown, setCountdown] = MyFramework.State(10);
-
-// set the needed players
-let neededPlayers = minimumPlayers; // for mini of 2 players
-// let neededPlayers = 1 ; // for testing with 1 player
-let timer;
 
 // Get the container element
 export const container = document.getElementById("app");
@@ -34,52 +42,189 @@ function connectToWebSocket(nickname) {
     }
   };
 
-  ws.onmessage = function(message) {
+  ws.onmessage = function (message) {
     const data = JSON.parse(message.data);
-    console.log("Data received", data.type);
-    if (data.messageType === "welcome") {
-      console.log("Welcome message received", data.numberofClients);
-      setPlayersReady(data.numberofClients);
-      setPlayersNicknames(data.clients);
-      showWaitingArea();
-      showChatBox();
-      if (data.loadMessages) {
-        chatMessages = data.loadMessages
-        loadExistingMessages();
-      }
-      game.gameGrid = data.gameGrid;
-      game.gameId = data.gameId;
-    } else if (data.messageType === "move") {
-      const { id, direction } = data;
-      changeDirection(direction, id);
-    } else if (data.messageType === "keyUp") {
-      const { id } = data;
-      setKeyUp(id);
-    } else if (data.messageType === "chat") {
-      const { nickname, message: chatMessage } = data;
-      chatMessages.push(`${nickname}: ${chatMessage.message}`); // Store the message
-      addChatMessage(`${nickname}: ${chatMessage.message}`); // Add to the chat
-      console.log("Chat message received", chatMessages);
-    } else if (data.messageType === "gameState") {
-      // Handle syncing the game state on new connection
-    } else if (data.messageType === 'bombExplosion') {
-      let userId = data.id;
-      let bombPosition = data.bombPosition
-      let directions = data.directions
-      checkIfPlayerInBlastRadius(userId, bombPosition, directions);
-    } else if (data.messageType === 'killPlayer') {
-      const { id } = data;
-      killPlayer(id);
-    } else if (data.messageType === 'youLost') {
-      playerGameOver()
-    }
+    handleServerMessage(data);
   };
 
   ws.onclose = () => {
+    ws.send(JSON.stringify({ message: { messageType: "disconnect" } }));
     console.log("Disconnected from WebSocket server");
   };
 }
 
+// New function to handle messages from the server
+function handleServerMessage(data) {
+  switch (data.messageType) {
+    case "welcome":
+      handleWelcomeMessage(data);
+      break;
+    case "lockIn":
+      startCountdownLockin(data); // Start the lock-in countdown
+      break;
+    case "updateTimer":
+      handleUpdateTimer(data); // Handle lock-in timer update
+      break;
+    case "lastChance":
+      startCountGameStarting(data); // Notify about last chance to join
+      break;
+    case "gameStarted":
+      handleGameStartedMessage(data); // Start the game
+      break;
+    case "updatePosition":
+      handlePlayerMove(data); // Handle player movement
+      break;
+    case "invalidMove":
+      console.log("Invalid move");
+      break;
+    case "keyUp":
+      handleKeyUp(data); // Handle key release event
+      break;
+    case "chat":
+      handleChatMessage(data); // Handle chat messages
+      break;
+    case "updateGameState":
+      syncGameState(data); // Sync the game state with the server
+      break;
+    case "bombExplosion":
+      handleBombExplosion(data); // Handle bomb explosion events
+      break;
+    case "killPlayer":
+      handleKillPlayer(data); // Handle player elimination
+      break;
+    case "updateHUD":
+      console.log("Update HUD", data.gameTimer);
+      // Update the HUD with the latest game state
+      // updateHUD(data);
+      break;
+    case "youLost":
+      playerGameOver(); // Handle player game over event
+      break;
+    default:
+      console.warn("Unknown message type:", data.messageType); // Warn if an unknown message type is received
+  }
+}
+
+function handleWelcomeMessage(data) {
+  setPlayersReady(data.numberofClients);
+  showWaitingArea();
+  showChatBox();
+  if (data.loadMessages) {
+    chatMessages = data.loadMessages;
+    loadExistingMessages();
+  }
+}
+
+function handlePlayerMove(data) {
+  game.gameGrid = data.currentGame.gameGrid;
+  game.players = data.currentGame.players;
+console.log("handlePlayerMove", data.currentGame.players);
+  const { id, direction } = data;
+  changeDirection(direction, id);
+}
+
+function handleKeyUp(data) {
+  const { id } = data;
+  window.requestAnimationFrame(() => setKeyUp(id));
+}
+
+function handleChatMessage(data) {
+  const { nickname, message: chatMessage } = data;
+  chatMessages.push(`${nickname}: ${chatMessage.message}`); // Store the message
+  addChatMessage(`${nickname}: ${chatMessage.message}`); // Add to the chat
+}
+
+function syncGameState(data) {
+  // Update the local game state based on the server's game state
+  // For example, this could include player positions, scores, etc.
+  console.log("Syncing game state", data);
+  game.gameGrid = data.gameGrid;
+  game.players = data.players;
+}
+
+function handleBombExplosion(data) {
+  let userId = data.id;
+  let bombPosition = data.bombPosition;
+  let directions = data.directions;
+  window.requestAnimationFrame(() => {
+    checkIfPlayerInBlastRadius(userId, bombPosition, directions);
+  });
+}
+
+function handleKillPlayer(data) {
+  const { id } = data;
+  killPlayer(id);
+}
+
+function handleGameStartedMessage(data) {
+  console.log("Game started", data);
+  game.gameGrid = data.currentGame.gameGrid;
+  game.players = data.currentGame.players;
+  game.gameId = data.game
+  game.gameTimer = data.currentGame.timer;
+
+  showGameGrid();
+  buildGame();
+}
+
+export function sendkeyUp() {
+  console.log("sendkeyUp");
+  if (ws) {
+    ws.send(
+      JSON.stringify({
+        message: {
+          gameId: game.gameId,
+          messageType: "keyUp",
+        },
+      })
+    );
+  }
+}
+
+export function sendBombExplosion(bombPosition, directions) {
+  console.log("checkPlayer");
+  if (ws) {
+    ws.send(
+      JSON.stringify({
+        message: {
+          messageType: "bombExplosion",
+          gameId: game.gameId,
+          bombPosition: bombPosition,
+          directions: directions,
+        },
+      })
+    );
+  }
+}
+
+export function sendKillPlayer(userId) {
+  console.log("sendKillPlayer");
+  if (ws) {
+    ws.send(
+      JSON.stringify({
+        message: {
+          messageType: "killPlayer",
+          gameId: game.gameId,
+          userId: userId,
+        },
+      })
+    );
+  }
+}
+
+export function sendplayerGameOver(nickname) {
+  if (ws) {
+    ws.send(
+      JSON.stringify({
+        message: {
+          messageType: "gameover",
+          nickname: nickname,
+          gameId: game.gameId,
+        },
+      })
+    );
+  }
+}
 
 export function sendPlayerMove(direction) {
   console.log("sendPlayerMove", "direction", direction.key);
@@ -96,56 +241,6 @@ export function sendPlayerMove(direction) {
   }
 }
 
-export function sendkeyUp() {
-  console.log('sendkeyUp');
-  if (ws) {
-    ws.send(JSON.stringify({
-      message: {
-        gameId: game.gameId,
-        messageType: 'keyUp'
-      }
-    }));
-  }
-}
-
-export function sendBombExplosion(bombPosition, directions) {
-  console.log('checkPlayer');
-  if (ws) {
-    ws.send(JSON.stringify({
-      message: {
-        messageType: 'bombExplosion',
-        gameId: game.gameId,
-        bombPosition: bombPosition,
-        directions: directions
-      }
-    }));
-  }
-}
-
-export function sendKillPlayer(userId) {
-  console.log('sendKillPlayer');
-  if (ws) {
-    ws.send(JSON.stringify({
-      message: {
-        messageType: 'killPlayer',
-        gameId: game.gameId,
-        userId: userId
-      }
-    }));
-  }
-}
-
-export function sendplayerGameOver(nickname) {
-  if (ws) {
-    ws.send(JSON.stringify({
-      message: {
-        messageType: 'gameover',
-        nickname: nickname,
-        gameId: game.gameId,
-      }
-    }));
-  }
-}
 // Define the landing page
 export function showLandingPage() {
   const landingPage = MyFramework.DOM(
@@ -168,10 +263,22 @@ export function showLandingPage() {
     )
   );
   if (container) {
-    document.getElementById("overlay").innerHTML = "";
-    document.getElementById("overlay").appendChild(MyFramework.DOM("h1", null, "Bomberman Game"));
-    document.getElementById("overlay").appendChild(MyFramework.DOM("img",{id:"logo", src: "images/logo.png", alt: "Bomberman" },null));
-
+    const upper = document.querySelector(".main");
+    const overlay = MyFramework.DOM(
+      "div",
+      { id: "overlay" },
+      MyFramework.DOM(
+        "div",
+        { id: "container" },
+        MyFramework.DOM("h1", null, "Bomberman Game")
+      ),
+      MyFramework.DOM("img", {
+        id: "logo",
+        src: "images/logo.png",
+        alt: "Bomberman",
+      })
+    );
+    upper.replaceChild(overlay, document.getElementById("overlay"));
     container.replaceChild(landingPage, document.getElementById("landingPage"));
   }
 }
@@ -182,6 +289,7 @@ function showNicknamePopup() {
     id: "nicknameInput",
     messageType: "text",
     placeholder: "Enter your nickname",
+    autofocus: true,
   });
 
   const submitButton = MyFramework.DOM(
@@ -206,7 +314,7 @@ function showNicknamePopup() {
   }
   document
     .getElementById("nicknameInput")
-    .addEventListener("keyup", function(event) {
+    .addEventListener("keyup", function (event) {
       if (event.key === "Enter") {
         submitNickname();
       }
@@ -222,11 +330,6 @@ function submitNickname() {
     nickname = nickname.slice(0, 10);
   }
   connectToWebSocket(nickname);
-
-  // Add the nickname and proceed
-  // setPlayersReady(playersReady() + 1);
-  // setPlayerNickname(playersReady() - 1, nickname);
-  // showWaitingArea();
 }
 
 // Show the waiting area
@@ -309,35 +412,54 @@ function showWaitingArea() {
 
   if (container) {
     container.innerHTML = "";
+    // container.replaceChild(waitingArea, document.getElementById("nicknamePopup"));
     container.appendChild(waitingArea);
-  }
-
-  if (playersReady() >= neededPlayers) {
-    startCountdown();
   }
 }
 
-// Start the countdown timer
-function startCountdown() {
-  // clear the timer if it's already running and set the countdown
-  clearInterval(timer);
-  setCountdown(maximumTime);
-  // hide countPlayers,waitingMessage
-  document.getElementById("waitingMessage").style.display = "none";
-  // show countdownTimer
-  document.getElementById("countdownTimer").style.display = "block";
-  timer = setInterval(() => {
-    setCountdown(countdown() - 1);
-    document.getElementById(
-      "countdownTimer"
-    ).textContent = `Starting in ${countdown()} seconds...`;
-    if (countdown() === 0) {
-      clearInterval(timer);
-      showGameGrid();
-      createNewGameinServer();
-      buildGame(game.gameGrid);
+let countdownInterval; // Store the interval ID to clear it later if needed
+
+// Function to start the lock-in countdown
+function startCountdownLockin(data) {
+  setCountdown(data.remainingTime);
+
+  const waitingMessageEl = document.getElementById("waitingMessage");
+  const countdownTimerEl = document.getElementById("countdownTimer");
+
+  if (waitingMessageEl) waitingMessageEl.style.display = "none";
+  if (countdownTimerEl) countdownTimerEl.style.display = "block";
+
+  countdownTimerEl.textContent = `${data.message}`;
+}
+
+// Function to start the game countdown
+function startCountGameStarting(data) {
+  setCountdown(data.remainingTime);
+  const countdownTimerEl = document.getElementById("countdownTimer");
+
+  countdownTimerEl.textContent = ``;
+  countdownTimerEl.textContent = `${data.message}`;
+
+}
+
+// Function to handle the updateTimer message from the server
+function handleUpdateTimer(data) {
+  const { remainingTime, message } = data;
+
+  if (remainingTime != null) {
+    // Update the countdown based on the received remaining time
+    setCountdown(remainingTime);
+
+    // Update the message if provided
+    if (message) {
+      const countdownTimerEl = document.getElementById("countdownTimer");
+      if (countdownTimerEl) {
+        // clear old textcontent
+        countdownTimerEl.textContent = "";
+        countdownTimerEl.textContent = `${message}`;
+      }
     }
-  }, 1000);
+  }
 }
 
 // chat box
@@ -365,8 +487,8 @@ function showChatBox() {
       )
     )
   );
-
   container.appendChild(chatBox);
+  // container.replaceChild(chatBox, document.getElementById("chatbox"));
 
   // Load existing messages if any
   for (const msg of chatMessages) {
@@ -377,7 +499,7 @@ function showChatBox() {
 
   document
     .getElementById("chatInput")
-    .addEventListener("keyup", function(event) {
+    .addEventListener("keyup", function (event) {
       if (event.key === "Enter") {
         sendMessage();
       }
@@ -388,14 +510,19 @@ function addChatMessage(msg) {
   const chatMessage = MyFramework.DOM("li", {}, msg);
   const chatMessagesList = document.getElementById("chatList");
   chatMessagesList.appendChild(chatMessage);
-  document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+  document.getElementById("chatMessages").scrollTop =
+    document.getElementById("chatMessages").scrollHeight;
 }
 
 function sendMessage() {
   const message = document.getElementById("chatInput").value.trim();
   if (message) {
     if (ws) {
-      ws.send(JSON.stringify({ message: { groupId: game.gameId, type: "chat", message } }));
+      ws.send(
+        JSON.stringify({
+          message: { gameId: game.gameId, messageType: "chat", message },
+        })
+      );
       // addChatMessage(`You: ${message}`); // Show the sent message immediately
       document.getElementById("chatInput").value = ""; // Clear input
     }
@@ -409,14 +536,17 @@ function loadExistingMessages() {
   for (const msg of chatMessages) {
     addChatMessage(msg);
   }
-  // chatMessages.forEach(msg => addChatMessage(msg));
 }
 
 // Start the app with the landing page
-showLandingPage();
+window.requestAnimationFrame(showLandingPage);
 
 function createNewGameinServer() {
   if (ws) {
-    ws.send(JSON.stringify({ message: { gameId: game.gameId, type: "newGame" } }));
+    ws.send(
+      JSON.stringify({
+        message: { gameId: game.gameId, messageType: "newGame" },
+      })
+    );
   }
 }

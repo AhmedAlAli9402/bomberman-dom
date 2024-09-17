@@ -3,7 +3,7 @@
 import { availableSquares } from './buildGame.js';
 import { width, game } from './model.js';
 import { updateHUD } from './buildGame.js';
-import { sendplayerGameOver, sendKillPlayer } from '../newapp.js';
+import { sendplayerGameOver, sendKillPlayer } from '../app.js';
 
 let players = game.players;
 

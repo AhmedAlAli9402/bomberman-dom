@@ -3,9 +3,9 @@
 import { MyFramework } from "../vFw/framework.js";
 import { game } from "./model.js";
 import { formatTime } from "./helpers.js";
-import { container } from "../newapp.js";
+import { container } from "../app.js";
 import { countdown, setCountdown } from "./model.js";
-import { sendPlayerMove, sendkeyUp, sendplayerGameOver } from "../newapp.js";
+import { sendPlayerMove, sendkeyUp, sendplayerGameOver } from "../app.js";
 
 export let availableSquares = [];
 // Initial lives for each player, starting with 3 lives each

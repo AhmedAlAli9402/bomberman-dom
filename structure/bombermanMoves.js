@@ -5,7 +5,6 @@ import { MyFramework } from '../vFw/framework.js';
 import { sendBombExplosion } from '../app.js';
 import { breakWall } from './gameEvents.js';
 
-const players = game.players;
 let powerUpTimeOut;
 
 const directionMap = {
@@ -16,6 +15,7 @@ const directionMap = {
 };
 
 export function changeDirection(e, id) {
+    const players = game.players;
     const player = players[id];
     if (!player.keyStillDown || (player.powerUp === "skate" && player.keyStillDownForSkate < 4)) {
         if (directionMap[e]) {
@@ -27,6 +27,8 @@ export function changeDirection(e, id) {
 }
 
 export function moveBomberman(direction, id) {
+    const players = game.players;
+    console.log('moveBomberman', direction,id,players);
     const player = players[id];
     const bomberman = document.querySelector(`.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`);
     if (!bomberman) return;
@@ -43,7 +45,7 @@ export function moveBomberman(direction, id) {
         const transform = directionMap[`Arrow${direction.charAt(0).toUpperCase() + direction.slice(1)}`].transform;
         bomberman.style.transform = transform;
         bomberman.style.transition = 'transform 0.002s';
-        
+
         setTimeout(() => {
             nextSquare.className = `bomberman${player.color}Going${direction.charAt(0).toUpperCase() + direction.slice(1)}`;
             bomberman.classList.remove(bombermanClass);
@@ -57,12 +59,16 @@ export function moveBomberman(direction, id) {
 }
 
 export function setKeyUp(id) {
+    const players = game.players;
+
     const player = players[id];
     player.keyStillDownForSkate = 0;
     player.keyStillDown = false;
 }
 
 function dropBomb(id) {
+    const players = game.players;
+
     const player = players[id];
     if ((player.bombDropped >= 1 && player.powerUp !== "extraBomb") || (player.bombDropped >= 2 && player.powerUp === "extraBomb")) return;
 
@@ -84,7 +90,7 @@ function dropBomb(id) {
         availableSquares[bombermanIndex].classList.add('explosion');
         const directions = breakWall(bombermanIndex,player.powerUp);
         sendBombExplosion(bombermanIndex, directions);
-        
+
         setTimeout(() => {
             availableSquares[bombermanIndex].classList.remove('explosion');
         }, 200);
@@ -92,6 +98,8 @@ function dropBomb(id) {
 }
 
 function addPowerUpToPlayer(powerUp, id) {
+    const players = game.players;
+
     if (powerUp) {
         players[id].powerUp = powerUp;
         clearTimeout(powerUpTimeOut);
