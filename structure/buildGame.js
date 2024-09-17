@@ -108,9 +108,16 @@ function initializePlayer() {
   // Add event listeners for player movement
   document.addEventListener("keydown", (event) => {
     const key = event.key;
-    if (keyStates.hasOwnProperty(key) && !keyStates[key]) {
-      keyStates[key] = true; // Set the key state to pressed
-      sendPlayerMove(event); // Send the initial move message
+    if (key === "ArrowUp" || key === "ArrowDown" || key === "ArrowLeft" || key === "ArrowRight") {
+      if (!keyStates[key]) {
+        keyStates[key] = true; // Set the key state to pressed
+        sendPlayerMove(event); // Send the initial move message
+      }
+    } else if (key === "x") {
+      if (!keyStates[key]) {
+        keyStates[key] = true; // Set the key state to pressed
+        // Handle 'x' key press
+      }
     }
   });
 
