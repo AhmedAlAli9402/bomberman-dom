@@ -105,9 +105,13 @@ const keyStates = {
 };
 
 function initializePlayer() {
+  // Ensure the grid element is focusable
+document.getElementById("gameGrid").setAttribute("tabindex", "0");
+
   // Add event listeners for player movement
-  document.addEventListener("keydown", (event) => {
+  document.getElementById("gameGrid").addEventListener("keydown", function (event) {
     const key = event.key;
+    console.log(key);
     if (key === "ArrowUp" || key === "ArrowDown" || key === "ArrowLeft" || key === "ArrowRight") {
       if (!keyStates[key]) {
         keyStates[key] = true; // Set the key state to pressed
