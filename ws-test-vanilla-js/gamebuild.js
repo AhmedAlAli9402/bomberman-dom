@@ -1,5 +1,3 @@
-import { getPlayerStartPositions } from "./calculatepos.js";
-
 // Function to build the game object
 export function buildGameObject() {
   const height = 17;
@@ -43,6 +41,7 @@ export function buildGameObject() {
     numberOfBreakableWalls: numberOfBreakableWalls,
     numberOfPowerUps: numberOfPowerUps,
     powerUps: powerUps,
+    powerUpsIndex: [],
     playerStartPositions: playerStartCoordinates, // Updated to use coordinates
     keepEmpty: keepEmpty,
   };
@@ -106,6 +105,7 @@ export function buildGameObject() {
         !alreadyUsedSquare.includes(randomSquare)
       ) {
         gameGrid.powerUp.push({ index: randomSquare, powerUp: powerUp });
+        gameGrid.powerUpsIndex.push(randomSquare);
         alreadyUsedSquare.push(randomSquare);
       } else {
         j--;
