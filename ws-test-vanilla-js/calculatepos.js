@@ -31,16 +31,21 @@ export function positionToIndex(position, gameGrid) {
 }
 
 // Function to check if the move is valid
-export function isMoveValid(newPosition, currentGame) {
+export function isMoveValid(newPosition, currentGame, player) {
   const walls = currentGame.gameGrid.wall;
   const breakableWalls = currentGame.gameGrid.breakableWall;
-
+  let moveNotPossible = player.keyStillDown
+  if (player.powerUp === "skate" && player.keyStillDownForSkate < 4){
+    player.keyStillDownForSkate++
+    moveNotPossible = false
+  }
   // Convert new position to index
   const newIndex = positionToIndex(newPosition, currentGame.gameGrid);
   return (
     newIndex >= 0 &&
     !walls.includes(newIndex) &&
-    !breakableWalls.includes(newIndex)
+    !breakableWalls.includes(newIndex) &&
+    !moveNotPossible
   );
 }
 // Function to get player start positions based on game grid dimensions
@@ -88,19 +93,27 @@ export function getPlayerStartPositions(width, height, breakableWalls) {
   return possibleStartPositions.slice(0, 4); // Assuming a maximum of 4 players
 }
 
-export function HandleExplosion(playerid, bombPositionId, currentGame){
-  let bombExplosionPositions = [-1, 1, currentGame.width, -currentGame.width];
+export function HandleExplosion(playerid, bombPosition, currentGame){
+  let bombPositionIndex = positionToIndex(bombPosition, currentGame.gameGrid);
+  console.log(bombPositionIndex, "bombPositionIndex");
+  let bombExplosionPositions = [-1, 1, currentGame.gameGrid.width, -currentGame.gameGrid.width];
+
   if (currentGame.players[playerid].powerUp === "powerBomb") {
-      let powerbombDirections = [-2, 2, currentGame.width*2, -currentGame.width*2];
+      let powerbombDirections = [-2, 2, currentGame.gameGrid.width*2, -currentGame.gameGrid.width*2];
       for (let i = 0; i < 4; i++) {
-          if (!currentGame.gameGrid.wall.includes(bombPositionId + bombExplosionPositions[i])) {
-            bombExplosionPositions.push(powerbombDirections[i]);                
-          }
+        if (!currentGame.gameGrid.wall.includes(bombPositionIndex + bombExplosionPositions[i])) {
+          bombExplosionPositions.push(powerbombDirections[i]);                
+        }
       }
     } 
-      // console.log(currentGame.gameGrid.breakableWall, "brbrrbrrb");
-  currentGame.gameGrid.breakableWall = currentGame.gameGrid.breakableWall.filter(wall => {
-    // console.log(wall);!bombExplosionPositions.includes(wall)
-    });
+
+    let bombExplosionPositionsIndex = []
+    for (let i = 0; i < bombExplosionPositions.length; i++) {
+      bombExplosionPositionsIndex.push(bombPositionIndex + bombExplosionPositions[i]);
+    }
+
+    console.log(currentGame.gameGrid.breakableWall, "brbrrbrrb");
+    currentGame.gameGrid.breakableWall = currentGame.gameGrid.breakableWall.filter(wall => !bombExplosionPositionsIndex.includes(wall));
+    console.log(currentGame.gameGrid.breakableWall, "b222rrbrrb");
   return currentGame.gameGrid.breakableWall;
   }

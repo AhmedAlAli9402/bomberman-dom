@@ -24,8 +24,9 @@ export function handleMessages(data, ws, currentGame) {
       )
 
       // Validate the move (e.g., check if the new position is free)
-      if (isMoveValid(newPosition, currentGame)) {
+      if (isMoveValid(newPosition, currentGame, player)) {
         player.playerPosition = newPosition
+        player.keyStillDown = true
         let playerIndex = positionToIndex(newPosition, currentGame.gameGrid)
         if (currentGame.gameGrid.powerUpsIndex.includes(playerIndex)) {
           // if (player.powerUp !== "") {
@@ -45,12 +46,6 @@ export function handleMessages(data, ws, currentGame) {
             currentGame.gameGrid.powerUpsIndex.filter(
               (powerUp) => powerUp !== playerIndex
             )
-          console.log(
-            "powerUps",
-            currentGame.gameGrid.powerUp,
-            "indoooooec",
-            currentGame.gameGrid.powerUpsIndex
-          )
         }
         broadcast = {
           messageType: "updatePosition",
@@ -67,6 +62,8 @@ export function handleMessages(data, ws, currentGame) {
         }
       }
     } else if (data.message.messageType === "keyUp") {
+      player.keyStillDown = false
+      player.keyStillDownForSkate = 0
       broadcast = {
         messageType: "keyUp",
         id: playerId,
@@ -84,13 +81,14 @@ export function handleMessages(data, ws, currentGame) {
         id: playerId,
         currentGame: currentGame,
       }
+      const bombPosition = player.playerPosition
       setTimeout(() => {
         currentGame.gameGrid.breakableWall = HandleExplosion(
           playerId,
-          player.playerPosition,
+          bombPosition,
           currentGame
         )
-        // console.log(currentGame.gameGrid.breakableWall);
+        console.log(currentGame.gameGrid.breakableWall);
         player.bombDropped--
         broadcast = {
           messageType: "bombExplosion",

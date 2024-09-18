@@ -113,10 +113,10 @@ document.getElementById("gameGrid").setAttribute("tabindex", "0");
     const key = event.key;
     console.log(key);
     if (key === "ArrowUp" || key === "ArrowDown" || key === "ArrowLeft" || key === "ArrowRight") {
-      if (!keyStates[key]) {
-        keyStates[key] = true; // Set the key state to pressed
+      // if (!keyStates[key]) {
+        // keyStates[key] = true; // Set the key state to pressed
         sendPlayerMove(event); // Send the initial move message
-      }
+      // }
     } else if (key === "x") {
       if (!keyStates[key]) {
         keyStates[key] = true; // Set the key state to pressed
