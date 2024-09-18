@@ -1,7 +1,7 @@
 // app.js
 
 import { MyFramework } from "./vFw/framework.js";
-import { showGameGrid, buildGame, updateHUD } from "./structure/buildGame.js";
+import { showGameGrid, buildGame, updateHUD, endGame } from "./structure/buildGame.js";
 import { game, wsUrl, updateGame } from "./structure/model.js";
 const [playersReady, setPlayersReady] = MyFramework.State([]);
 import {
@@ -48,6 +48,7 @@ function connectToWebSocket(nickname) {
 
 // New function to handle messages from the server
 function handleServerMessage(data) {
+  console.log("handleServerMessage", data.messageType);
   switch (data.messageType) {
     case "welcome":
       handleWelcomeMessage(data);
@@ -80,7 +81,6 @@ function handleServerMessage(data) {
       syncGameState(data); // Sync the game state with the server
       break;
     case "placeBomb":
-      console.log("Place bomb");
       dropBomb(data.id); // Handle bomb placement events
       break;
     case "bombExplosion":
@@ -93,6 +93,12 @@ function handleServerMessage(data) {
       console.log("Update HUD", data.gameTimer);
       // Update the HUD with the latest game state
       // updateHUD(data);
+      break;
+    case "disconnect":
+      handleChatMessage(data); // Handle chat messages
+      break;
+    case "winnerByDefault":
+      endGame(); // Handle player game over event
       break;
     case "youLost":
       playerGameOver(); // Handle player game over event
@@ -126,7 +132,13 @@ function handleKeyUp(data) {
 }
 
 function handleChatMessage(data) {
+  console.log("Chat message", data);
   const { nickname, message: chatMessage } = data;
+  if (data.messageType === "disconnect") {
+    chatMessages.push(`${nickname} has left the game`); // Store the message
+    addChatMessage(`${nickname} has left the game`); // Add to the chat
+    return;
+  }
   chatMessages.push(`${nickname}: ${chatMessage.message}`); // Store the message
   addChatMessage(`${nickname}: ${chatMessage.message}`); // Add to the chat
 }

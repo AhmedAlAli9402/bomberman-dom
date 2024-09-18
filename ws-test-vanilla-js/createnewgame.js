@@ -17,6 +17,7 @@ export function CreateNewGame() {
           keyStillDown: false,
           keyStillDownForSkate: 0,
           bombDropped: 0,
+          disconnected: true,
         },
         {
           nickname: "",
@@ -28,6 +29,7 @@ export function CreateNewGame() {
           keyStillDown: false,
           keyStillDownForSkate: 0,
           bombDropped: 0,
+          disconnected: true,
         },
         {
           nickname: "",
@@ -39,6 +41,7 @@ export function CreateNewGame() {
           keyStillDown: false,
           keyStillDownForSkate: 0,
           bombDropped: 0,
+          disconnected: true,
         },
         {
           nickname: "",
@@ -50,7 +53,7 @@ export function CreateNewGame() {
           keyStillDown: false,
           keyStillDownForSkate: 0,
           bombDropped: 0,
-
+          disconnected: true,
         },
       ], // To track player positions
       lockInCount: 5, // Countdown for locking in

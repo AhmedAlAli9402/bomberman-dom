@@ -75,7 +75,7 @@ function startPreGameCountdown(currentGame) {
       };
       broadcastToClients(currentGame, gameStartMessage);
       currentGame.isStarted = true; // Mark the game as started
-      startGameTimer(currentGame); // Start the game timer
+      // startGameTimer(currentGame); // Start the game timer
     }
   }, 1000); // Update every second
 }

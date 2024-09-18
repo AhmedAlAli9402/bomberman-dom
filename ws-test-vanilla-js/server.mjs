@@ -60,6 +60,7 @@ wss.on("connection", (ws) => {
       currentGame.players[playerId].startPosition = initialPosition;
       currentGame.players[playerId].playerPosition = initialPosition;
       currentGame.players[playerId].lives = 3;
+      currentGame.players[playerId].disconnected = false;
 
       // Send a welcome message
       const welcomeMessage = {

@@ -62,18 +62,6 @@ export function handleMessages(data, ws, currentGame) {
         messageType: "killPlayer",
         id: data.message.userId,
       };
-    } else if (data.message.messageType === "gameover") {
-      if (nickname === data.message.nickname) {
-        ws.send(JSON.stringify({ messageType: "youLost" }));
-      }
-      // Notify others that the game is over
-      const gameOverMessage = {
-        messageType: "gameover",
-        nickname: data.message.nickname,
-      };
-      currentGame.clients.forEach((client) =>
-        client.send(JSON.stringify(gameOverMessage))
-      );
     } else if (data.message.messageType === "chat") {
       currentGame.chatMessages.push(`${nickname}: ${data.message.message}`); // Store the message
       broadcast = {

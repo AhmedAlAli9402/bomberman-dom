@@ -220,12 +220,12 @@ export function updateHUD(playerId) {
     }
   }
 }
-
+let timer;
 // Start the countdown timer
 function startTimer(time) {
   let Players = game.players;
   setCountdown(time); // 3 minutes
-  const timer = setInterval(() => {
+   timer = setInterval(() => {
     setCountdown(countdown() - 1);
     if (countdown() === 0) {
       clearInterval(timer);
@@ -233,7 +233,7 @@ function startTimer(time) {
     }
     updateHUD();
     // if only one player has lives remaining, end the game // should === 1 once we have more than 2 players
-    if (Players.filter((player) => player.lives > 0).length > 4) {
+    if (Players.filter((player) => player.lives > 0).length === 1) {
       clearInterval(timer);
       endGame();
     }
@@ -241,11 +241,16 @@ function startTimer(time) {
 }
 
 // End the game when the countdown reaches 0
-function endGame() {
+export function endGame() {
+  clearInterval(timer);
+  const HUD = document.getElementById("container");
+  HUD.removeChild(document.getElementById("hud"));
   let Players = game.players;
   const gameGrid = document.getElementById("gameGrid");
   gameGrid.innerHTML = ""; // Clear the game grid
 
+
+  console.log("Game Over!",Players);
   // Display "Game Over" message
   const gameOver = MyFramework.DOM("h1", { class: "game-over" }, "Game Over!");
   gameGrid.appendChild(gameOver);
@@ -257,7 +262,7 @@ function endGame() {
 
   if (
     winnerIndex !== -1 &&
-    Players.filter((player) => player.lives > 0).length === 1
+   ( Players.filter((player) => player.lives > 0).length === 1 && Players.filter((player) => player.disconnected === false).length === 1)
   ) {
     const winnerName = Players[winnerIndex].nickname; // Get the winner's name
     // Display the winner
@@ -280,7 +285,7 @@ function endGame() {
     { class: "startNewGame", onclick: startNewGame },
     "startNewGame"
   );
-  gameGrid.appendChild(noWinner);
+  gameGrid.appendChild(newGameButton);
 }
 
 function startNewGame() {
