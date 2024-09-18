@@ -7,6 +7,29 @@ import { sendplayerGameOver, sendKillPlayer } from '../app.js';
 
 let players = game.players;
 
+
+export function findExplosionDirections(id){
+    let bomb = document.getElementById(id);
+    let powerbomb = false
+    if (!bomb.classList.contains('bomb')) {
+        bomb = document.querySelector('.powerBombDropped');
+        powerbomb = true;
+    }
+    if (!bomb) return;
+    const bombPosition = Number(bomb.getAttribute('id'));
+    let directions = [-1, 1, width, -width];
+    if (powerbomb) {
+        let powerbombDirections = [-2, 2, width*2, -width*2];
+        for (let i = 0; i < 4; i++) {
+            if (!availableSquares[bombPosition + directions[i]].classList.contains('wall')) {
+                directions.push(powerbombDirections[i]);                
+            }
+        }
+        } 
+        return directions
+        ;
+}
+
 export function breakWall(id, directions) {
     let bomb = document.getElementById(id);
     const bombPosition = Number(bomb.getAttribute('id'));
