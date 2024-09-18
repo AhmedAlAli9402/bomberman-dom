@@ -11,7 +11,7 @@ import {
   dropBomb,
 } from "./structure/bombermanMoves.js";
 import {
-  checkIfPlayerInBlastRadius,
+  checkGameStructure, checkIfPlayerInBlastRadius,
   killPlayer,
 } from "./structure/gameEvents.js";
 
@@ -81,7 +81,9 @@ function handleServerMessage(data) {
       syncGameState(data); // Sync the game state with the server
       break;
     case "placeBomb":
-      dropBomb(data.id); // Handle bomb placement events
+      console.log("Place bomb");
+      updateGame(data.currentGame);
+      dropBomb(data.currentGame.players[data.id]); // Handle bomb placement events
       break;
     case "bombExplosion":
       handleBombExplosion(data); // Handle bomb explosion events
@@ -119,10 +121,11 @@ function handleWelcomeMessage(data) {
 }
 
 function handlePlayerMove(data) {
-  game.gameGrid = data.currentGame.gameGrid;
-  game.players = data.currentGame.players;
+  // game.gameGrid = data.currentGame.gameGrid;
   console.log("handlePlayerMove", data.currentGame.players);
-  const { id, direction } = data;
+  const { id, direction , currentGame} = data;
+  updateGame(currentGame);
+  // checkGameStructure(data.currentGame.gameGrid);
   moveBomberman(direction, id);
 }
 
@@ -147,7 +150,7 @@ function syncGameState(data) {
   // Update the local game state based on the server's game state
   // For example, this could include player positions, scores, etc.
   console.log("Syncing game state", data);
-  game.gameGrid = data.gameGrid;
+  // checkGameStructure(data.currentGame.gameGrid);
   game.players = data.players;
 }
 
@@ -178,8 +181,10 @@ function handleGameStartedMessage(data) {
 }
 
 export function sendkeyUp() {
-  console.log("sendkeyUp");
+  console.log("sendkeyUp1");
   if (ws) {
+    console.log("sendkeyUp2");
+
     ws.send(
       JSON.stringify({
         message: {
@@ -191,21 +196,21 @@ export function sendkeyUp() {
   }
 }
 
-export function sendBombExplosion(bombPosition, directions) {
-  console.log("checkPlayer");
-  if (ws) {
-    ws.send(
-      JSON.stringify({
-        message: {
-          messageType: "bombExplosion",
-          gameId: game.gameId,
-          bombPosition: bombPosition,
-          directions: directions,
-        },
-      })
-    );
-  }
-}
+// export function sendBombExplosion(bombPosition, directions) {
+//   console.log("checkPlayer");
+//   if (ws) {
+//     ws.send(
+//       JSON.stringify({
+//         message: {
+//           messageType: "bombExplosion",
+//           gameId: game.gameId,
+//           bombPosition: bombPosition,
+//           directions: directions,
+//         },
+//       })
+//     );
+//   }
+// }
 
 export function sendKillPlayer(userId) {
   console.log("sendKillPlayer");
@@ -243,6 +248,7 @@ export function sendPlayerMove(direction) {
       JSON.stringify({
         message: {
           gameId: game.gameId,
+          gameGrid: game.gameGrid,
           messageType: "move",
           direction: direction.key,
         },
@@ -520,9 +526,7 @@ function showChatBox() {
 
   // chatMessages.forEach(msg => addChatMessage(msg));
 
-  document
-    .getElementById("chatInput")
-    .addEventListener("keyup", function (event) {
+  document.getElementById("chatInput").addEventListener("keyup", function (event) {
       if (event.key === "Enter") {
         sendMessage();
       }
