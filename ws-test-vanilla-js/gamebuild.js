@@ -88,7 +88,7 @@ export function buildGameObject() {
     const random = getRandomIndex(emptySquares.length);
     let randomSquare = emptySquares[random];
     const targetSquare = gameGrid.wall.includes(randomSquare);
-    if (!targetSquare) {
+    if (!targetSquare && !gameGrid.breakableWall.includes(randomSquare)) {
       gameGrid.breakableWall.push(randomSquare);
     } else {
       i--;
