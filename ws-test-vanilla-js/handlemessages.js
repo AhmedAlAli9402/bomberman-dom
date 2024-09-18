@@ -1,27 +1,22 @@
-import { calculateNewPosition,isMoveValid } from "./calculatepos.js";
+import { calculateNewPosition, isMoveValid } from "./calculatepos.js";
 
 export function handleMessages(data, ws, currentGame) {
-if (currentGame.clients.has(ws) && data.message) {
+  if (currentGame.clients.has(ws) && data.message) {
     const nickname = currentGame.clients.get(ws);
-    const userId = Array.from(currentGame.clients.keys()).indexOf(ws);
+    const playerId = Array.from(currentGame.clients.keys()).indexOf(ws);
+    const player = currentGame.players[playerId];
     let broadcast = {};
+
     if (data.message.messageType === "move") {
       const { direction } = data.message;
-      const playerId = Array.from(currentGame.clients.keys()).indexOf(ws);
-      const player = currentGame.players[playerId];
       // const playerPosition = player.playerPosition;
       player.startPosition = player.playerPosition;
       // Calculate new position based on direction
-      const newPosition = calculateNewPosition(player.playerPosition, direction, currentGame.gameGrid);
-      // player.playerPosition = newPosition;
-
-      // broadcast = {
-      //   messageType: "updatePosition",
-      //   id: playerId,
-      //   currentGame: currentGame,
-      //   direction: direction,
-      // };
-
+      const newPosition = calculateNewPosition(
+        player.playerPosition,
+        direction,
+        currentGame.gameGrid
+      );
 
       // Validate the move (e.g., check if the new position is free)
       if (isMoveValid(newPosition, currentGame)) {
@@ -41,20 +36,27 @@ if (currentGame.clients.has(ws) && data.message) {
           direction: direction,
         };
       }
-      
     } else if (data.message.messageType === "keyUp") {
       broadcast = {
         messageType: "keyUp",
-        id: userId,
+        id: playerId,
       };
-    } else if (data.message.messageType === "bombExplosion") {
-      let singleUserMessage = {
-        messageType: "bombExplosion",
-        bombPosition: data.message.bombPosition,
-        directions: data.message.directions,
-        id: userId,
+    } else if (data.message.messageType === "placeBomb") {
+      if ((player.bombDropped >= 1 && player.powerUp !== "extraBomb") || (player.bombDropped >= 2 && player.powerUp === "extraBomb")) return;
+      player.bombDropped++;
+
+      broadcast = {
+        messageType: "placeBomb",
+        id: playerId,
       };
-      ws.send(JSON.stringify(singleUserMessage));
+      setTimeout(() => {
+        player.bombDropped--;
+        broadcast = {
+          messageType: "bombExplosion",
+          id: playerId,
+        };
+      }
+      , 3000);
     } else if (data.message.messageType === "killPlayer") {
       broadcast = {
         messageType: "killPlayer",

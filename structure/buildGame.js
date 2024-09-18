@@ -5,7 +5,7 @@ import { game } from "./model.js";
 import { formatTime } from "./helpers.js";
 import { container } from "../app.js";
 import { countdown, setCountdown } from "./model.js";
-import { sendPlayerMove, sendkeyUp, sendplayerGameOver } from "../app.js";
+import { sendPlayerMove, sendkeyUp, sendplayerGameOver, sendPlaceBomb } from "../app.js";
 
 export let availableSquares = [];
 // Initial lives for each player, starting with 3 lives each
@@ -116,7 +116,7 @@ function initializePlayer() {
     } else if (key === "x") {
       if (!keyStates[key]) {
         keyStates[key] = true; // Set the key state to pressed
-        // Handle 'x' key press
+        sendPlaceBomb(event); // Send the place bomb message
       }
     }
   });

@@ -12,6 +12,8 @@ export let game = {gameId: 0, gameGrid:{}, players:[
     { nickname: "", powerUp: "", startPosition: (width * height) - width - 2, playerPosition: 0, color: "Black", lives: 0, connection: "", keyStillDown: false, keyStillDownForSkate: 0, bombDropped: 0 },
 ]};
 
+export let games = [];
+
 // Function to update the game state using signals
 export function updateGame(newGameData) {
     game = { ...game, ...newGameData };
@@ -27,7 +29,7 @@ export const maximumPlayers = 4;
 export const minimumTime = 10;
 export const maximumTime = 20;
 
-const host = '10.1.204.210'; // change to the server IP address
+const host = '10.1.204.52'; // change to the server IP address
 export const wsUrl = 'ws://' + host + ':8080';
 
 const gameDuration = 180; // 3 minutes

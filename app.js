@@ -8,6 +8,7 @@ import {
   setKeyUp,
   playerGameOver,
   moveBomberman,
+  dropBomb,
 } from "./structure/bombermanMoves.js";
 import {
   checkIfPlayerInBlastRadius,
@@ -77,6 +78,10 @@ function handleServerMessage(data) {
       break;
     case "updateGameState":
       syncGameState(data); // Sync the game state with the server
+      break;
+    case "placeBomb":
+      console.log("Place bomb");
+      dropBomb(data.id); // Handle bomb placement events
       break;
     case "bombExplosion":
       handleBombExplosion(data); // Handle bomb explosion events
@@ -228,6 +233,20 @@ export function sendPlayerMove(direction) {
           gameId: game.gameId,
           messageType: "move",
           direction: direction.key,
+        },
+      })
+    );
+  }
+}
+
+export function sendPlaceBomb() {
+  console.log("sendPlaceBomb");
+  if (ws) {
+    ws.send(
+      JSON.stringify({
+        message: {
+          gameId: game.gameId,
+          messageType: "placeBomb",
         },
       })
     );
