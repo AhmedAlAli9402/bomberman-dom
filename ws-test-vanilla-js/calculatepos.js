@@ -19,14 +19,14 @@ export function calculateNewPosition(currentPosition, direction, gameGrid) {
     default:
       return currentPosition; // No movement
   }
-  }else{
+  } else{
     console.log("No x and y");
   }
   return { x: newX, y: newY }; // Return the new position
 }
 
 // Function to convert x, y to a single position index
-function positionToIndex(position, gameGrid) {
+export function positionToIndex(position, gameGrid) {
   return position.y * gameGrid.width + position.x;
 }
 
@@ -37,7 +37,6 @@ export function isMoveValid(newPosition, currentGame) {
 
   // Convert new position to index
   const newIndex = positionToIndex(newPosition, currentGame.gameGrid);
-  console.log(newIndex);
   return (
     newIndex >= 0 &&
     !walls.includes(newIndex) &&
@@ -88,3 +87,20 @@ export function getPlayerStartPositions(width, height, breakableWalls) {
   // Assign players to start positions
   return possibleStartPositions.slice(0, 4); // Assuming a maximum of 4 players
 }
+
+export function HandleExplosion(playerid, bombPositionId, currentGame){
+  let bombExplosionPositions = [-1, 1, currentGame.width, -currentGame.width];
+  if (currentGame.players[playerid].powerUp === "powerBomb") {
+      let powerbombDirections = [-2, 2, currentGame.width*2, -currentGame.width*2];
+      for (let i = 0; i < 4; i++) {
+          if (!currentGame.gameGrid.wall.includes(bombPositionId + bombExplosionPositions[i])) {
+            bombExplosionPositions.push(powerbombDirections[i]);                
+          }
+      }
+    } 
+      // console.log(currentGame.gameGrid.breakableWall, "brbrrbrrb");
+  currentGame.gameGrid.breakableWall = currentGame.gameGrid.breakableWall.filter(wall => {
+    // console.log(wall);!bombExplosionPositions.includes(wall)
+    });
+  return currentGame.gameGrid.breakableWall;
+  }
