@@ -1,7 +1,8 @@
-import { availableSquares } from "./buildGame.js";
-import { width, game, powerUps } from "./model.js";
-import { sendBombExplosion } from "../app.js";
-import { breakWall } from "./gameEvents.js";
+import { availableSquares } from './buildGame.js';
+import { breakWall, findExplosionDirections } from './gameEvents.js';
+import { width, game, powerUps } from './model.js';
+// import { sendBombExplosion } from '../app.js';
+// import { breakWall, findExplosionDirections } from './gameEvents.js';
 
 let powerUpTimeOut;
 
@@ -29,13 +30,18 @@ export function moveBomberman(direction, id) {
     game.gameGrid
   );
 
-  const nextSquare = document.querySelectorAll(".grid div")[bombermanNextIndex];
-  const classDirection = direction.split("Arrow").slice(1).join("");
-  if (nextSquare) {
-    // Move the bomberman visually
-    const transform = directionMap[direction].transform;
-    bomberman.style.transform = transform;
-    bomberman.style.transition = "transform 0.2s"; // Increased duration for visibility
+    const nextSquare = document.querySelectorAll(".grid div")[bombermanNextIndex];
+    const classDirection = direction.split('Arrow').slice(1).join('');
+    const newIndex = nextSquare.classList[0]
+    if (nextSquare && (!nextSquare.classList.length || powerUps.includes(newIndex))) {
+        if (powerUps.includes(newIndex)) {
+            game.gameGrid.powerUp = game.gameGrid.powerUp.filter(powerUp => powerUp.index !== newIndex);
+            addPowerUpToPlayer(newIndex, id);
+        }
+        // Move the bomberman visually
+        const transform = directionMap[direction].transform;
+        bomberman.style.transform = transform;
+        bomberman.style.transition = 'transform 0.2s'; // Increased duration for visibility
 
     requestAnimationFrame(() => {
       bomberman.classList.remove(bombermanClass);
@@ -58,11 +64,11 @@ export function setKeyUp(id) {
   player.keyStillDown = false;
 }
 
-export function dropBomb(id) {
-  const players = game.players;
-
-  const player = players[id];
-
+export function dropBomb(player) {
+  // const players = game.players;
+  // console.log("players drop bomb", players);
+  // const player = players[id];
+  console.warn("player drop bomb", player);
   const bomberman = document.querySelector(
     `.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`
   );
@@ -70,14 +76,12 @@ export function dropBomb(id) {
 
   const bombermanIndex = positionToIndex(player.playerPosition, game.gameGrid);
   console.log("bombermanIndex", bombermanIndex);
-  const bombClass =
-    player.powerUp === "powerBomb" ? "powerBombDropped" : "bomb";
+  const bombClass = player.powerUp === "powerBomb" ? "powerBombDropped" : "bomb";
   availableSquares[bombermanIndex].classList.add(bombClass);
-  console.log("bombClass", bombClass);
-  console.log(
-    "availableSquares[bombermanIndex].classList",
-    availableSquares[bombermanIndex].classList
-  );
+  const explosionDirections = findExplosionDirections(bombermanIndex);
+  setTimeout(() => {
+    breakWall(bombermanIndex, explosionDirections);
+  }, 3000);
 }
 
 function addPowerUpToPlayer(powerUp, id) {
