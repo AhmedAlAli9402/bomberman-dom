@@ -53,51 +53,45 @@ export function breakWall(id, directions) {
 }
 
 
-export function checkIfPlayerInBlastRadius(userId, bombPosition, directions) {
-    const bomberman = document.querySelector(`.bomberman${players[userId].color}GoingUp, .bomberman${players[userId].color}GoingRight, .bomberman${players[userId].color}GoingDown, .bomberman${players[userId].color}GoingLeft`);
-    const bombermanIndex = availableSquares.indexOf(bomberman);
-    for (let i=0;i<directions.length;i++) {
-        let explosionPosition = bombPosition + directions[i];
-        console.log(explosionPosition, bombermanIndex)
-    if (explosionPosition === bombermanIndex) {
-        sendKillPlayer(userId);
-        return
-    }}
-    if (bombermanIndex === bombPosition) {
-        sendKillPlayer(userId);
-    }
-
-}
+// export function checkIfPlayerInBlastRadius(userId, bombPosition, directions) {
+//     const bomberman = document.querySelector(`.bomberman${players[userId].color}GoingUp, .bomberman${players[userId].color}GoingRight, .bomberman${players[userId].color}GoingDown, .bomberman${players[userId].color}GoingLeft`);
+//     const bombermanIndex = availableSquares.indexOf(bomberman);
+//     for (let i=0;i<directions.length;i++) {
+//         let explosionPosition = bombPosition + directions[i];
+//         console.log(explosionPosition, bombermanIndex)
+//     if (explosionPosition === bombermanIndex) {
+//         sendKillPlayer(userId);
+//         return
+//     }}
+//     if (bombermanIndex === bombPosition) {
+//         sendKillPlayer(userId);
+//     }
+// }
 
 export function killPlayer(userId) {
+    console.log("killPlayer", userId)
     const bomberman = document.querySelector(`.bomberman${players[userId].color}GoingUp, .bomberman${players[userId].color}GoingRight, .bomberman${players[userId].color}GoingDown, .bomberman${players[userId].color}GoingLeft`);
     bomberman.classList.add('dead');
-    let recoveryPosition =players[userId].startPosition
-    if (availableSquares[recoveryPosition].childNodes.length > 0) {
-        for (let i=0;i<players.length;i++){
-            if (availableSquares[players[i].startPosition].length === 0){ {
-                recoveryPosition = players[i].startPosition;
-            }
-        }
-    }}
     setTimeout(() => {bomberman.removeAttribute('class');
-        if (players[userId].lives !== 0) {
-    availableSquares[recoveryPosition].classList.add(`bomberman${players[userId].color}GoingDown`)
-} else {
-    sendplayerGameOver(players[userId].nickname);
-}
-    ;}, 10)
+//         if (players[userId].lives !== 0) {
+//     availableSquares[recoveryPosition].classList.add(`bomberman${players[userId].color}GoingDown`)
+// } else {
+//     sendplayerGameOver(players[userId].nickname);
+// }
+    ;}, 50)
     updateHUD(userId)
 }
 
 export function checkGameStructure(gameGrid){
-    console.log(gameGrid)
-    console.log(game.gameGrid)
     if (gameGrid.breakableWall.length < game.gameGrid.breakableWall.length) {
         game.gameGrid.breakableWall.map(wall => {if (!gameGrid.breakableWall.includes(wall)) {
             document.getElementById(wall).classList.remove('breakableWall');}
         });
         game.gameGrid.breakableWall = gameGrid.breakableWall;
+    } else if (gameGrid.breakableWall.length > game.gameGrid.breakableWall.length) {
+        gameGrid.breakableWall.map(wall => {if (!game.gameGrid.breakableWall.includes(wall)) {
+            document.getElementById(wall).classList.add('breakableWall');}
+        });
     }
     if (gameGrid.powerUps.length < game.gameGrid.powerUps.length) {
         game.gameGrid.powerUps.map(powerUps => {if (!gameGrid.powerUps.includes(powerUps)) {

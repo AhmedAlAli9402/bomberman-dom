@@ -101,3 +101,13 @@ export function playerGameOver() {
   const gameOver = MyFramework.DOM("h1", { class: "game-over" }, "Game Over!");
   gameGrid.appendChild(gameOver);
 }
+
+export function resetBombermanPosition(playerid, newPosition){
+  const player = game.players[playerid];
+  console.log("newPosition", newPosition);
+  const nextSquare = document.getElementById(String(newPosition));
+  console.log("nextSquare", nextSquare);
+      requestAnimationFrame(() => {
+    nextSquare.className = `bomberman${player.color}GoingDown`;
+  });
+}

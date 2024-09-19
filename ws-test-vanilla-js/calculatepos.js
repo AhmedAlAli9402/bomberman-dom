@@ -1,3 +1,5 @@
+import { broadcastToClients } from "./gamecounter.js";
+
 // Function to calculate the new position based on the direction
 export function calculateNewPosition(currentPosition, direction, gameGrid) {
   let newX = currentPosition.x;
@@ -106,14 +108,77 @@ export function HandleExplosion(playerid, bombPosition, currentGame){
         }
       }
     } 
-
     let bombExplosionPositionsIndex = []
     for (let i = 0; i < bombExplosionPositions.length; i++) {
       bombExplosionPositionsIndex.push(bombPositionIndex + bombExplosionPositions[i]);
     }
+    checkIfPlayersInBlastRadius(bombPositionIndex, bombExplosionPositionsIndex, currentGame);
 
     console.log(currentGame.gameGrid.breakableWall, "brbrrbrrb");
     currentGame.gameGrid.breakableWall = currentGame.gameGrid.breakableWall.filter(wall => !bombExplosionPositionsIndex.includes(wall));
     console.log(currentGame.gameGrid.breakableWall, "b222rrbrrb");
   return currentGame.gameGrid.breakableWall;
   }
+
+
+export function checkIfPlayersInBlastRadius(bombPosition, bombExplosionPositions, currentGame) {
+  const players = currentGame.players;
+  let playerStartPositions = [
+    currentGame.gameGrid.width + 1,
+    currentGame.gameGrid.width * 2 - 2,
+    currentGame.gameGrid.width * currentGame.gameGrid.height - currentGame.gameGrid.width * 2 + 1,
+    currentGame.gameGrid.width * currentGame.gameGrid.height - currentGame.gameGrid.width - 2,
+  ]
+  console.log(playerStartPositions, "playerStartPositionsvvvv");
+  let playersPositionsIndex = players.map((player) => positionToIndex(player.playerPosition, currentGame.gameGrid));
+  playerStartPositions = playerStartPositions.filter((position) => !playersPositionsIndex.includes(position));
+  console.log(playerStartPositions, "playerStartPositions");
+  for (let i=0;i<players.length;i++) {
+  let playerKilled = false;
+  for (let k=0;k<bombExplosionPositions.length;k++) {
+    if (bombExplosionPositions[k] === playersPositionsIndex[i]) {
+      playerKilled = true;
+      let message = {
+        messageType: "killPlayer",
+        id: i,
+      }
+      broadcastToClients(currentGame, message)
+      players[i].lives--;
+      // if (players[i].lives === 0) { 
+      //   broadcastToClients(currentGame, {messageType: "youLost", id: i})
+      // }
+    }
+  }
+  if (bombPosition === playersPositionsIndex[i]) {
+    playerKilled = true;
+    let message = {
+      messageType: "killPlayer",
+      id: i,
+    }
+    console.log(message)
+    broadcastToClients(currentGame, message); 
+  }
+     if (playerKilled) {
+      console.log(playerStartPositions[i], "playerStartPositions[i]");
+    if(playerStartPositions[i] !== undefined) {
+      players[i].playerPosition ={x:playerStartPositions[i] % currentGame.gameGrid.width,
+      y:Math.floor(playerStartPositions[i] / currentGame.gameGrid.width)}
+    } else {
+      for (let j =0;j<playerStartPositions.length;j++) {
+        players[i].playerPosition ={x:playerStartPositions[i] % currentGame.gameGrid.width,
+          y:Math.floor(playerStartPositions[i] / currentGame.gameGrid.width)}
+          console.log("reset position", players[i].playerPosition);
+          break;}
+        }
+      let message = {
+          messageType: "updatePosition",
+            id: i,
+            currentGame: currentGame,
+            direction: "reset",
+            newPosition: positionToIndex(players[i].playerPosition, currentGame.gameGrid),
+        }
+        broadcastToClients(currentGame, message);
+      }
+
+}
+}

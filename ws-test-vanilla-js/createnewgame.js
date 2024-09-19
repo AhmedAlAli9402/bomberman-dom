@@ -10,6 +10,7 @@ export function CreateNewGame() {
         {
           nickname: "",
           powerUp: "",
+          beginPosition: 0,
           startPosition: 0,
           playerPosition: { x: 0, y: 0 },
           color: "White",
@@ -22,6 +23,7 @@ export function CreateNewGame() {
         {
           nickname: "",
           powerUp: "",
+          beginPosition: 0,
           startPosition: 0,
           playerPosition: { x: 0, y: 0 },
           color: "Red",
@@ -34,6 +36,7 @@ export function CreateNewGame() {
         {
           nickname: "",
           powerUp: "",
+          beginPosition: 0,
           startPosition: 0,
           playerPosition: { x: 0, y: 0 },
           color: "Blue",
@@ -46,6 +49,7 @@ export function CreateNewGame() {
         {
           nickname: "",
           powerUp: "",
+          beginPosition: 0,
           startPosition: 0,
           playerPosition: { x: 0, y: 0 },
           color: "Black",

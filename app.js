@@ -9,9 +9,10 @@ import {
   playerGameOver,
   moveBomberman,
   dropBomb,
+  resetBombermanPosition,
 } from "./structure/bombermanMoves.js";
 import {
-  checkGameStructure, checkIfPlayerInBlastRadius,
+  checkGameStructure,
   killPlayer,
 } from "./structure/gameEvents.js";
 
@@ -82,12 +83,13 @@ function handleServerMessage(data) {
       break;
     case "placeBomb":
       console.log("Place bomb");
-      updateGame(data.currentGame);
+      // updateGame(data.currentGame);
+      checkGameStructure(data.currentGame.gameGrid);
       dropBomb(data.currentGame.players[data.id]); // Handle bomb placement events
       break;
-    case "bombExplosion":
-      handleBombExplosion(data); // Handle bomb explosion events
-      break;
+    // case "bombExplosion":
+    //   handleBombExplosion(data); // Handle bomb explosion events
+    //   break;
     case "killPlayer":
       handleKillPlayer(data); // Handle player elimination
       break;
@@ -124,9 +126,14 @@ function handlePlayerMove(data) {
   // game.gameGrid = data.currentGame.gameGrid;
   console.log("handlePlayerMove", data.currentGame.players);
   const { id, direction , currentGame} = data;
-  updateGame(currentGame);
   // checkGameStructure(data.currentGame.gameGrid);
+  updateGame(currentGame);
+  if (direction === "reset") {
+    resetBombermanPosition(id, data.newPosition);
+    return;
+  } else {
   moveBomberman(direction, id);
+  }
 }
 
 function handleKeyUp(data) {
@@ -154,16 +161,17 @@ function syncGameState(data) {
   game.players = data.players;
 }
 
-function handleBombExplosion(data) {
-  let userId = data.id;
-  let bombPosition = data.bombPosition;
-  let directions = data.directions;
-  window.requestAnimationFrame(() => {
-    checkIfPlayerInBlastRadius(userId, bombPosition, directions);
-  });
-}
+// function handleBombExplosion(data) {
+//   let userId = data.id;
+//   let bombPosition = data.bombPosition;
+//   let directions = data.directions;
+//   window.requestAnimationFrame(() => {
+//     checkIfPlayerInBlastRadius(userId, bombPosition, directions);
+//   });
+// }
 
 function handleKillPlayer(data) {
+  console.log("Kill player", data);
   const { id } = data;
   killPlayer(id);
 }

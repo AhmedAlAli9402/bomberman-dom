@@ -59,6 +59,7 @@ wss.on("connection", (ws) => {
       currentGame.players[playerId].nickname = data.nickname;
       currentGame.players[playerId].startPosition = initialPosition;
       currentGame.players[playerId].playerPosition = initialPosition;
+      currentGame.players[playerId].beginPosition = initialPosition;
       currentGame.players[playerId].lives = 3;
       currentGame.players[playerId].disconnected = false;
 
