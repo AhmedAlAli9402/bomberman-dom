@@ -17,10 +17,10 @@ function connectToWebSocket(nickname) {
   console.log("Connecting to WebSocket server");
   console.log("Nickname", nickname);
   const newWS = new WebSocket(wsUrl);
-  setWs(newWS);
 
   newWS.onopen = () => {
     console.log("Connected to WebSocket server");
+    setWs(newWS); // Set the WebSocket connection after successful connection
     if (nickname && nickname.trim()) {
       newWS.send(JSON.stringify({ messageType: "firstConnect", nickname: nickname }));
     } else {
@@ -34,6 +34,11 @@ function connectToWebSocket(nickname) {
     newWS.send(JSON.stringify({ message: { messageType: "disconnect" } }));
     console.log("Disconnected from WebSocket server");
   };
+}
+
+// to check WebSocket connection status
+function isWebSocketConnected() {
+  return ws().readyState === WebSocket.OPEN;
 }
 
 function handleServerMessage(data) {
@@ -122,7 +127,7 @@ function handleGameStartedMessage(data) {
 }
 
 export function sendWebSocketMessage(messageType, additionalData = {}) {
-  if (ws()) {
+  if (isWebSocketConnected()) {
     ws().send(JSON.stringify({
       message: {
         messageType,
@@ -130,6 +135,8 @@ export function sendWebSocketMessage(messageType, additionalData = {}) {
         ...additionalData
       }
     }));
+  } else {
+    console.error("WebSocket is not connected. Unable to send message:", messageType);
   }
 }
 
