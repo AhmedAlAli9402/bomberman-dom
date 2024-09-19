@@ -19,7 +19,6 @@ export function handleMessages(data, ws) {
     const player = currentGame.players[playerId]
     let broadcast = {}
     if (data.message.messageType === "move") {
-      console.log("F SAMI 3x")
       const { direction } = data.message
       // const playerPosition = player.playerPosition;
       player.startPosition = player.playerPosition
