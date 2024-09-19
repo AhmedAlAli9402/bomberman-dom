@@ -38,6 +38,8 @@ export function positionToIndex(position, gameGrid) {
 export function isMoveValid(newPosition, currentGame, player) {
   const walls = currentGame.gameGrid.wall;
   const breakableWalls = currentGame.gameGrid.breakableWall;
+  const players = currentGame.players;
+  const playersPositionsIndex = players.map((player) => positionToIndex(player.playerPosition, currentGame.gameGrid));
   let moveNotPossible = player.keyStillDown;
   if (player.powerUp === "skate" && player.keyStillDownForSkate < 4) {
     player.keyStillDownForSkate++;
@@ -49,12 +51,13 @@ export function isMoveValid(newPosition, currentGame, player) {
     newIndex >= 0 &&
     !walls.includes(newIndex) &&
     !breakableWalls.includes(newIndex) &&
-    !moveNotPossible
+    !moveNotPossible &&
+    !playersPositionsIndex.includes(newIndex) &&
+    !currentGame.bombs.includes(newIndex)
   );
 }
 
-export function HandleExplosion(playerid, bombPosition) {
-  let bombPositionIndex = positionToIndex(bombPosition, currentGame.gameGrid);
+export function HandleExplosion(playerid, bombPositionIndex) {
   let bombExplosionPositions = [
     -1,
     1,
@@ -108,8 +111,10 @@ export function checkIfPlayersInBlastRadius(
   let playersStartPositionsIndex = players.map((player) => positionToIndex(player.beginPosition, currentGame.gameGrid));
   let playersPositionsIndex = players.map((player) => positionToIndex(player.playerPosition, currentGame.gameGrid));
   for (let i = 0; i < playersStartPositionsIndex.length; i++) {
-    if (playersPositionsIndex.includes(playersStartPositions[i])) {
-      playersStartPositions[i] = "";
+    if (playersPositionsIndex.includes(playersStartPositionsIndex[i])) {
+
+      playersStartPositionsIndex[i] = "";
+      console.log(playersStartPositionsIndex[i], "player start position index");
     }
   }
   for (let i=0;i<players.length;i++) {
@@ -142,11 +147,11 @@ export function checkIfPlayersInBlastRadius(
     if(playersStartPositionsIndex[i] !== "") {
       players[i].playerPosition =playersStartPositions[i]
     } else {
-      for (let j =0;j<playerStartPositions.length;j++) {
-        players[i].playerPosition ={x:playerStartPositions[i] % currentGame.gameGrid.width,
-          y:Math.floor(playerStartPositions[i] / currentGame.gameGrid.width)}
-          console.log("reset position", players[i].playerPosition);
-          break;}
+      for (let j =0;j<playersStartPositionsIndex.length;j++) {
+        if (playersStartPositionsIndex[j] !== "") {
+        players[i].playerPosition = playersStartPositions[j]
+          break;
+        }}
         }
         }
       let message = {

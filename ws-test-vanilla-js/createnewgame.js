@@ -6,6 +6,7 @@ export function CreateNewGame() {
       clients: new Map(),
       gameGrid: buildGameObject(),
       chatMessages: [],
+      bombs: [],
       players: [
         {
           playerId: randomId(),

@@ -86,12 +86,14 @@ export function handleMessages(data, ws) {
         id: playerId,
         currentGame: currentGame,
       }
-      const bombPosition = player.playerPosition
+      const bombPosition = positionToIndex(player.playerPosition, currentGame.gameGrid)
+      currentGame.bombs.push(bombPosition)
       setTimeout(() => {
         currentGame.gameGrid.breakableWall = HandleExplosion(
           playerId,
           bombPosition
         )
+        currentGame.bombs = currentGame.bombs.filter((bomb) => bomb !== bombPosition)
         player.bombDropped--
         broadcast = {
           messageType: "bombExplosion",
