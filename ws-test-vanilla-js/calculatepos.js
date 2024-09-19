@@ -102,69 +102,45 @@ export function checkIfPlayersInBlastRadius(
   bombExplosionPositions
 ) {
   const players = currentGame.players;
-  let playerStartPositions = [
-    currentGame.gameGrid.width + 1,
-    currentGame.gameGrid.width * 2 - 2,
-    currentGame.gameGrid.width * currentGame.gameGrid.height -
-      currentGame.gameGrid.width * 2 +
-      1,
-    currentGame.gameGrid.width * currentGame.gameGrid.height -
-      currentGame.gameGrid.width -
-      2,
-  ];
-  let playersPositionsIndex = players.map((player) =>
-    positionToIndex(player.playerPosition, currentGame.gameGrid)
-  );
-  playerStartPositions = playerStartPositions.filter(
-    (position) => !playersPositionsIndex.includes(position)
-  );
-  for (let i = 0; i < players.length; i++) {
-    let playerKilled = false;
-    for (let k = 0; k < bombExplosionPositions.length; k++) {
-      if (bombExplosionPositions[k] === playersPositionsIndex[i]) {
-        playerKilled = true;
-        let message = {
-          messageType: "killPlayer",
-          id: i,
-        };
-        broadcastToClients(currentGame, message);
-        players[i].lives--;
-        console.log(players[i].lives,"lives");
-        if (players[i].lives === 0) {
-          removeDeadPlayers(i);
-          broadcastToClients(currentGame, {messageType: "youLost", id: i})
-        }
-      }
+  let playerStartPositions = players.map((player) => positionToIndex(player.beginPosition, currentGame.gameGrid));
+  let playersPositionsIndex = players.map((player) => positionToIndex(player.playerPosition, currentGame.gameGrid));
+  for (let i = 0; i < playerStartPositions.length; i++) {
+    if (playersPositionsIndex.includes(playerStartPositions[i])) {
+      playersPositionsIndex[i] = "";
     }
-    if (bombPosition === playersPositionsIndex[i]) {
+  }
+  for (let i=0;i<players.length;i++) {
+  let playerKilled = false;
+  for (let k=0;k<bombExplosionPositions.length;k++) {
+    if (bombExplosionPositions[k] === playersPositionsIndex[i]) {
       playerKilled = true;
       let message = {
         messageType: "killPlayer",
         id: i,
-      };
+      }
+      broadcastToClients(currentGame, message)
       players[i].lives--;
-      if (players[i].lives === 0) {
-        removeDeadPlayers(i);
-        const client = Array.from(currentGame.clients.keys())[i];
-        sendToClient(client, {messageType: "youLost", id: i})
-      }
-      broadcastToClients(currentGame, message);
     }
-    if (playerKilled) {
-      if (playerStartPositions[i] !== undefined) {
-        players[i].playerPosition = {
-          x: playerStartPositions[i] % currentGame.gameGrid.width,
-          y: Math.floor(playerStartPositions[i] / currentGame.gameGrid.width),
-        };
-      } else {
-        for (let j = 0; j < playerStartPositions.length; j++) {
-          players[i].playerPosition = {
-            x: playerStartPositions[i] % currentGame.gameGrid.width,
-            y: Math.floor(playerStartPositions[i] / currentGame.gameGrid.width),
-          };
-          break;
+  }
+  if (bombPosition === playersPositionsIndex[i]) {
+    playerKilled = true;
+    let message = {
+      messageType: "killPlayer",
+      id: i,
+    }
+    broadcastToClients(currentGame, message); 
+  }
+     if (playerKilled && players[i].lives !== 0) {
+    if(playerStartPositions[i] !== "") {
+      players[i].playerPosition ={x:playerStartPositions[i] % currentGame.gameGrid.width,
+      y:Math.floor(playerStartPositions[i] / currentGame.gameGrid.width)}
+    } else {
+      for (let j =0;j<playerStartPositions.length;j++) {
+        players[i].playerPosition ={x:playerStartPositions[i] % currentGame.gameGrid.width,
+          y:Math.floor(playerStartPositions[i] / currentGame.gameGrid.width)}
+          console.log("reset position", players[i].playerPosition);
+          break;}
         }
-      }
       let message = {
         messageType: "updatePosition",
         id: i,
