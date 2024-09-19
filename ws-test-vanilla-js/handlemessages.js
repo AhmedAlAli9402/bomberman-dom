@@ -5,6 +5,8 @@ import {
   positionToIndex,
 } from "./calculatepos.js"
 
+let powerUpTimeOut;
+
 export function handleMessages(data, ws, currentGame) {
   if (currentGame.clients.has(ws) && data.message) {
     const nickname = currentGame.clients.get(ws)
@@ -29,14 +31,14 @@ export function handleMessages(data, ws, currentGame) {
         player.keyStillDown = true
         let playerIndex = positionToIndex(newPosition, currentGame.gameGrid)
         if (currentGame.gameGrid.powerUpsIndex.includes(playerIndex)) {
-          // if (player.powerUp !== "") {
-          //   clearTimeout(powerUpTimeOut);
-          // }
+          if (player.powerUp !== "") {
+            clearTimeout(powerUpTimeOut);
+          }
           const currentPowerUp = currentGame.gameGrid.powerUp.filter((power) => power.index === playerIndex).map((power) => power.powerUp)
           if (currentPowerUp) {
           player.powerUp = currentPowerUp[0]
           }
-          setTimeout(() => {
+          powerUpTimeOut = setTimeout(() => {
             player.powerUp = ""
           }, 20000)
           currentGame.gameGrid.powerUp = currentGame.gameGrid.powerUp.filter(
@@ -95,11 +97,6 @@ export function handleMessages(data, ws, currentGame) {
           id: playerId,
         }
       }, 3000)
-    } else if (data.message.messageType === "killPlayer") {
-      broadcast = {
-        messageType: "killPlayer",
-        id: data.message.userId,
-      }
     } else if (data.message.messageType === "chat") {
       currentGame.chatMessages.push(`${nickname}: ${data.message.message}`) // Store the message
       broadcast = {
