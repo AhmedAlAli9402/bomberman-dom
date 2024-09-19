@@ -71,7 +71,6 @@ export function handleMessages(data, ws, currentGame) {
         id: playerId,
       }
     } else if (data.message.messageType === "placeBomb") {
-      console.log("bombDropped", player.bombDropped, player.powerUp)
       if (
         (player.bombDropped >= 1 && player.powerUp !== "extraBomb") ||
         (player.bombDropped >= 2 && player.powerUp === "extraBomb")
@@ -87,10 +86,8 @@ export function handleMessages(data, ws, currentGame) {
       setTimeout(() => {
         currentGame.gameGrid.breakableWall = HandleExplosion(
           playerId,
-          bombPosition,
-          currentGame
+          bombPosition
         )
-        console.log(currentGame.gameGrid.breakableWall);
         player.bombDropped--
         broadcast = {
           messageType: "bombExplosion",

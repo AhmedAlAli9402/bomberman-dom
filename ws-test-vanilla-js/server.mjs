@@ -11,12 +11,16 @@ const server = http.createServer();
 const wss = new WebSocketServer({ server });
 
 export const Games = []; // Array to track all games
+export let currentGame;
+
+export function updateGame(newGameData) {
+  currentGame = { ...currentGame, ...newGameData };
+}
 
 // Handle WebSocket connections
 wss.on("connection", (ws) => {
   console.log("Client connected");
   let data;
-  let currentGame;
 
   // Handle incoming messages
   ws.on("message", (message) => {

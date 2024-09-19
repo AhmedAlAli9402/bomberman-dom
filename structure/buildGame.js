@@ -245,7 +245,7 @@ function startTimer(time) {
 }
 
 // End the game when the countdown reaches 0
-export function endGame() {
+export function endGame(data) {
   clearInterval(timer);
   const HUD = document.getElementById("container");
   HUD.removeChild(document.getElementById("hud"));
@@ -264,9 +264,12 @@ export function endGame() {
     return player.lives > Players[winnerIndex].lives ? index : winnerIndex;
   }, 0);
 
+
+  console.log("winnerIndex",winnerIndex);
+
+
   if (
-    winnerIndex !== -1 &&
-   ( Players.filter((player) => player.lives > 0).length === 1 && Players.filter((player) => player.disconnected === false).length === 1)
+    winnerIndex !== undefined && Players[winnerIndex].lives > 0
   ) {
     const winnerName = Players[winnerIndex].nickname; // Get the winner's name
     // Display the winner

@@ -1,3 +1,5 @@
+import { removeDeadPlayers } from "./removeDeadPlayer.js";
+
 export function handleClientDisconnection(ws, currentGame, Games) {
   console.log("Client disconnected", ws, currentGame, Games);
 
@@ -5,21 +7,7 @@ export function handleClientDisconnection(ws, currentGame, Games) {
     const playerId = Array.from(currentGame.clients.keys()).indexOf(ws);
     const nickname = currentGame.clients.get(ws);
     currentGame.clients.delete(ws);
-
-    // Find the playerId by matching the ws in the clients map
-    console.log("playerId", playerId);
-    console.log("currentGame.players[playerid]", currentGame.players[playerId]);
-    // Instead of removing the player, mark their slot as disconnected
-    if (currentGame.players[playerId]) {
-      currentGame.players[playerId] = {
-        ...currentGame.players[playerId],
-        disconnected: true,  // Mark the player as disconnected
-        nickname: "",        // Clear the nickname
-        lives: 0,            // Reset the lives
-      };
-    }
-
-    console.log("currentGame.players", currentGame.players);
+    removeDeadPlayers(playerId);
 
     // Clear the timer if it's running
     clearTimeout(currentGame.timer);

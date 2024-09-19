@@ -1,32 +1,32 @@
 import { broadcastToClients } from "./gamecounter.js";
-
-export function startGameTimer(currentGame) {
-  console.log(currentGame);
-
+import { currentGame } from "./server.mjs";
+export function startGameTimer() {
   const timer = setInterval(() => {
     currentGame.gameTimer--;
-    
+
     if (currentGame.gameTimer === 0) {
       clearInterval(timer);
-      
-      // Game over: Determine the winner
-      let winner = null;
-      let maxLives = -1;
-      let tie = false;
 
-      // Check players' lives and determine the player with the most lives
-      currentGame.players.forEach((player) => {
-        if (player.lives > maxLives) {
-          maxLives = player.lives;
+      // Game over: Determine the winner
+      let tie = false;
+      let highestLives = currentGame.players[0].lives;
+      let winner = currentGame.players[0]; // Start by assuming the first player is the winner
+
+      for (let i = 1; i < currentGame.players.length; i++) {
+        let player = currentGame.players[i];
+        console.log(player.lives, "player ", winner.lives, "winner");
+
+        if (player.lives > highestLives) {
           winner = player;
-          tie = false; // Reset the tie status if we have a new leader
-        } else if (player.lives === maxLives) {
-          tie = true; // If two players have the same number of lives, it's a tie
+          highestLives = player.lives;
+          tie = false; // Reset tie if there's a new leader
+        } else if (player.lives === highestLives) {
+          tie = true; // If two players have the same lives, it's a tie
         }
-      });
+      }
 
       let gameOverMessage;
-      if (tie || maxLives <= 0) {
+      if (tie || highestLives === 0) {
         // If it's a tie or no player has any lives, there's no winner
         gameOverMessage = {
           messageType: "gameOver",

@@ -75,7 +75,7 @@ function startPreGameCountdown(currentGame) {
       };
       broadcastToClients(currentGame, gameStartMessage);
       currentGame.isStarted = true; // Mark the game as started
-      // startGameTimer(currentGame); // Start the game timer
+      startGameTimer(); // Start the game timer
     }
   }, 1000); // Update every second
 }
@@ -85,4 +85,8 @@ export function broadcastToClients(currentGame, message) {
   for (const client of currentGame.clients.keys()) {
     client.send(JSON.stringify(message));
   }
+}
+
+export function sendToClient(client, message) {
+  client.send(JSON.stringify(message));
 }

@@ -1,6 +1,7 @@
 import { availableSquares } from './buildGame.js';
 import { breakWall, findExplosionDirections } from './gameEvents.js';
 import { width, game, powerUps } from './model.js';
+import { MyFramework } from '../vFw/framework.js';
 // import { sendBombExplosion } from '../app.js';
 // import { breakWall, findExplosionDirections } from './gameEvents.js';
 
@@ -65,9 +66,7 @@ export function setKeyUp(id) {
 }
 
 export function dropBomb(player) {
-  // const players = game.players;
-  // console.log("players drop bomb", players);
-  // const player = players[id];
+
   console.warn("player drop bomb", player);
   const bomberman = document.querySelector(
     `.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`
@@ -75,7 +74,6 @@ export function dropBomb(player) {
   if (!bomberman) return;
 
   const bombermanIndex = positionToIndex(player.playerPosition, game.gameGrid);
-  console.log("bombermanIndex", bombermanIndex);
   const bombClass = player.powerUp === "powerBomb" ? "powerBombDropped" : "bomb";
   availableSquares[bombermanIndex].classList.add(bombClass);
   const explosionDirections = findExplosionDirections(bombermanIndex);
@@ -104,9 +102,7 @@ export function playerGameOver() {
 
 export function resetBombermanPosition(playerid, newPosition){
   const player = game.players[playerid];
-  console.log("newPosition", newPosition);
   const nextSquare = document.getElementById(String(newPosition));
-  console.log("nextSquare", nextSquare);
       requestAnimationFrame(() => {
     nextSquare.className = `bomberman${player.color}GoingDown`;
   });

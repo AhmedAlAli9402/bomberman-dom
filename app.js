@@ -49,7 +49,6 @@ function connectToWebSocket(nickname) {
 
 // New function to handle messages from the server
 function handleServerMessage(data) {
-  console.log("handleServerMessage", data.messageType);
   switch (data.messageType) {
     case "welcome":
       handleWelcomeMessage(data);
@@ -82,7 +81,6 @@ function handleServerMessage(data) {
       syncGameState(data); // Sync the game state with the server
       break;
     case "placeBomb":
-      console.log("Place bomb");
       // updateGame(data.currentGame);
       checkGameStructure(data.currentGame.gameGrid);
       dropBomb(data.currentGame.players[data.id]); // Handle bomb placement events
@@ -102,10 +100,16 @@ function handleServerMessage(data) {
       handleChatMessage(data); // Handle chat messages
       break;
     case "winnerByDefault":
-      endGame(); // Handle player game over event
+      endGame(data); // Handle player game over event
+      break;
+    case "gameOver":
+      console.log("Game Over", data);
+      endGame(data); // Handle player game over event
       break;
     case "youLost":
-      playerGameOver(); // Handle player game over event
+      console.log("You lost", data);
+      updateGame(data.currentGame);
+      playerGameOver(data.id); // Handle player game over event
       break;
     default:
       console.warn("Unknown message type:", data.messageType); // Warn if an unknown message type is received
@@ -124,7 +128,6 @@ function handleWelcomeMessage(data) {
 
 function handlePlayerMove(data) {
   // game.gameGrid = data.currentGame.gameGrid;
-  console.log("handlePlayerMove", data.currentGame.players);
   const { id, direction , currentGame} = data;
   // checkGameStructure(data.currentGame.gameGrid);
   updateGame(currentGame);
@@ -142,7 +145,6 @@ function handleKeyUp(data) {
 }
 
 function handleChatMessage(data) {
-  console.log("Chat message", data);
   const { nickname, message: chatMessage } = data;
   if (data.messageType === "disconnect") {
     chatMessages.push(`${nickname} has left the game`); // Store the message
@@ -171,7 +173,6 @@ function syncGameState(data) {
 // }
 
 function handleKillPlayer(data) {
-  console.log("Kill player", data);
   const { id } = data;
   killPlayer(id);
 }
@@ -189,10 +190,7 @@ function handleGameStartedMessage(data) {
 }
 
 export function sendkeyUp() {
-  console.log("sendkeyUp1");
   if (ws) {
-    console.log("sendkeyUp2");
-
     ws.send(
       JSON.stringify({
         message: {
@@ -204,24 +202,7 @@ export function sendkeyUp() {
   }
 }
 
-// export function sendBombExplosion(bombPosition, directions) {
-//   console.log("checkPlayer");
-//   if (ws) {
-//     ws.send(
-//       JSON.stringify({
-//         message: {
-//           messageType: "bombExplosion",
-//           gameId: game.gameId,
-//           bombPosition: bombPosition,
-//           directions: directions,
-//         },
-//       })
-//     );
-//   }
-// }
-
 export function sendKillPlayer(userId) {
-  console.log("sendKillPlayer");
   if (ws) {
     ws.send(
       JSON.stringify({
@@ -250,7 +231,6 @@ export function sendplayerGameOver(nickname) {
 }
 
 export function sendPlayerMove(direction) {
-  console.log("sendPlayerMove", "direction", direction.key);
   if (ws) {
     ws.send(
       JSON.stringify({
@@ -266,7 +246,6 @@ export function sendPlayerMove(direction) {
 }
 
 export function sendPlaceBomb() {
-  console.log("sendPlaceBomb");
   if (ws) {
     ws.send(
       JSON.stringify({
