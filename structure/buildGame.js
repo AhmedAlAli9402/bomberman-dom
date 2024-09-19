@@ -106,7 +106,7 @@ const keyStates = {
 
 function initializePlayer() {
   // Ensure the grid element is focusable
-document.getElementById("gameGrid").setAttribute("tabindex", "0");
+  document.getElementById("gameGrid").setAttribute("tabindex", "0");
 
   // Add event listeners for player movement
   document.getElementById("gameGrid").addEventListener("keydown", function (event) {
@@ -229,7 +229,7 @@ let timer;
 function startTimer(time) {
   let Players = game.players;
   setCountdown(time); // 3 minutes
-   timer = setInterval(() => {
+  timer = setInterval(() => {
     setCountdown(countdown() - 1);
     if (countdown() === 0) {
       clearInterval(timer);
@@ -253,25 +253,19 @@ export function endGame(data) {
   const gameGrid = document.getElementById("gameGrid");
   gameGrid.innerHTML = ""; // Clear the game grid
 
-
-  console.log("Game Over!",Players);
+  console.log("Game Over!", Players);
   // Display "Game Over" message
   const gameOver = MyFramework.DOM("h1", { class: "game-over" }, "Game Over!");
   gameGrid.appendChild(gameOver);
 
   // Determine the winner with the most lives remaining (if any) otherwise, no winner if all players have 0 lives or equal lives
-  const winnerIndex = Players.reduce((winnerIndex, player, index) => {
-    return player.lives > Players[winnerIndex].lives ? index : winnerIndex;
-  }, 0);
+  const maxLives = Math.max(...Players.map(player => player.lives));
+  const winners = Players.filter(player => player.lives === maxLives);
 
+  console.log("winnerIndex", winners);
 
-  console.log("winnerIndex",winnerIndex);
-
-
-  if (
-    winnerIndex !== undefined && Players[winnerIndex].lives > 0
-  ) {
-    const winnerName = Players[winnerIndex].nickname; // Get the winner's name
+  if (winners.length === 1 && maxLives > 0) {
+    const winnerName = winners[0].nickname; // Get the winner's name
     // Display the winner
     const winnerDisplay = MyFramework.DOM(
       "h2",
