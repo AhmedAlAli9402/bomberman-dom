@@ -56,11 +56,6 @@ export function killPlayer(userId) {
     const bomberman = document.querySelector(`.bomberman${players[userId].color}GoingUp, .bomberman${players[userId].color}GoingRight, .bomberman${players[userId].color}GoingDown, .bomberman${players[userId].color}GoingLeft`);
     bomberman.classList.add('dead');
     setTimeout(() => {bomberman.removeAttribute('class');
-//         if (players[userId].lives !== 0) {
-//     availableSquares[recoveryPosition].classList.add(`bomberman${players[userId].color}GoingDown`)
-// } else {
-//     sendplayerGameOver(players[userId].nickname);
-// }
     ;}, 50)
     updateHUD(userId)
 }

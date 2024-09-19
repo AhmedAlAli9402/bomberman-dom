@@ -76,7 +76,6 @@ wss.on("connection", (ws) => {
           numberofClients: currentGame.clients.size,
           loadMessages: currentGame.chatMessages,
         };
-        // ws.send(JSON.stringify(welcomeMessage));
         broadcastToClients(currentGame, welcomeMessage);
         // Start the countdown timer if there are at least 2 players
         if (currentGame.clients.size === 2) {

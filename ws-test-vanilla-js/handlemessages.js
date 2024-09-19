@@ -20,7 +20,6 @@ export function handleMessages(data, ws) {
     let broadcast = {}
     if (data.message.messageType === "move") {
       const { direction } = data.message
-      // const playerPosition = player.playerPosition;
       player.startPosition = player.playerPosition
       // Calculate new position based on direction
       const newPosition = calculateNewPosition(

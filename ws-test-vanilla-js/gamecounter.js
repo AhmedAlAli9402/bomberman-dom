@@ -7,7 +7,6 @@ export function startGameCountdown(currentGame) {
     !currentGame.isStarted
   ) {
     currentGame.isLockingIn = true; // Ensure the game is marked as starting to avoid multiple countdowns
-    // currentGame.countdown1 = 20; // Store the countdown in the game object
 
     const lockInMessage = {
       messageType: "lockIn",
@@ -33,7 +32,6 @@ export function startGameCountdown(currentGame) {
 
       if (currentGame.lockInCount <= 0 || currentGame.clients.size === 4) {
         clearInterval(lockInCountInterval); // Stop sending timer updates
-        // currentGame.startingCount = 10; // Set countdown for the last 10 seconds
         startPreGameCountdown(currentGame); // Start the final countdown
       }
     }, 1000); // Update every second
@@ -75,7 +73,6 @@ function startPreGameCountdown(currentGame) {
       };
       broadcastToClients(currentGame, gameStartMessage);
       currentGame.isStarted = true; // Mark the game as started
-      // startGameTimer(); // Start the game timer
     }
   }, 1000); // Update every second
 }

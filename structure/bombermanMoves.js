@@ -2,8 +2,6 @@ import { availableSquares } from './buildGame.js';
 import { breakWall, findExplosionDirections } from './gameEvents.js';
 import { width, game, powerUps } from './model.js';
 import { MyFramework } from '../vFw/framework.js';
-// import { sendBombExplosion } from '../app.js';
-// import { breakWall, findExplosionDirections } from './gameEvents.js';
 
 let powerUpTimeOut;
 
