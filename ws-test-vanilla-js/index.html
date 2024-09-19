@@ -36,9 +36,8 @@
             // Assuming incoming message is formatted as JSON
             try {
                 const data = JSON.parse(event.data);
-                console.log('Received message:', data);
                 if (data && data.nickname && data.message) {
-                    newMessage.textContent = `${data.nickname}: ${data.message}`;
+                    newMessage.textContent = `${data.nickname}: ${data.message.message}`;
                     messagesDiv.appendChild(newMessage);
                 }
             } catch (error) {
@@ -76,7 +75,7 @@
                 const message = messageInput.value.trim();
 
                 if (message && message.length <= 100) {
-                    ws.send(JSON.stringify({ message })); // Send message as JSON
+                    ws.send(JSON.stringify({ message: { messageType: "chatTest", message } }));
                     messageInput.value = ''; // Clear the input
                 } else {
                     alert('Message cannot be empty or exceed 100 characters.');

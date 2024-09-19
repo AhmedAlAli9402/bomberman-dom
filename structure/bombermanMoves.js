@@ -1,105 +1,104 @@
-// structure/bombermanMoves.js
 import { availableSquares } from './buildGame.js';
-import { width, height, game, powerUps } from './model.js';
-import { MyFramework } from '../vFw/framework.js';
-import { sendBombExplosion } from '../app.js';
 import { breakWall, findExplosionDirections } from './gameEvents.js';
+import { width, game, powerUps } from './model.js';
+import { MyFramework } from '../vFw/framework.js';
 
-let players = game.players;
-let powerUpTimeOut
+let powerUpTimeOut;
 
-export function changeDirection(e, id) {
-    console.log(e, id)
-    if (!players[id].keyStillDown || (players[id].powerUp === "skate" && players[id].keyStillDownForSkate < 4)) {
-        const directions = {
-            'ArrowUp': 'up',
-            'ArrowRight': 'right',
-            'ArrowDown': 'down',
-            'ArrowLeft': 'left'
-        };
+// Function to convert x, y to a single position index
+const positionToIndex = (position, gameGrid) =>
+  position.y * gameGrid.width + position.x;
 
-        if (directions[e]) {
-            moveBomberman(directions[e], id);
-        } else if (e === 'x') {
-            dropBomb(id);
-        }
+const directionMap = {
+  ArrowUp: { offset: -width, transform: "translateY(-100%)" },
+  ArrowRight: { offset: 1, transform: "translateX(100%)" },
+  ArrowDown: { offset: width, transform: "translateY(100%)" },
+  ArrowLeft: { offset: -1, transform: "translateX(-100%)" },
+};
+
+export function moveBomberman(direction, id) {
+  const player = game.players[id];
+  const bomberman = document.querySelectorAll(
+    `.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`
+  );
+  if (!bomberman) return;
+
+  const bombermanNextIndex = positionToIndex(
+    player.playerPosition,
+    game.gameGrid
+  );
+  
+  const nextSquare = document.querySelectorAll(".grid div")[bombermanNextIndex];
+  const classDirection = direction.split('Arrow').slice(1).join('');
+  const newIndex = nextSquare.classList[0]
+  if (nextSquare && (!nextSquare.classList.length || powerUps.includes(newIndex))) {
+    if (powerUps.includes(newIndex)) {
+      game.gameGrid.powerUp = game.gameGrid.powerUp.filter(powerUp => powerUp.index !== newIndex);
+      addPowerUpToPlayer(newIndex, id);
     }
-}
-
-function moveBomberman(direction, id) {
-    const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
-    if (!bomberman) return;
-
-    const bombermanClass = bomberman.classList[0].replace(' bomb', '');
-    const bombermanIndex = availableSquares.indexOf(bomberman);
-
-    const directionMap = {
-        'up': -width,
-        'right': 1,
-        'down': width,
-        'left': -1
-    };
-
-    const newIndex = bombermanIndex + directionMap[direction];
-    const nextSquare = availableSquares[newIndex];
-
-    if (nextSquare && (!nextSquare.classList.length || powerUps.includes(nextSquare.classList[0]))) {
-        if (powerUps.includes(nextSquare.classList[0])){
-            AddPowerUpToPlayer(nextSquare.classList[0], id);
-            clearTimeout(powerUpTimeOut);
-            console.log(nextSquare.classList[0])
-        }
-        nextSquare.className = `bomberman${players[id].color}Going${capitalize(direction)}`;
-        bomberman.classList.remove(bombermanClass);
-        players[id].keyStillDown = true;
-        if (players[id].powerUp === 'skate') {
-            players[id].keyStillDownForSkate++
-    } else {
-        players[id].keyStillDownForSkate = 0
+    // Move the bomberman visually
+    const transform = directionMap[direction].transform;
+    for (let i = 0; i < bomberman.length; i++) {
+      bomberman[i].style.transform = transform;
+      bomberman[i].style.transition = 'transform 0.2s'; // Increased duration for visibility
+      const bombermanClass = bomberman[i].classList[0].replace(" bomb", "");
+      bomberman[i].classList.remove(bombermanClass);
+      bomberman[i].style.transform = "";
+      bomberman[i].style.transition = "";
     }
-}
+      nextSquare.className = `bomberman${player.color}Going${classDirection}`;
+    player.keyStillDown = true;
+    player.keyStillDownForSkate =
+      player.powerUp === "skate" ? player.keyStillDownForSkate + 1 : 0;
+  }
 }
 
 export function setKeyUp(id) {
-    
-    players[id].keyStillDownForSkate = 0;
-    players[id].keyStillDown = false;
+  const players = game.players;
+
+  const player = players[id];
+  player.keyStillDownForSkate = 0;
+  player.keyStillDown = false;
 }
 
-function dropBomb(id) {
-    if ((players[id].bombDropped >= 1 && players[id].powerUp !=="extraBomb") || (players[id].bombDropped >= 2 && players[id].powerUp === "extraBomb")) return;
-    const bomberman = document.querySelector(`.bomberman${players[id].color}GoingUp, .bomberman${players[id].color}GoingRight, .bomberman${players[id].color}GoingDown, .bomberman${players[id].color}GoingLeft`);
-    if (!bomberman) return;
+export function dropBomb(player) {
 
-    const bombermanIndex = availableSquares.indexOf(bomberman);
-    players[id].bombDropped++
-    if (players[id].powerUp === 'powerBomb') {
-        availableSquares[bombermanIndex].classList.add('powerBombDropped');
-    } else {
-    availableSquares[bombermanIndex].classList.add('bomb');
-}
-const directions = findExplosionDirections(bombermanIndex);
-setTimeout(() => {
-    players[id].bombDropped--;
-         breakWall(bombermanIndex, directions);
-        sendBombExplosion(bombermanIndex, directions);
-    }, 3000);
+  console.warn("player drop bomb", player);
+  const bomberman = document.querySelector(
+    `.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`
+  );
+  if (!bomberman) return;
+
+  const bombermanIndex = positionToIndex(player.playerPosition, game.gameGrid);
+  const bombClass = player.powerUp === "powerBomb" ? "powerBombDropped" : "bomb";
+  availableSquares[bombermanIndex].classList.add(bombClass);
+  const explosionDirections = findExplosionDirections(bombermanIndex);
+  setTimeout(() => {
+    breakWall(bombermanIndex, explosionDirections);
+  }, 3000);
 }
 
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+function addPowerUpToPlayer(powerUp, id) {
+  const players = game.players;
+
+  if (powerUp) {
+    players[id].powerUp = powerUp;
+    clearTimeout(powerUpTimeOut);
+    powerUpTimeOut = setTimeout(() => {
+      players[id].powerUp = "";
+    }, 20000);
+  }
 }
 
-function AddPowerUpToPlayer(powerUp, id) {
-    if (powerUp) {
-        players[id].powerUp = powerUp;
-        powerUpTimeOut = setTimeout(() => {players[id].powerUp = ''}, 20000);
-    }
+export function playerGameOver() {
+  const gameGrid = document.getElementById("gameGrid");
+  const gameOver = MyFramework.DOM("h1", { class: "game-over" }, "Game Over!");
+  gameGrid.appendChild(gameOver);
 }
 
-export function playerGameOver(){
-    const gameGrid = document.getElementById('gameGrid');
-    // Display "Game Over" message
-        const gameOver = MyFramework.DOM('h1', { class: 'game-over' }, 'Game Over!');
-        gameGrid.appendChild(gameOver);
+export function resetBombermanPosition(playerid, newPosition){
+  const player = game.players[playerid];
+  const nextSquare = document.getElementById(String(newPosition));
+    nextSquare.className = `bomberman${player.color}GoingDown`;
+  ;
 }
