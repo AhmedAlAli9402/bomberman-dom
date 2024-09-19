@@ -31,7 +31,7 @@ export function startGameCountdown(currentGame) {
       // Notify all clients with the remaining time
       broadcastToClients(currentGame, timerUpdateMessage);
 
-      if (currentGame.lockInCount <= 0) {
+      if (currentGame.lockInCount <= 0 || currentGame.clients.size === 4) {
         clearInterval(lockInCountInterval); // Stop sending timer updates
         // currentGame.startingCount = 10; // Set countdown for the last 10 seconds
         startPreGameCountdown(currentGame); // Start the final countdown
