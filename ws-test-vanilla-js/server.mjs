@@ -22,6 +22,8 @@ wss.on("connection", (ws) => {
   console.log("Client connected");
   let data;
 
+  console.log("Games", Games.length);
+
   // Handle incoming messages
   ws.on("message", (message) => {
     try {
@@ -40,9 +42,11 @@ wss.on("connection", (ws) => {
     if (data.nickname) {
       if (Games.length === 0 || Games[Games.length - 1].isStarting) {
         currentGame = CreateNewGame();
+        Games.push(currentGame);
       } else {
         currentGame = Games[Games.length - 1];
       }
+      console.log("Games2", Games.length);
 
       // Check if the nickname is already taken and add a number to it
       const existingNicknames = Array.from(currentGame.clients.values());

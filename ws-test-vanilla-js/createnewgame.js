@@ -69,6 +69,5 @@ export function CreateNewGame() {
       gameTimer: 17, // To track the timer
     };
 
-    Games.push(newGame);
     return newGame;
   }

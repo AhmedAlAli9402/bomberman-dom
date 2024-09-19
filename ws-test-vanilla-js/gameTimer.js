@@ -14,7 +14,6 @@ export function startGameTimer() {
 
       for (let i = 1; i < currentGame.players.length; i++) {
         let player = currentGame.players[i];
-        console.log(player.lives, "player ", winner.lives, "winner");
 
         if (player.lives > highestLives) {
           winner = player;
@@ -43,8 +42,6 @@ export function startGameTimer() {
       broadcastToClients(currentGame, gameOverMessage);
       return;
     }
-
-    console.log(currentGame.gameTimer);
 
     // Update the game HUD with the remaining time
     const updateHUD = {
