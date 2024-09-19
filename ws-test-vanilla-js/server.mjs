@@ -5,7 +5,7 @@ import { WebSocketServer } from "ws"; // Import WebSocket as Server
 import { handleClientDisconnection } from "./handleclientdiscc.js";
 import { CreateNewGame } from "./createnewgame.js";
 import { handleMessages } from "./handlemessages.js";
-import { startGameCountdown } from "./gamecounter.js";
+import { startGameCountdown, broadcastToClients } from "./gamecounter.js";
 
 const server = http.createServer();
 const wss = new WebSocketServer({ server });
@@ -79,8 +79,8 @@ wss.on("connection", (ws) => {
         numberofClients: currentGame.clients.size,
         loadMessages: currentGame.chatMessages,
       };
-      ws.send(JSON.stringify(welcomeMessage));
-
+      // ws.send(JSON.stringify(welcomeMessage));
+      broadcastToClients(currentGame, welcomeMessage);
       // Start the countdown timer if there are at least 2 players
       if (currentGame.clients.size === 2) {
         startGameCountdown(currentGame);
