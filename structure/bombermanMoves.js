@@ -101,7 +101,6 @@ export function playerGameOver() {
 export function resetBombermanPosition(playerid, newPosition){
   const player = game.players[playerid];
   const nextSquare = document.getElementById(String(newPosition));
-      requestAnimationFrame(() => {
     nextSquare.className = `bomberman${player.color}GoingDown`;
-  });
+  ;
 }

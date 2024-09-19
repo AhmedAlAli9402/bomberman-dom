@@ -2,8 +2,8 @@
 export function buildGameObject() {
   const height = 17;
   const width = 23;
-  const numberOfBreakableWalls = 100;
-  const numberOfPowerUps = 50;
+  const numberOfBreakableWalls = 70;
+  const numberOfPowerUps = 30;
   const powerUps = ["powerBomb", "extraBomb", "skate"];
   const playerStartPositions = [
     width + 1,

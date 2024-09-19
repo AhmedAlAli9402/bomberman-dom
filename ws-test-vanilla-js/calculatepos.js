@@ -114,7 +114,6 @@ export function checkIfPlayersInBlastRadius(
     if (playersPositionsIndex.includes(playersStartPositionsIndex[i])) {
 
       playersStartPositionsIndex[i] = "";
-      console.log(playersStartPositionsIndex[i], "player start position index");
     }
   }
   for (let i=0;i<players.length;i++) {

@@ -65,8 +65,8 @@ export function CreateNewGame() {
           disconnected: true,
         },
       ], // To track player positions
-      lockInCount: 5, // Countdown for locking in
-      startingCount: 3, // Countdown for starting
+      lockInCount: 20, // Countdown for locking in
+      startingCount: 10, // Countdown for starting
       isLockingIn: false, // Game is not locking in
       isStarting: false, // Game is not starting
       isStarted: false, // Game is not started

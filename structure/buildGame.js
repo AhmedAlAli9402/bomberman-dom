@@ -5,7 +5,7 @@ import { game } from "./model.js";
 import { formatTime } from "./helpers.js";
 import { container } from "../app.js";
 import { countdown, setCountdown } from "./model.js";
-import { sendPlayerMove, sendkeyUp, sendplayerGameOver, sendPlaceBomb } from "../app.js";
+import { sendPlayerMove, sendkeyUp, sendplayerGameOver, sendPlaceBomb, update } from "../app.js";
 
 export let availableSquares = [];
 // Initial lives for each player, starting with 3 lives each
@@ -93,7 +93,7 @@ export function buildGame() {
 
   // Ensure no blocked initial paths
   startTimer(countdown());
-  initializePlayer();
+  (initializePlayer());
 }
 
 const keyStates = {
@@ -111,16 +111,15 @@ function initializePlayer() {
   // Add event listeners for player movement
   document.getElementById("gameGrid").addEventListener("keydown", function (event) {
     const key = event.key;
-    console.log(key);
     if (key === "ArrowUp" || key === "ArrowDown" || key === "ArrowLeft" || key === "ArrowRight") {
       // if (!keyStates[key]) {
         // keyStates[key] = true; // Set the key state to pressed
-        sendPlayerMove(event); // Send the initial move message
+        update(sendPlayerMove(event)); // Send the initial move message
       // }
     } else if (key === "x") {
       if (!keyStates[key]) {
         keyStates[key] = true; // Set the key state to pressed
-        sendPlaceBomb(event); // Send the place bomb message
+        update(sendPlaceBomb(event)); // Send the place bomb message
       }
     }
   });
@@ -129,14 +128,9 @@ function initializePlayer() {
     const key = event.key;
     if (keyStates.hasOwnProperty(key)) {
       keyStates[key] = false; // Set the key state to not pressed
-      sendkeyUp(event); // Handle key up event
+      update(sendkeyUp(event)); // Handle key up event
     }
   });
-}
-
-export function deinitializePlayer() {
-  document.removeEventListener("keydown", (ev) => sendPlayerMove(ev));
-  document.removeEventListener("keyup", sendkeyUp);
 }
 
 // Show the game grid and HUD
@@ -252,8 +246,6 @@ export function endGame(data) {
   let Players = game.players;
   const gameGrid = document.getElementById("gameGrid");
   gameGrid.innerHTML = ""; // Clear the game grid
-
-  console.log("Game Over!", Players);
   // Display "Game Over" message
   const gameOver = MyFramework.DOM("h1", { class: "game-over" }, "Game Over!");
   gameGrid.appendChild(gameOver);
@@ -261,8 +253,6 @@ export function endGame(data) {
   // Determine the winner with the most lives remaining (if any) otherwise, no winner if all players have 0 lives or equal lives
   const maxLives = Math.max(...Players.map(player => player.lives));
   const winners = Players.filter(player => player.lives === maxLives);
-
-  console.log("winnerIndex", winners);
 
   if (winners.length === 1 && maxLives > 0) {
     const winnerName = winners[0].nickname; // Get the winner's name

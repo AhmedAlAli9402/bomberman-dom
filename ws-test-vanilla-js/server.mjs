@@ -92,11 +92,7 @@ wss.on("connection", (ws) => {
         return;
       }
     } else {
-      // if (data.message.gameId) {
         handleMessages(data, ws);
-      // } else {
-      //   console.log("No gameId found in the message",data.gameId);
-      // }
     }
     // Handle regular messages
   });

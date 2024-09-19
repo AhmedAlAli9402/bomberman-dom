@@ -14,8 +14,6 @@ const [ws, setWs] = MyFramework.State(null);
 let chatMessages = [];
 
 function connectToWebSocket(nickname) {
-  console.log("Connecting to WebSocket server");
-  console.log("Nickname", nickname);
   const newWS = new WebSocket(wsUrl);
 
   newWS.onopen = () => {
@@ -28,17 +26,23 @@ function connectToWebSocket(nickname) {
     }
   };
 
-  newWS.onmessage = (message) => handleServerMessage(JSON.parse(message.data));
+  newWS.onmessage = (message) => ((handleServerMessage(JSON.parse(message.data))));
 
   newWS.onclose = () => {
     newWS.send(JSON.stringify({ message: { messageType: "disconnect" } }));
-    console.log("Disconnected from WebSocket server");
   };
 }
+export function update() {
+  // Add your game state or UI update logic here
+  // console.log("Updating game state or UI");
+  // Call requestAnimationFrame to update on the next frame
+  requestAnimationFrame(update);
+}
 
+// Start the update loop
 // to check WebSocket connection status
 function isWebSocketConnected() {
-  return ws().readyState === WebSocket.OPEN;
+  return ws() && ws().readyState === WebSocket.OPEN;
 }
 
 function handleServerMessage(data) {
@@ -53,21 +57,21 @@ function handleServerMessage(data) {
     keyUp: handleKeyUp,
     chat: handleChatMessage,
     updateGameState: syncGameState,
-    placeBomb: (data) => { checkGameStructure(data.currentGame.gameGrid); dropBomb(data.currentGame.players[data.id]); },
+    placeBomb: (data) => { update(checkGameStructure(data.currentGame.gameGrid)); dropBomb(data.currentGame.players[data.id]); },
     killPlayer: handleKillPlayer,
     updateHUD: (data) => console.log("Update HUD", data.gameTimer),
     disconnect: handleChatMessage,
     winnerByDefault: endGame,
-    gameOver: (data) => { console.log("Game Over", data); endGame(data); },
-    youLost: (data) => { console.log("You lost", data); updateGame(data.currentGame); playerGameOver(data.id); },
+    gameOver: (data) => {endGame(data); },
+    youLost: (data) => {updateGame(data.currentGame); playerGameOver(data.id); },
   };
-console.log("new message",data.messageType)
   const handler = handlers[data.messageType];
   if (handler) {
-    handler(data);
+    update(handler(data));
   } else {
     console.warn("Unknown message type:", data.messageType);
   }
+  requestAnimationFrame(update);
 }
 
 function handleWelcomeMessage(data) {
@@ -87,12 +91,13 @@ function handlePlayerMove(data) {
   if (direction === "reset") {
     resetBombermanPosition(id, data.newPosition);
   } else {
-    moveBomberman(direction, id);
+    (moveBomberman(direction, id));
   }
 }
 
 function handleKeyUp(data) {
-  window.requestAnimationFrame(() => setKeyUp(data.id));
+  // window.requestAnimationFrame(() => setKeyUp(data.id));
+  setKeyUp(data.id)
 }
 
 function handleChatMessage(data) {
@@ -105,7 +110,6 @@ function handleChatMessage(data) {
 }
 
 function syncGameState(data) {
-  console.log("Syncing game state", data);
   game.players = data.players;
 }
 
@@ -114,7 +118,6 @@ function handleKillPlayer(data) {
 }
 
 function handleGameStartedMessage(data) {
-  console.log("Game started", data);
   Object.assign(game, {
     gameGrid: data.currentGame.gameGrid,
     players: data.currentGame.players,
@@ -123,7 +126,7 @@ function handleGameStartedMessage(data) {
   });
   updateGame(game);
   showGameGrid();
-  buildGame();
+  requestAnimationFrame(buildGame);
 }
 
 export function sendWebSocketMessage(messageType, additionalData = {}) {
@@ -352,13 +355,3 @@ function loadExistingMessages() {
 
 window.requestAnimationFrame(showLandingPage);
 
-// function createNewGameinServer() {
-//   if (ws()) {
-//     ws().send(JSON.stringify({
-//       message: {
-//         gameId: game.gameId,
-//         messageType: "newGame"
-//       }
-//     }));
-//   }
-// }
