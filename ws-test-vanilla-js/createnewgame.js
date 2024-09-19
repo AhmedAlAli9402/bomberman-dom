@@ -8,6 +8,7 @@ export function CreateNewGame() {
       chatMessages: [],
       players: [
         {
+          playerId: randomId(),
           nickname: "",
           powerUp: "",
           beginPosition: 0,
@@ -21,6 +22,7 @@ export function CreateNewGame() {
           disconnected: true,
         },
         {
+          playerId: randomId(),
           nickname: "",
           powerUp: "",
           beginPosition: 0,
@@ -34,6 +36,7 @@ export function CreateNewGame() {
           disconnected: true,
         },
         {
+          playerId: randomId(),
           nickname: "",
           powerUp: "",
           beginPosition: 0,
@@ -47,6 +50,7 @@ export function CreateNewGame() {
           disconnected: true,
         },
         {
+          playerId: randomId(),
           nickname: "",
           powerUp: "",
           beginPosition: 0,
@@ -65,9 +69,13 @@ export function CreateNewGame() {
       isLockingIn: false, // Game is not locking in
       isStarting: false, // Game is not starting
       isStarted: false, // Game is not started
-      gameId:0,
+      gameId:randomId(),
       gameTimer: 17, // To track the timer
     };
 
     return newGame;
+  }
+
+  function randomId() {
+    return Math.floor(Math.random() * 1000000);
   }

@@ -22,8 +22,6 @@ wss.on("connection", (ws) => {
   console.log("Client connected");
   let data;
 
-  console.log("Games", Games.length);
-
   // Handle incoming messages
   ws.on("message", (message) => {
     try {
@@ -37,66 +35,70 @@ wss.on("connection", (ws) => {
       );
       return;
     }
-
-    // If the client is sending their nickname on first connection
-    if (data.nickname) {
-      if (Games.length === 0 || Games[Games.length - 1].isStarting) {
-        currentGame = CreateNewGame();
-        Games.push(currentGame);
-      } else {
-        currentGame = Games[Games.length - 1];
-      }
-      console.log("Games2", Games.length);
-
-      // Check if the nickname is already taken and add a number to it
-      const existingNicknames = Array.from(currentGame.clients.values());
-      if (existingNicknames.includes(data.nickname)) {
-        let i = 1;
-        while (existingNicknames.includes(data.nickname + i)) {
-          i++;
+    if (data.messageType === "firstConnect") {
+      // If the client is sending their nickname on first connection
+      if (data.nickname) {
+        if (Games.length === 0 || Games[Games.length - 1].isStarting) {
+          currentGame = CreateNewGame();
+          Games.push(currentGame);
+        } else {
+          currentGame = Games[Games.length - 1];
         }
-        data.nickname = data.nickname + i;
-      }
 
-      // Assign the initial player position based on the current client count
-      const playerId = currentGame.clients.size;
-      const initialPosition =
-        currentGame.gameGrid.playerStartPositions[playerId];
-      currentGame.clients.set(ws, data.nickname);
+        // Check if the nickname is already taken and add a number to it
+        const existingNicknames = Array.from(currentGame.clients.values());
+        if (existingNicknames.includes(data.nickname)) {
+          let i = 1;
+          while (existingNicknames.includes(data.nickname + i)) {
+            i++;
+          }
+          data.nickname = data.nickname + i;
+        }
 
-      currentGame.players[playerId].nickname = data.nickname;
-      currentGame.players[playerId].startPosition = initialPosition;
-      currentGame.players[playerId].playerPosition = initialPosition;
-      currentGame.players[playerId].beginPosition = initialPosition;
-      currentGame.players[playerId].lives = 3;
-      currentGame.players[playerId].disconnected = false;
+        // Assign the initial player position based on the current client count
+        const playerId = currentGame.clients.size;
+        const initialPosition =
+          currentGame.gameGrid.playerStartPositions[playerId];
+        currentGame.clients.set(ws, data.nickname);
 
-      // Send a welcome message
-      const welcomeMessage = {
-        messageType: "welcome",
-        nickname: data.nickname,
-        message: `Welcome, ${data.nickname}!`,
-        numberofClients: currentGame.clients.size,
-        loadMessages: currentGame.chatMessages,
-      };
-      // ws.send(JSON.stringify(welcomeMessage));
-      broadcastToClients(currentGame, welcomeMessage);
-      // Start the countdown timer if there are at least 2 players
-      if (currentGame.clients.size === 2) {
-        startGameCountdown(currentGame);
-      } else if (currentGame.isLockingIn) {
-        const lockInMessage = {
-          messageType: "lockIn",
-          message: `More players can still join, ${currentGame.lockInCount} seconds!.`,
-          remainingTime: currentGame.lockInCount,
+        currentGame.players[playerId].nickname = data.nickname;
+        currentGame.players[playerId].startPosition = initialPosition;
+        currentGame.players[playerId].playerPosition = initialPosition;
+        currentGame.players[playerId].beginPosition = initialPosition;
+        currentGame.players[playerId].lives = 3;
+        currentGame.players[playerId].disconnected = false;
+
+        // Send a welcome message
+        const welcomeMessage = {
+          messageType: "welcome",
+          nickname: data.nickname,
+          message: `Welcome, ${data.nickname}!`,
+          numberofClients: currentGame.clients.size,
+          loadMessages: currentGame.chatMessages,
         };
-        ws.send(JSON.stringify(lockInMessage));
+        // ws.send(JSON.stringify(welcomeMessage));
+        broadcastToClients(currentGame, welcomeMessage);
+        // Start the countdown timer if there are at least 2 players
+        if (currentGame.clients.size === 2) {
+          startGameCountdown(currentGame);
+        } else if (currentGame.isLockingIn) {
+          const lockInMessage = {
+            messageType: "lockIn",
+            message: `More players can still join, ${currentGame.lockInCount} seconds!.`,
+            remainingTime: currentGame.lockInCount,
+          };
+          ws.send(JSON.stringify(lockInMessage));
+        }
+        return;
       }
-      return;
+    } else {
+      // if (data.message.gameId) {
+        handleMessages(data, ws);
+      // } else {
+      //   console.log("No gameId found in the message",data.gameId);
+      // }
     }
-
     // Handle regular messages
-    handleMessages(data, ws, currentGame);
   });
 
   // Handle client disconnection

@@ -22,7 +22,7 @@ function connectToWebSocket(nickname) {
   newWS.onopen = () => {
     console.log("Connected to WebSocket server");
     if (nickname && nickname.trim()) {
-      newWS.send(JSON.stringify({ nickname }));
+      newWS.send(JSON.stringify({ messageType: "firstConnect", nickname: nickname }));
     } else {
       alert("Nickname cannot be empty");
     }
@@ -91,7 +91,7 @@ function handleKeyUp(data) {
 
 function handleChatMessage(data) {
   const { nickname, message: chatMessage } = data;
-  const messageText = data.messageType === "disconnect" 
+  const messageText = data.messageType === "disconnect"
     ? `${nickname} has left the game`
     : `${nickname}: ${chatMessage.message}`;
   chatMessages.push(messageText);
@@ -112,7 +112,7 @@ function handleGameStartedMessage(data) {
   Object.assign(game, {
     gameGrid: data.currentGame.gameGrid,
     players: data.currentGame.players,
-    gameId: data.game,
+    gameId: data.gameId,
     gameTimer: data.currentGame.timer
   });
   updateGame(game);
@@ -121,7 +121,9 @@ function handleGameStartedMessage(data) {
 }
 
 export function sendWebSocketMessage(messageType, additionalData = {}) {
+  console.log("F SAMI")
   if (ws()) {
+    console.log("F SAMI 2x")
     ws().send(JSON.stringify({
       message: {
         messageType,
@@ -193,11 +195,11 @@ function showNicknamePopup() {
       "Submit"
     )
   );
-  
+
   if (container) {
     container.replaceChild(nicknamePopup, document.getElementById("landingPage"));
   }
-  
+
   document.getElementById("nicknameInput").addEventListener("keyup", (event) => {
     if (event.key === "Enter") {
       submitNickname();
@@ -237,7 +239,7 @@ function showWaitingArea() {
       { id: "instructionsPage" },
       MyFramework.DOM("h3", { class: "instruction-title" }, "Instructions"),
       MyFramework.DOM("h3", { class: "instruction-objective" }, "The objective of the game is to eliminate all other players by placing bombs."),
-      ...instructionsContent.map(item => 
+      ...instructionsContent.map(item =>
         MyFramework.DOM(
           "div",
           { class: "instruction-item" },

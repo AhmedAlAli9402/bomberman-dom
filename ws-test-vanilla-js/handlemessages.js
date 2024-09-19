@@ -5,16 +5,21 @@ import {
   positionToIndex,
 } from "./calculatepos.js"
 
+import { Games } from "./server.mjs"
+
 let powerUpTimeOut;
 
-export function handleMessages(data, ws, currentGame) {
+export function handleMessages(data, ws) {
+// find the game the player is in
+  const currentGame = Games.find((game) => game.clients.has(ws))
+
   if (currentGame.clients.has(ws) && data.message) {
     const nickname = currentGame.clients.get(ws)
     const playerId = Array.from(currentGame.clients.keys()).indexOf(ws)
     const player = currentGame.players[playerId]
     let broadcast = {}
     if (data.message.messageType === "move") {
-      // console.log(data.message.messageType);
+      console.log("F SAMI 3x")
       const { direction } = data.message
       // const playerPosition = player.playerPosition;
       player.startPosition = player.playerPosition
@@ -124,5 +129,7 @@ export function handleMessages(data, ws, currentGame) {
       }
     }
     return
+  } else {
+    console.log("Invalid message received:", data, "from", ws)
   }
 }
