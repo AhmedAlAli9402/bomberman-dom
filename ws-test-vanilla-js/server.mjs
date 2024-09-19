@@ -87,7 +87,7 @@ wss.on("connection", (ws) => {
             message: `More players can still join, ${currentGame.lockInCount} seconds!.`,
             remainingTime: currentGame.lockInCount,
           };
-          ws.send(JSON.stringify(lockInMessage));
+          broadcastToClients(currentGame, lockInMessage);
         }
         return;
       }
