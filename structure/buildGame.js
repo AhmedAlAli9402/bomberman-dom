@@ -1,5 +1,3 @@
-// structure/buildGame.js
-
 import { MyFramework } from "../vFw/framework.js";
 import { game } from "./model.js";
 import { formatTime } from "./helpers.js";

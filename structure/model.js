@@ -1,4 +1,3 @@
-// structure/model.js
 import { MyFramework } from "../vFw/framework.js";
 
 export let height = 17;

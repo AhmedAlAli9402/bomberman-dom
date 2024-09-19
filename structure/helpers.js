@@ -1,4 +1,3 @@
-//helpers.js
 import { game } from './model.js';
 
 let players = game.players;

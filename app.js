@@ -1,5 +1,3 @@
-// app.js
-
 import { MyFramework } from "./vFw/framework.js";
 import { showGameGrid, buildGame, endGame } from "./structure/buildGame.js";
 import { game, wsUrl, updateGame } from "./structure/model.js";
