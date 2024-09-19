@@ -4,7 +4,6 @@ export function createSignal(initialValue) {
     const subscribers = new Set();
     function getter() {
         if (currentSubscriber) {
-            console.log("getting");
             subscribers.add(currentSubscriber);
         }
         return value;

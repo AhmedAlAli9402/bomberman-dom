@@ -28,7 +28,7 @@ export const maximumPlayers = 4;
 export const minimumTime = 10;
 export const maximumTime = 20;
 
-const host = 'localhost'; // change to the server IP address
+const host = '192.168.8.115'; // change to the server IP address
 export const wsUrl = 'ws://' + host + ':8080';
 
 const gameDuration = 180; // 3 minutes

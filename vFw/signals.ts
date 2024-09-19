@@ -14,7 +14,6 @@ export function createSignal<T>(initialValue?: T): [Getter<T>, Setter<T>] {
 
   function getter() {
     if (currentSubscriber) {
-      console.log("getting");
       subscribers.add(currentSubscriber);
     }
     return value;

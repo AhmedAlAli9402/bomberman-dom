@@ -31,9 +31,6 @@ function connectToWebSocket(nickname) {
   };
 }
 export function update() {
-  // Add your game state or UI update logic here
-  // console.log("Updating game state or UI");
-  // Call requestAnimationFrame to update on the next frame
   requestAnimationFrame(update);
 }
 
@@ -352,4 +349,3 @@ function loadExistingMessages() {
 }
 
 window.requestAnimationFrame(showLandingPage);
-
