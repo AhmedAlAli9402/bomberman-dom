@@ -20,37 +20,35 @@ const directionMap = {
 
 export function moveBomberman(direction, id) {
   const player = game.players[id];
-  const bomberman = document.querySelector(
+  const bomberman = document.querySelectorAll(
     `.bomberman${player.color}GoingUp, .bomberman${player.color}GoingRight, .bomberman${player.color}GoingDown, .bomberman${player.color}GoingLeft`
   );
   if (!bomberman) return;
 
-  const bombermanClass = bomberman.classList[0].replace(" bomb", "");
   const bombermanNextIndex = positionToIndex(
     player.playerPosition,
     game.gameGrid
   );
-
-    const nextSquare = document.querySelectorAll(".grid div")[bombermanNextIndex];
-    const classDirection = direction.split('Arrow').slice(1).join('');
-    const newIndex = nextSquare.classList[0]
-    if (nextSquare && (!nextSquare.classList.length || powerUps.includes(newIndex))) {
-        if (powerUps.includes(newIndex)) {
-            game.gameGrid.powerUp = game.gameGrid.powerUp.filter(powerUp => powerUp.index !== newIndex);
-            addPowerUpToPlayer(newIndex, id);
-        }
-        // Move the bomberman visually
-        const transform = directionMap[direction].transform;
-        bomberman.style.transform = transform;
-        bomberman.style.transition = 'transform 0.2s'; // Increased duration for visibility
-
-    requestAnimationFrame(() => {
-      bomberman.classList.remove(bombermanClass);
+  
+  const nextSquare = document.querySelectorAll(".grid div")[bombermanNextIndex];
+  const classDirection = direction.split('Arrow').slice(1).join('');
+  const newIndex = nextSquare.classList[0]
+  if (nextSquare && (!nextSquare.classList.length || powerUps.includes(newIndex))) {
+    if (powerUps.includes(newIndex)) {
+      game.gameGrid.powerUp = game.gameGrid.powerUp.filter(powerUp => powerUp.index !== newIndex);
+      addPowerUpToPlayer(newIndex, id);
+    }
+    // Move the bomberman visually
+    const transform = directionMap[direction].transform;
+    for (let i = 0; i < bomberman.length; i++) {
+      bomberman[i].style.transform = transform;
+      bomberman[i].style.transition = 'transform 0.2s'; // Increased duration for visibility
+      const bombermanClass = bomberman[i].classList[0].replace(" bomb", "");
+      bomberman[i].classList.remove(bombermanClass);
+      bomberman[i].style.transform = "";
+      bomberman[i].style.transition = "";
+    }
       nextSquare.className = `bomberman${player.color}Going${classDirection}`;
-      bomberman.style.transform = "";
-      bomberman.style.transition = "";
-    });
-
     player.keyStillDown = true;
     player.keyStillDownForSkate =
       player.powerUp === "skate" ? player.keyStillDownForSkate + 1 : 0;

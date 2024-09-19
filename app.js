@@ -77,7 +77,8 @@ function handleWelcomeMessage(data) {
 
 function handlePlayerMove(data) {
   const { id, direction, currentGame } = data;
-  updateGame(currentGame);
+  checkGameStructure(currentGame.gameGrid);
+  updateGame(currentGame); 
   if (direction === "reset") {
     resetBombermanPosition(id, data.newPosition);
   } else {
@@ -121,9 +122,7 @@ function handleGameStartedMessage(data) {
 }
 
 export function sendWebSocketMessage(messageType, additionalData = {}) {
-  console.log("F SAMI")
   if (ws()) {
-    console.log("F SAMI 2x")
     ws().send(JSON.stringify({
       message: {
         messageType,
