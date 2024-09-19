@@ -153,7 +153,7 @@ export function checkIfPlayersInBlastRadius(
           break;
         }}
         }
-        }
+        
       let message = {
         messageType: "updatePosition",
         id: i,
@@ -164,8 +164,10 @@ export function checkIfPlayersInBlastRadius(
           currentGame.gameGrid
         ),
       };
+    
       broadcastToClients(currentGame, message);
-      if (players[i].lives === 0) {
+    }
+    if (players[i].lives === 0) {
         const client = Array.from(currentGame.clients.keys())[i];
         sendToClient(client, {messageType: "youLost", id: i})
         removeDeadPlayers(i);

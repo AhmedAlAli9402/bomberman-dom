@@ -95,10 +95,6 @@ export function handleMessages(data, ws) {
         )
         currentGame.bombs = currentGame.bombs.filter((bomb) => bomb !== bombPosition)
         player.bombDropped--
-        broadcast = {
-          messageType: "bombExplosion",
-          id: playerId,
-        }
       }, 3000)
     } else if (data.message.messageType === "chat") {
       currentGame.chatMessages.push(`${nickname}: ${data.message.message}`) // Store the message
